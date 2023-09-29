@@ -1,0 +1,93 @@
+{
+  "catalog": [
+    {
+      "id": 1,
+      "name": "Calabresa",
+      "image_url": "../../../../../public/Vector.svg",
+      "description": "Pizza de Quatro Queijos com borda tradicional",
+      "type": "TRADITIONAL",
+      "price": "49.99"
+    },
+    {
+      "id": 2,
+      "name": "Mussarela",
+      "image_url": "../../../../../public/Vector.svg",
+      "description": "Pizza de Quatro Queijos com borda tradicional",
+      "type": "TRADITIONAL",
+      "price": "49.99"
+    },
+    {
+      "id": 3,
+      "name": "Mexicana",
+      "image_url": "../../../../../public/Vector.svg",
+      "description": "Pizza de Quatro Queijos com borda tradicional",
+      "type": "TRADITIONAL",
+      "price": "49.99"
+    },
+    {
+      "id": 4,
+      "name": "Bacon",
+      "image_url": "../../../../../public/Vector.svg",
+      "description": "Pizza de Quatro Queijos com borda tradicional",
+      "type": "SPECIAL",
+      "price": "59.99"
+    },
+    {
+      "id": 5,
+      "name": "Quatro Queijos",
+      "image_url": "../../../../../public/Vector.svg",
+      "description": "Pizza de Quatro Queijos com borda tradicional",
+      "type": "SPECIAL",
+      "price": "59.99"
+    }
+  ],
+  "drinks": [
+    {
+      "id": 1,
+      "name": "Coca Lata",
+      "image_url": "/public/coca-cola.png",
+      "description": "Coca lata zero",
+      "price": "5,00"
+    },
+    {
+      "id": 2,
+      "name": "Coca 1L",
+      "image_url": "/public/coca-cola.png",
+      "description": "Coca 1L pet",
+      "price": "10,00"
+    },
+    {
+      "id": 3,
+      "name": "Suco de laranja",
+      "image_url": "/public/coca-cola.png",
+      "description": "Suco de laranja 500ML sem acucar",
+      "price": "7,00"
+    }
+  ],
+  "address": [
+    {
+      "neighborhood": {
+        "name": "Bairro 5",
+        "tax": "5.00"
+      },
+      "number": "11123",
+      "street": "Rua dos bobos",
+      "type": "Trabalho",
+      "zipCode": "54645654",
+      "phone": "(54) 64654-6464",
+      "id": 1
+    }
+  ],
+  "neighborhood": [
+    {
+      "id": 1,
+      "neighborhood": "bairro 1",
+      "tax": "5.00"
+    },
+    {
+      "id": 2,
+      "neighborhood": "Bairro 4",
+      "tax": "6.00"
+    }
+  ]
+}
