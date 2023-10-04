@@ -5,10 +5,8 @@ import { ContextApp } from "../../../../context/context-app";
 import { useState } from "react";
 
 export const Catalog = () => {
-  const { flavors, drinks, onChangeCatalog } = ContextApp()
+  const { flavors, onChangeCatalog } = ContextApp()
   const [onChangeType, setOnChangeType] = useState('TRADITIONAL')
-  console.log(onChangeCatalog, );
-  
 
   return (
     <div className=" mt-10  w-full">
@@ -28,37 +26,39 @@ export const Catalog = () => {
                     price={flavor.price}
                     image_url={flavor.image_url}
                     description={flavor.description}
+                    category={flavor.category}
                   />
                 ))
-              
-                ): (
-                  flavors.filter((flavor) => flavor.type === 'SPECIAL').map((flavor) => (
-                    <CardCatalogPizza
-                      id={flavor.id}
-                      name={flavor.name}
-                      price={flavor.price}
-                      image_url={flavor.image_url}
-                      description={flavor.description}
-                    />
-                  ))
-                  
-                )}
+
+              ) : (
+                flavors.filter((flavor) => flavor.type === 'SPECIAL').map((flavor) => (
+                  <CardCatalogPizza
+                    id={flavor.id}
+                    name={flavor.name}
+                    price={flavor.price}
+                    image_url={flavor.image_url}
+                    description={flavor.description}
+                    category={flavor.category}
+                  />
+                ))
+
+              )}
             </div>
-            
-           
+
           </>
         )
         : (
 
           <div className="mb-10 w-full flex flex-col items-center justify-center gap-5">
             <h2 className="text-start w-11/12 font-bold text-gray-500 text-xl my-3">Bebidas</h2>
-            {drinks.map((drink) => (
+            {flavors.filter((flavor) => flavor.category.name === 'drink').map((drink) => (
               <CardCatalogDrink
                 id={drink.id}
                 name={drink.name}
                 price={drink.price}
                 image_url={drink.image_url}
                 description={drink.description}
+                category={drink.category}
               />
             ))}
           </div>

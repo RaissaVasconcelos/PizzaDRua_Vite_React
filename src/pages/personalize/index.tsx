@@ -1,11 +1,13 @@
 import pizza from '../../assets/pizza.svg'
-import pizzaIcon from '../../assets/pizzaIcon.svg'
-import pizzaWhite from '../../assets/pizza-white.svg'
+import pizzaImg from '../../assets/pizza.png'
+import pizzaWhite from '../../assets/pizza-white.png'
+import half from '../../assets/half.png'
+import halfWhite from '../../assets/half-white.png'
 import { Controller, useForm } from "react-hook-form";
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as RadioGroup from "@radix-ui/react-radio-group";
-import { AlertCircle, Pizza, XCircle } from 'lucide-react';
+import { AlertCircle, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import Select, { StylesConfig } from 'react-select';
 import makeAnimated from 'react-select/animated';
@@ -206,7 +208,7 @@ export default function Personalize() {
       </div>
       <form onSubmit={handleSubmit(handleSubmitForm)} className='w-full ' action="">
         <div className='bg-white  m-5'>
-          <h2 className='text-gray-200 bg-blue-600 rounded-t-sm p-1 '>TAMANHO</h2>
+          <h2 className='text-gray-100 font-semibold bg-orange-600 rounded-t-sm p-1 '>TAMANHO</h2>
           <Controller
             control={control}
             name="size"
@@ -225,9 +227,9 @@ export default function Personalize() {
                       setValue('flavor', [])
                       handleSelectSize('MEDIUM')
                     }}
-                    className={`${isChecked === 'MEDIUM' ? 'bg-blue-500' : 'bg-[#B7C6DC]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
+                    className={`${isChecked === 'MEDIUM' ? 'bg-orange-500' : 'bg-[#f9f9f9]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
                   >
-                    {isChecked === 'MEDIUM' ? <img src={pizzaWhite} width={60} height={60} alt='' /> : <img src={pizzaIcon} width={60} height={60} alt='' />}
+                    {isChecked === 'MEDIUM' ? <img src={pizzaWhite} width={60} height={60} alt='' /> : <img src={pizzaImg} width={60} height={60} alt='' />}
                   </RadioGroup.Item>
                   <RadioGroup.Item
                     onClick={() => {
@@ -235,10 +237,10 @@ export default function Personalize() {
                         setValue('flavor', [])
                       handleSelectSize('HALF')
                     }}
-                    className={`${isChecked === 'HALF' ? 'bg-blue-500' : 'bg-[#B7C6DC]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
+                    className={`${isChecked === 'HALF' ? 'bg-orange-500' : 'bg-[#f9f9f9]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
                     value="HALF"
                   >
-                    {isChecked === 'HALF' ? <Pizza size={40} color="#fff" strokeWidth={1} /> : <Pizza size={40} color="#386BED" strokeWidth={1} />}
+                    {isChecked === 'MEDIUM' ? <img src={half } width={60} height={60} alt='' /> : <img src={halfWhite} width={60} height={60} alt='' />}
 
                   </RadioGroup.Item>
                 </RadioGroup.Root>
@@ -246,7 +248,7 @@ export default function Personalize() {
             }}
           />
           <div className='h-[2px] bg-blue-500 mx-2'></div>
-          <div className='mx-2 p-2 text-cyan-500 font-semibold'>
+          <div className='mx-2 p-2 text-gray-500 font-semibold'>
             {
               isChecked === 'MEDIUM'
                 ? <p>Pizza de 40 centimetros, com 12 fatias</p>
@@ -255,7 +257,7 @@ export default function Personalize() {
           </div>
         </div>
         <div className='bg-white  m-5'>
-          <h2 className='text-gray-200 bg-blue-600 rounded-t-sm p-1 '>SABORES</h2>
+          <h2 className='text-gray-100 font-semibold bg-orange-600 rounded-t-sm p-1 '>SABORES</h2>
           <div className='p-5'>
             <Controller
               control={control}
@@ -298,7 +300,7 @@ export default function Personalize() {
               <p className="border-2 border-yellow-500 bg-yellow-100 p-2 rounded-md text-yellow-500 font-semibold mt-4 flex gap-2 "><AlertCircle className='text-yellow-500' /> Sabor especial selecionado.</p>
             )}
             <div className='h-[2px] bg-blue-500 mt-4' />
-            <p className='text-cyan-500 mt-2 font-semibold'>{isChecked === 'MEDIUM' ? 'Voce pode selecionar até 3 sabores' : 'Voce pode selecionar até 2 sabores'}</p>
+            <p className='text-gray-500 mt-2 font-semibold'>{isChecked === 'MEDIUM' ? 'Voce pode selecionar até 3 sabores' : 'Voce pode selecionar até 2 sabores'}</p>
           </div>
         </div>
         <div className='bg-white  m-5 flex items-center justify-between gap-3 p-5'>

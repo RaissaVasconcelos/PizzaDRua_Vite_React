@@ -48,7 +48,6 @@ export const EditAddressModal = ({ id, neighborhood, number, street, type, phone
     control,
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<AddressSchema>({
     resolver: zodResolver(addressSchemaBody),

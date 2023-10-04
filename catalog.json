@@ -3,6 +3,10 @@
     {
       "id": 1,
       "name": "Calabresa",
+      "category": {
+        "id": 1,
+        "name": "pizza"
+      },
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "TRADITIONAL",
@@ -11,6 +15,10 @@
     {
       "id": 2,
       "name": "Mussarela",
+      "category": {
+        "id": 2,
+        "name": "pizza"
+      },
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "TRADITIONAL",
@@ -19,6 +27,10 @@
     {
       "id": 3,
       "name": "Mexicana",
+      "category": {
+        "id": 3,
+        "name": "pizza"
+      },
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "TRADITIONAL",
@@ -27,6 +39,10 @@
     {
       "id": 4,
       "name": "Bacon",
+      "category": {
+        "id": 4,
+        "name": "pizza"
+      },
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "SPECIAL",
@@ -35,46 +51,63 @@
     {
       "id": 5,
       "name": "Quatro Queijos",
+      "category": {
+        "id": 5,
+        "name": "pizza"
+      },
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "SPECIAL",
       "price": "59.99"
-    }
-  ],
-  "drinks": [
+    },
     {
-      "id": 1,
+      "id": 6,
       "name": "Coca Lata",
+      "category": {
+        "id": 6,
+        "name": "drink"
+      },
       "image_url": "/public/coca-cola.png",
       "description": "Coca lata zero",
+      "type": null,
       "price": "5,00"
     },
     {
-      "id": 2,
+      "id": 7,
       "name": "Coca 1L",
+      "category": {
+        "id": 7,
+        "name": "drink"
+      },
       "image_url": "/public/coca-cola.png",
       "description": "Coca 1L pet",
+      "type": null,
       "price": "10,00"
     },
     {
-      "id": 3,
+      "id": 8,
       "name": "Suco de laranja",
+      "category": {
+        "id": 8,
+        "name": "drink"
+      },
       "image_url": "/public/coca-cola.png",
       "description": "Suco de laranja 500ML sem acucar",
+      "type": null,
       "price": "7,00"
     }
   ],
   "address": [
     {
       "neighborhood": {
-        "name": "Bairro 5",
-        "tax": "5.00"
+        "tax":"6.00",
+        "name": "Bairro 01"
       },
-      "number": "11123",
-      "street": "Rua dos bobos",
-      "type": "Trabalho",
-      "zipCode": "54645654",
-      "phone": "(54) 64654-6464",
+      "number": "1234",
+      "street": "Rua Joao carlos",
+      "type": "Casa",
+      "zipCode": "65656565",
+      "phone": "(65) 44242-4568",
       "id": 1
     }
   ],
@@ -88,6 +121,20 @@
       "id": 2,
       "neighborhood": "Bairro 4",
       "tax": "6.00"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "status": "ACCEPTED"
+    },
+    {
+      "id": 2,
+      "status": "FINISHED"
+    },
+    {
+      "id": 3,
+      "status": "FINISHED"
     }
   ]
 }

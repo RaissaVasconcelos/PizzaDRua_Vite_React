@@ -4,6 +4,7 @@ import imageUrl from '../../../assets/pizza.svg'
 import { ContextApp } from "../../../context/context-app"
 import { CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
+import { priceFormatter } from "../../../utils/formatter"
 
 
 interface CartProps {
@@ -36,7 +37,7 @@ export const CardProduct = ({ name, price, quantityProduct, id }: CartProps) => 
                     </div>
                     <span>Tamanho M</span>
                     <span>Qtd {quantityProduct}x</span>
-                    <span className="font-semibold">R$ {totalPrice}</span>
+                    <span className="font-semibold">{priceFormatter.format(Number(totalPrice))}</span>
                 </div>
             </div>
             <div className="flex items-start justify-center ">

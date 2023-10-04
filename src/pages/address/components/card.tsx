@@ -3,8 +3,10 @@ import React from "react"
 import { Button } from "../../../components/ui/button"
 import { cn } from "../../../utils/cn"
 import * as Dialog from "@radix-ui/react-dialog";
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card"
 import { EditAddressModal } from "./EditAddressModal";
+import { DeleteAddressModal } from "./DeleteAddressModal";
 
 
 type AddressProps  = {
@@ -24,7 +26,6 @@ type AddressProps  = {
 type AddressCardProps  = AddressProps & React.HTMLAttributes<HTMLDivElement>  
 
 export const CardAddress: React.FC<AddressCardProps> = ({addressId ,className, type, street, number, neighborhood, zipCode, phone, ...rest}) => {
-  console.log(neighborhood);
   
   
   return (
@@ -62,7 +63,12 @@ export const CardAddress: React.FC<AddressCardProps> = ({addressId ,className, t
 
             />
           </Dialog.Root>
-          <Button className="bg-red-500 hover:bg-red-600  flex gap-2"><Trash size={18} /> Deletar</Button>
+          <AlertDialog.Root>
+            <AlertDialog.Trigger asChild>
+              <Button className="bg-red-500 hover:bg-red-600  flex gap-2"><Trash size={18} /> Deletar</Button>
+            </AlertDialog.Trigger>
+            <DeleteAddressModal  />
+          </AlertDialog.Root>
         </div>
       </CardContent>
     </Card>

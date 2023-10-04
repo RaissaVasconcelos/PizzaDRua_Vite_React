@@ -25,6 +25,9 @@ interface ProductProps {
   id: number
   type?: 'TRADITIONAL' | 'SPECIAL'
   image_url: string
+  category: {
+    name: string
+  }
   name: string
   description: string
   price: string
@@ -54,23 +57,17 @@ interface GroupOptions {
 type PizzaDRuaContextType = {
   flavors: ProductProps[]
   addresses: AddressProps[]
-  drinks: ProductProps[]
+  getAddress: AddressProps
   groupOptions: GroupOptions[]
   productToCart: OrdersCartProps[]
-  drinkToCart: OrdersCartProps[]
   productPersonalize: PizzaPersonalizeProps[]
   addProductPersonalize: (product: PizzaPersonalizeProps) => void
   addProductToCart: (product: OrdersCartProps) => void
-  addDrinkToCart: (product: OrdersCartProps) => void
   setonChangeCatalog: (catalog: string) => void
-  setOnChangeType: (type: string) => void
   removeProductFromCart: (productId: number) => void
-  removeDrinkFromCart: (drinkId: number) => void
   removeProductPersonalizeFromCart: (productSize: string) => void
   onChangeCatalog: string
-  onChangeType: string
   cartProductsTotalPrice: number
-  cartDrinksTotalPrice: number
   totalItemsOnCart: number
 }
 
@@ -95,8 +92,12 @@ const filterType = (type: string, arr: ProductProps[]) => {
 export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [flavors, setFlavors] = useState<ProductProps[]>([])
   const [addresses, setAddresses] = useState<AddressProps[]>([])
+  const [getAddress, setGetAddress] = useState<AddressProps>(
+    () => {
+      const storaged = parseCookies().address
+      return storaged ? JSON.parse(storaged) : null
+    });
   const [onChangeCatalog, setonChangeCatalog] = useState('PIZZA')
-  const [onChangeType, setOnChangeType] = useState('TRADITIONAL')
   const [productPersonalize, setProductPersonalize] = useState<PizzaPersonalizeProps[]>(
     () => {
       const storagedCart = parseCookies().productPersonalize
@@ -108,20 +109,8 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       return storagedCart ? JSON.parse(storagedCart) : []
     }
   )
-  const [drinkToCart, setDrinkToCart] = useState<OrdersCartProps[]>(
-    () => {
-      const storagedCart = parseCookies().drink
-      return storagedCart ? JSON.parse(storagedCart) : []
-    }
-  )
-  const [drinks, setDrinks] = useState<ProductProps[]>([])
 
-
-
-  const getDrinks = async () => {
-    const response = await api.get('/drinks')
-    setDrinks(response.data)
-  }
+ 
 
   const [groupOptions, setGroupOptions] = useState<any[]>([])
 
@@ -144,9 +133,12 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   }
 
 
+
   const addProductPersonalize = (product: PizzaPersonalizeProps) => {
     const newFlavors = produce(productPersonalize, (draft) => {
-      draft.push(product)
+      if (productPersonalize.length === 0) {
+        draft.push(product)
+      }
     })
     setProductPersonalize(newFlavors)
     setCookie(undefined, 'productPersonalize', JSON.stringify(newFlavors), {
@@ -162,13 +154,9 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
         draft.splice(productExists, 1);
       }
     });
-
-
-
     setProductPersonalize(findProduct)
     setCookie(undefined, 'productPersonalize', JSON.stringify(findProduct), {})
   };
-
 
   const cartProductsTotalPrice = productToCart.reduce((acc, item) => {
     const priceString = item.price.replace(',', '.')
@@ -176,14 +164,9 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     return acc + price * item.quantityProduct;
   }, 0);
 
-  const cartDrinksTotalPrice = drinkToCart.reduce((acc, item) => {
-    const priceString = item.price.replace(',', '.')
-    const price = parseFloat(priceString)
-    return acc + price * item.quantityProduct;
-  }, 0)
 
 
-  const totalItemsOnCart = (productToCart.length + drinkToCart.length + productPersonalize.length)
+  const totalItemsOnCart = (productToCart.length + productPersonalize.length)
 
   const addProductToCart = (product: OrdersCartProps) => {
     const checkIfProductExists = productToCart.findIndex(
@@ -215,46 +198,15 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     setProductToCart(findProduct)
   };
 
-
-  const addDrinkToCart = (drink: OrdersCartProps) => {
-    const checkIfProductExists = drinkToCart.findIndex(
-      (item) => item.id === drink.id)
-    const newProduct = produce(drinkToCart, (draft) => {
-      if (checkIfProductExists < 0) {
-        draft.push(drink)
-      } else {
-        draft[checkIfProductExists].quantityProduct += drink.quantityProduct
-      }
-    })
-    setCookie(undefined, 'drink', JSON.stringify(newProduct), {
-      maxAge: 60 * 60 * 24 * 30,
-    })
-    setDrinkToCart(newProduct)
-  }
-
-  const removeDrinkFromCart = (drinkId: number) => {
-    const findDrink = produce(drinkToCart, (draft) => {
-      const drinkExists = drinkToCart.findIndex(
-        (item) => item.id === drinkId
-      );
-      if (drinkExists >= 0) {
-        draft.splice(drinkExists, 1);
-      }
-    });
-    setCookie(undefined, 'drink', JSON.stringify(findDrink), {})
-    setDrinkToCart(findDrink)
-  };
-
   const getAddresses = async () => {
     const response = await api.get('/address')
+
     setAddresses(response.data)
   }
-
 
   useEffect(() => {
     getFlavors()
     getAddresses()
-    getDrinks()
   }, [])
 
   return (
@@ -262,22 +214,16 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       addresses,
       flavors,
       onChangeCatalog,
-      drinks,
+      getAddress,
       groupOptions,
       productToCart,
-      drinkToCart,
       cartProductsTotalPrice,
-      cartDrinksTotalPrice,
       totalItemsOnCart,
       productPersonalize,
-      onChangeType,
-      setOnChangeType,
       addProductPersonalize,
       setonChangeCatalog,
       addProductToCart,
-      addDrinkToCart,
       removeProductFromCart,
-      removeDrinkFromCart,
       removeProductPersonalizeFromCart
     }}>
       {children}

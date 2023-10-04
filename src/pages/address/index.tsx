@@ -22,8 +22,7 @@ export default function Address() {
   const [isChecked, setIsChecked] = useState<AddressProps | null>(null);
 
   const { addresses } = ContextApp()
-  console.log(addresses);
-  
+ 
   const {
     control,
     handleSubmit,
@@ -42,12 +41,15 @@ export default function Address() {
     setCookie(undefined, 'address', JSON.stringify(isChecked), {
       maxAge: 60 * 60 * 24 * 30,
     })
-
+    console.log('isChecked');
+    
   }
+console.log(isChecked, 'isChecked');
+
   return (
     <div className="h-screen max-w-[1100px] m-auto  flex flex-col items-center justify-start">
       <div className="w-full flex flex-col items-start justify-center ">
-        <HeaderOrder className="w-4/6" title="Selecione um Endereço" link="/cart" />
+        <HeaderOrder title="Selecione um Endereço" link="/cart" />
       </div>
       <div className="w-full flex flex-col items-center justify-center mt-10">
         <Button disabled={addresses.length >= 3} className="w-4/5 text-orange-500 font-semibold  bg-transparent border-2 border-orange-500 my-4 rounded-md  py-2 px-4 ">
@@ -102,7 +104,11 @@ export default function Address() {
             <div className="text-red-500 text-center mt-5">Selecione um endereço</div>
           )}
           <div className="my-10 w-full flex items-center justify-center ">
-            <Button className="w-4/5 font-semibold  bg-orange-500 text-gray-100 ">Continuar</Button>
+            <Button type="submit" className="w-4/5 font-semibold  bg-orange-500 text-gray-100 text-lg haver:bg-orange-600 ">
+              <NavLink to={"/cart"}>
+                 Continuar
+              </NavLink>
+            </Button>
           </div>
         </form>
       </div>

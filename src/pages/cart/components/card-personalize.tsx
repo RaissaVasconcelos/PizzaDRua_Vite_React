@@ -5,6 +5,7 @@ import { ContextApp } from "../../../context/context-app"
 import { cn } from "../../../utils/cn"
 import { Card, CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
+import { priceFormatter } from "../../../utils/formatter"
 
 
 type CartProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -16,12 +17,10 @@ type CartProps = React.HTMLAttributes<HTMLDivElement> & {
 }
 
 export const CardPersonalize = ({ flavor, price, size, className }: CartProps) => {
-    console.log(flavor, 'flavor');
-
     const { removeProductPersonalizeFromCart } = ContextApp()
     return (
-        <Card className={cn('flex flex-col w-10/12 py-2 mt-5 bg-white rounded-[8px]', className)}>
-            <CardContent className="flex items-center justify-between">
+        <>
+            <CardContent className="w-full flex items-center justify-between">
                 <div className="flex items-center justify-center gap-2">
                     <img
                         className="w-28 rounded"
@@ -37,15 +36,17 @@ export const CardPersonalize = ({ flavor, price, size, className }: CartProps) =
                             ))}
                         </div>
                         <span>Tamanho {size === 'MEDIUM' ? 'M' : 'MEIA'}</span>
-                        <span className="font-semibold">R$ {price}</span>
+                        <span className="font-semibold">{priceFormatter.format(Number(price))}</span>
                     </div>
                 </div>
-                <div className="h-full">
-                    <Button onClick={() => removeProductPersonalizeFromCart(size)} className="h-[5rem] mt-2 bg-orange-50 text-orange-500 border-2 border-orange-500 hover:bg-orange-300 rounded-[8px]"><Trash size={20} /></Button>
+                <div className="flex items-start justify-center ">
+                    <Button onClick={() => removeProductPersonalizeFromCart(size)} className="h-[5rem] mt-3 bg-orange-50 text-orange-500 border-2 border-orange-500 hover:bg-orange-300 rounded-[8px]">
+                        <Trash size={20} />
+                    </Button>
                 </div>
 
             </CardContent>
-        </Card>
+        </>
     )
 
 }

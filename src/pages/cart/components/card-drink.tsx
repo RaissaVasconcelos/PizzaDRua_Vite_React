@@ -15,12 +15,12 @@ interface CartProps {
 }
 
 export const CardDrink = ({ name, price, quantityProduct, id, description }: CartProps) => {
-    const { removeDrinkFromCart } = ContextApp()
+    const { removeProductFromCart } = ContextApp()
     const priceString = price.replace(',', '.')
     const totalPrice = (parseFloat(priceString) * quantityProduct).toFixed(2)
     return (
 
-        <CardContent className="flex items-center justify-between">
+        <CardContent className="flex items-center justify-between py-2">
             <div className="flex items-center justify-center gap-2">
                 <img
                     className="w-28 rounded"
@@ -39,11 +39,9 @@ export const CardDrink = ({ name, price, quantityProduct, id, description }: Car
                     <span className="font-semibold">R$ {totalPrice}</span>
                 </div>
             </div>
-            <div>
-                <Button
-                    onClick={() => removeDrinkFromCart(id)}
-                    className="h-[5rem] mt-2 bg-orange-50 text-orange-500 border-2 border-orange-500 hover:bg-orange-300 rounded-[8px]">
-                    <Trash size={18} />
+            <div className="flex items-start justify-center ">
+                <Button onClick={() => removeProductFromCart(id)} className="h-[5rem] mt-1 bg-orange-50 text-orange-500 border-2 border-orange-500 hover:bg-orange-300 rounded-[8px]">
+                    <Trash size={20} />
                 </Button>
             </div>
 

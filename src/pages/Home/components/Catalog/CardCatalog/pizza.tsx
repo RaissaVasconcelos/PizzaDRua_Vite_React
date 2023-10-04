@@ -6,11 +6,15 @@ import { Button } from "../../../../../components/ui/button"
 import { ToastContainer } from "react-toastify";
 import { notify } from "../../../../../utils/toast"
 import { ContextApp } from "../../../../../context/context-app"
+import { priceFormatter } from "../../../../../utils/formatter"
 
 interface CardCatalogProps {
   id: number,
   type?: 'TRADITIONAL' | 'SPECIAL',
   name: string,
+  category: {
+    name: string
+  }
   price: string,
   image_url: string
   description: string
@@ -43,7 +47,7 @@ export const CardCatalogPizza = (catalog: CardCatalogProps) => {
 
 
   return (
-    <Card className="bg-white border-0  rounded w-11/12 p-2 box-border">
+    <Card className="bg-white border-0  rounded w-11/12 py-2 box-border">
       <CardContent className="w-full flex items-center justify-between gap-2">
         <div className="w-80">
           <img className="object-fit w-full" src={image} alt='' />
@@ -52,7 +56,7 @@ export const CardCatalogPizza = (catalog: CardCatalogProps) => {
           <p className="font-bold text-lg text-gray-600">{catalog.name}</p>
           <p className="text-gray-600">{catalog.description}</p>
           <div className="w-full flex items-center justify-between mt-3 ">
-            <p className="text-gray-500 font-bold text-lg">R${catalog.price}</p>
+            <p className="text-gray-500 font-bold text-lg">{priceFormatter.format(Number(catalog.price))}</p>
             <InputQuantityProductInCart
               onDecrease={handleDecrementProduct}
               onIncrease={handleIncrementProduct}
