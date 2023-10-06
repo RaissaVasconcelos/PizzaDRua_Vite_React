@@ -123,7 +123,8 @@ export default function Personalize() {
   const navigate = useNavigate();
 
   const handleSubmitForm = (data: CustomizeSchema) => {
-
+    console.log(data);
+    
     addProductPersonalize({ ...data, finalPrice: price });
     setValue('flavor', []);
     navigate('/cart')

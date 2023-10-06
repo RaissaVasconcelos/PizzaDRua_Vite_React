@@ -2,6 +2,7 @@ import { Controller, useForm } from 'react-hook-form'
 import ReactSelect from 'react-select'
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
+import  { useNavigate }  from 'react-router-dom'
 import InputMask from 'react-input-mask';
 import { api } from '../../../utils/axios';
 import { Label } from '@radix-ui/react-label';
@@ -80,7 +81,7 @@ export default function CreateAddress() {
 
   });
 
-  // const router = useRouter()
+  const navigate = useNavigate()
 
   const handleSubmitForm = async (data: AddressSchema) => {
     await api.post('/address', {
@@ -93,7 +94,7 @@ export default function CreateAddress() {
 
     })
 
-    // router.push('/address')
+    navigate('/address')
   }
 
   return (

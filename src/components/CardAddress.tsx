@@ -1,43 +1,23 @@
 
 import { Building2, Edit, Home, MapPin, MapPinOff } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { AddressProps, ContextApp } from "../context/context-app";
-
+import { ContextApp } from "../context/context-app";
 import { Button } from "./ui/button";
-import { useEffect, useState } from "react";
+
 
 
 
 export const CardAddress = () => {
-  const {addresses, getAddress} = ContextApp()
-  const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null)
-
-  const handleAddress = () => {
-    if (getAddress) {
-      setCurrentAddress(getAddress)
-    } else {
-      setCurrentAddress(addresses[0])
-    }
-  }
-
-  useEffect(() => {
-    handleAddress()
-  }, [addresses])
-
-  
+  const { currentAddress} = ContextApp()
 
   return (
     <>
      {currentAddress  ? (
-        <div className="w-11/12 mt-10 flex bg-white  rounded flex-col items-center justify-center p-4">
+        <div className="w-11/12  flex bg-white  rounded flex-col items-center justify-center p-4">
           <header className="flex items-center justify-between w-full">
             <div className="flex items-center justify-between gap-2 text-orange-500">
-              {getAddress ? (
-                getAddress.type === "Casa" ? <Home size={20} /> : getAddress.type === "Trabalho" ? <Building2 size={18} /> : <MapPin />
-              ) : (
-                addresses[0].type === "Casa" ? <Home size={20} /> : addresses[0].type === "Trabalho" ? <Building2 size={18} /> : <MapPin />
-              )}
-              <span>{getAddress ? getAddress.type : addresses[0].type}</span>
+              {currentAddress.type === "Casa" ? <Home size={20} /> : currentAddress.type === "Trabalho" ? <Building2 size={18} /> : <MapPin />}
+              <span>{currentAddress.type}</span>
             </div>
             <NavLink to="/address">
               <Edit size={24} className="text-gray-500" />
@@ -45,12 +25,12 @@ export const CardAddress = () => {
           </header>
           <div className="w-full flex items-start justify-center flex-col">
             <div className=" w-11/12 mt-2 flex gap-2">
-              <span>{getAddress ? getAddress.street : addresses[0].street},</span>
-              <span>{getAddress ? getAddress.number : addresses[0].number} - </span>
-              <span>{ getAddress ? getAddress.neighborhood.name : addresses[0].neighborhood.name}</span>
+              <span>{currentAddress.street},</span>
+              <span>{currentAddress.number} - </span>
+              <span>{currentAddress.neighborhood.name}</span>
             </div>
-            <span>{getAddress ? getAddress.phone : addresses[0].phone}</span>
-            <span>{getAddress ? getAddress.zipCode : addresses[0].zipCode}</span>
+            <span>{currentAddress.phone}</span>
+            <span>{currentAddress.zipCode}</span>
           </div>
       </div>
      ):(

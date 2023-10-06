@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from '../pages/Home'
-import CartPage from '../pages/cart'
+import Cart from '../pages/cart'
 import Personalize from '../pages/personalize'
 import Address from '../pages/address'
 import CreateAddress from '../pages/address/create-address'
@@ -18,11 +18,11 @@ export const Router = () => {
       <Route path='/' element={<Home />} />
       <Route path='/sign-in' element={<SignIn />} />
       <Route path='/sign-up' element={<SignUp />} />
-      <Route path='/cart' element={<CartPage />} />
       <Route path='/payment' element={<Payment />} />
       <Route path='/checkout' element={<Checkout />} />
       <Route path='/personalize' element={<Personalize />} />
       <Route path='/address' element={<Address />} />
+      <Route path='/cart' element={<Cart />} />
       <Route path='/create-address' element={<CreateAddress />} />
       <Route path='/pix' element={<Pix />} />
       <Route path='/success' element={<Success />} />

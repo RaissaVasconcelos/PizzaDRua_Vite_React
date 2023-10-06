@@ -6,7 +6,8 @@ interface taxProps {
 }
 
 export const Summary = ({ tax }: taxProps) => {
-
+ 
+  
   const { cartProductsTotalPrice, productPersonalize } = ContextApp()
 
   const priceProductPersonalize = productPersonalize.reduce((acc, product) => {
@@ -30,11 +31,11 @@ export const Summary = ({ tax }: taxProps) => {
         </div>
         <div className="flex items-center justify-between w-full">
           <span>Entrega</span>
-          <span>{tax ? priceFormatter.format(Number(tax)) : priceFormatter.format(Number("0,00"))}</span>
+          <span>{tax ? priceFormatter.format(Number(tax)) : priceFormatter.format(Number("0.00"))}</span>
         </div>
         <div className="flex items-center justify-between w-full font-bold">
           <span>Total</span>
-          <span className="text-gray-700 font-bold">{totalPrice ? priceFormatter.format(Number(totalPrice)) : "0,00"}</span>
+          <span className="text-gray-700 font-bold">{totalPrice ? priceFormatter.format(Number(totalPrice)) : priceFormatter.format(Number("0.00"))}</span>
         </div>
       </div>
     </>

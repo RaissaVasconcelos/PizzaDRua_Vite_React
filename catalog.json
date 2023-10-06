@@ -1,20 +1,12 @@
 {
   "catalog": [
     {
-      "id": 1,
-      "name": "Calabresa",
-      "category": {
-        "id": 1,
-        "name": "pizza"
-      },
-      "image_url": "../../../../../public/Vector.svg",
-      "description": "Pizza de Quatro Queijos com borda tradicional",
-      "type": "TRADITIONAL",
-      "price": "49.99"
-    },
-    {
-      "id": 2,
-      "name": "Mussarela",
+      "id": "1",
+      "product": [
+        {
+          "name": "Calabresa"
+        }
+      ],
       "category": {
         "id": 2,
         "name": "pizza"
@@ -25,8 +17,28 @@
       "price": "49.99"
     },
     {
-      "id": 3,
-      "name": "Mexicana",
+      "id": "2",
+      "product": [
+        {
+          "name": "Mussarela"
+        }
+      ],
+      "category": {
+        "id": 2,
+        "name": "pizza"
+      },
+      "image_url": "../../../../../public/Vector.svg",
+      "description": "Pizza de Quatro Queijos com borda tradicional",
+      "type": "TRADITIONAL",
+      "price": "49.99"
+    },
+    {
+      "id": "3",
+      "product": [
+        {
+          "name": "Mexicana"
+        }
+      ],
       "category": {
         "id": 3,
         "name": "pizza"
@@ -37,8 +49,12 @@
       "price": "49.99"
     },
     {
-      "id": 4,
-      "name": "Bacon",
+      "id": "4",
+      "product": [
+        {
+          "name": "Bacon"
+        }
+      ],
       "category": {
         "id": 4,
         "name": "pizza"
@@ -49,8 +65,12 @@
       "price": "59.99"
     },
     {
-      "id": 5,
-      "name": "Quatro Queijos",
+      "id": "5",
+      "product": [
+        {
+          "name": "Quatro Queijos"
+        }
+      ],
       "category": {
         "id": 5,
         "name": "pizza"
@@ -61,8 +81,12 @@
       "price": "59.99"
     },
     {
-      "id": 6,
-      "name": "Coca Lata",
+      "id": "6",
+      "product": [
+        {
+          "name": "Coca Lata"
+        }
+      ],
       "category": {
         "id": 6,
         "name": "drink"
@@ -73,8 +97,12 @@
       "price": "5,00"
     },
     {
-      "id": 7,
-      "name": "Coca 1L",
+      "id": "7",
+      "product": [
+        {
+          "name": "Coca 1L"
+        }
+      ],
       "category": {
         "id": 7,
         "name": "drink"
@@ -85,8 +113,12 @@
       "price": "10,00"
     },
     {
-      "id": 8,
-      "name": "Suco de laranja",
+      "id": "8",
+      "product": [
+        {
+          "name": "Suco de laranja"
+        }
+      ],
       "category": {
         "id": 8,
         "name": "drink"
@@ -100,15 +132,29 @@
   "address": [
     {
       "neighborhood": {
-        "tax":"6.00",
-        "name": "Bairro 01"
+        "name": "Bairro01",
+        "tax": "5.00"
       },
       "number": "1234",
+      "standard": true,
       "street": "Rua Joao carlos",
       "type": "Casa",
-      "zipCode": "65656565",
+      "zipCode": "65656566",
       "phone": "(65) 44242-4568",
       "id": 1
+    },
+    {
+      "neighborhood": {
+        "name": "Bairro02",
+        "tax": "8.00"
+      },
+      "number": "1234",
+      "standard": false,
+      "street": "Rua Joao carlos",
+      "type": "Trabalho",
+      "zipCode": "65656565",
+      "phone": "(65) 44242-4568",
+      "id": 2
     }
   ],
   "neighborhood": [

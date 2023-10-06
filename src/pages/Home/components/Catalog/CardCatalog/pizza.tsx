@@ -11,7 +11,7 @@ import { priceFormatter } from "../../../../../utils/formatter"
 interface CardCatalogProps {
   id: number,
   type?: 'TRADITIONAL' | 'SPECIAL',
-  name: string,
+  product: {name: string}[],
   category: {
     name: string
   }
@@ -53,7 +53,7 @@ export const CardCatalogPizza = (catalog: CardCatalogProps) => {
           <img className="object-fit w-full" src={image} alt='' />
         </div>
         <div className="w-full">
-          <p className="font-bold text-lg text-gray-600">{catalog.name}</p>
+          {catalog.product.map((item) => (<p key={item.name} className="font-bold text-lg text-gray-600">{item.name}</p>))}
           <p className="text-gray-600">{catalog.description}</p>
           <div className="w-full flex items-center justify-between mt-3 ">
             <p className="text-gray-500 font-bold text-lg">{priceFormatter.format(Number(catalog.price))}</p>
