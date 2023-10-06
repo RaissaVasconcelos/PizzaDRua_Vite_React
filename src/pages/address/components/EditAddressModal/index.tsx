@@ -7,15 +7,18 @@ import { Label } from "../../../../components/ui/label";
 import InputMask from 'react-input-mask';
 import ReactSelect from "react-select";
 import { Input } from "../../../../components/ui/input";
+import { Switch } from "../../../../components/ui/switch";
 import { Button } from "../../../../components/ui/button";
 import { AddressProps } from "../../../../context/context-app";
 import { api } from "../../../../utils/axios";
-
+import * as AlertDialog   from "@radix-ui/react-alert-dialog";
+import { DeleteAddressModal } from "../DeleteAddressModal";
+// import './styles.css'
 
 const addressSchemaBody = z.object({
   neighborhood: z.object({
-    label: z.string().nonempty('Selecione um bairro'),
-    value: z.string().nonempty('Selecione um bairro'),
+    label: z.string().optional(),
+    value: z.string().optional(),
     tax: z.string().optional(),
   }),
   number: z.string().nonempty('Digite um número'),
@@ -36,14 +39,15 @@ const addressSchemaBody = z.object({
     .refine((value) => /^\d{8}$/.test(value), {
       message: 'CEP inválido',
     }),
+  standardAddress: z.boolean().optional(),
+
 })
 
 type AddressSchema = z.infer<typeof addressSchemaBody>;
 
 
-export const EditAddressModal = ({ id, neighborhood, number, street, type, phone, zipCode }: AddressProps) => {
-
-
+export const EditAddressModal = ({ id, standard, neighborhood, number, street, type, phone, zipCode }: AddressProps) => {
+  
   const {
     control,
     register,
@@ -54,10 +58,11 @@ export const EditAddressModal = ({ id, neighborhood, number, street, type, phone
     defaultValues: {
       number,
       street,
-      type: { label: type, },
+      neighborhood: { label: neighborhood.name },
       phone,
       zipCode,
-      neighborhood: { label: neighborhood.name },
+      type: { label: type, },
+      standardAddress: standard
     }
   });
 
@@ -92,13 +97,15 @@ export const EditAddressModal = ({ id, neighborhood, number, street, type, phone
 
   const handleEditAddressForm = async (data: AddressSchema) => {
     try {
-
+      console.log(data, 'data fedfdffd');
+      
       const response = await api.put(`/address/${id}`, {
         neighborhood: {
           name: data.neighborhood.label,
           tax: data.neighborhood.tax
         },
         number: data.number,
+        standard: data.standardAddress,
         street: data.street,
         type: data.type.label,
         zipCode: data.zipCode,
@@ -140,13 +147,16 @@ export const EditAddressModal = ({ id, neighborhood, number, street, type, phone
           <Controller
             control={control}
             name="neighborhood"
-            rules={{ required: true }}
             render={({ field }) => (
               <ReactSelect
+                value={field.value}
                 onChange={field.onChange}
                 className='w-full'
-                options={data}
-                value={field.value}
+                options={[
+                  { value: 'Bairro01', label: 'Bairro01',  },
+                  { value: 'Bairro02', label: 'Bairro02',  },
+                  { value: 'Bairro03', label: 'Bairro03',  },
+                ]}
 
               />
             )}
@@ -158,6 +168,7 @@ export const EditAddressModal = ({ id, neighborhood, number, street, type, phone
             placeholder='EX. Rua João Daniel Martinelli'
             {...register('street')}
           />
+          {errors.street && <p className='text-red-500'>{errors.street.message}</p>}
           <div className='w-full flex items-center justify-center gap-4'>
             <div className='w-full'>
               <Label className='text-gray-500'>Numero</Label>
@@ -189,7 +200,6 @@ export const EditAddressModal = ({ id, neighborhood, number, street, type, phone
               />
             </div>
           </div>
-          {errors.street && <p className='text-red-500'>{errors.street.message}</p>}
           <Label className='text-gray-500'>Cep</Label>
           <Controller
             name="zipCode"
@@ -225,7 +235,27 @@ export const EditAddressModal = ({ id, neighborhood, number, street, type, phone
             )}
           />
           {errors.phone && <p className='text-red-500'>{errors.phone.message}</p>}
-          <Button className='w-full mt-4 bg-red-500 hover:bg-red-400' type='submit'>Salvar</Button>
+          <Controller
+            name="standardAddress"
+            control={control}
+            render={({ field }) => (
+            <div className="mt-5 w-full flex items-center justify-between gap-2">
+              <span>Definir como endereço padrão</span>
+              <Switch 
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                className="bg-orange-500"  />
+            </div>  
+             
+            )}
+          />
+          <AlertDialog.Root >
+            <AlertDialog.Trigger asChild>
+              <Button className="mt-5 w-full bg-gray-200 hover:bg-red-600 text-gray-800  flex gap-2"> Deletar</Button>
+            </AlertDialog.Trigger>
+            <DeleteAddressModal  />
+          </AlertDialog.Root>
+          <Button className='w-full bg-red-500 hover:bg-red-400' type='submit'>Salvar</Button>
         </form>
       </Dialog.Content>
     </Dialog.Portal>

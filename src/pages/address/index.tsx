@@ -22,7 +22,7 @@ export default function Address() {
   const [isChecked, setIsChecked] = useState<AddressProps | null>(null);
 
   const { addresses } = ContextApp()
- 
+
   const {
     control,
     handleSubmit,
@@ -44,7 +44,7 @@ export default function Address() {
     console.log('isChecked');
     
   }
-console.log(isChecked, 'isChecked');
+
 
   return (
     <div className="h-screen max-w-[1100px] m-auto  flex flex-col items-center justify-start">
@@ -75,7 +75,6 @@ console.log(isChecked, 'isChecked');
                       <RadioGroup.Item
                         {...field}
                         value={address.type}
-                        checked={isChecked?.id === address.id} // Marque o checkbox se este endereço estiver selecionado
                         onClick={() => handleCheckboxChange(address)} // Chama a função handleCheckboxChange
                         key={address.id}
                         className="w-full flex items-center justify-center "
@@ -83,7 +82,6 @@ console.log(isChecked, 'isChecked');
 
                       >
                         <CardAddress
-                          className={isChecked?.id === address.id ? "bg-orange-50 border-[3px] border-orange-500" : " bg-white"}
                           neighborhood={address.neighborhood}
                           number={address.number}
                           street={address.street}
@@ -91,6 +89,7 @@ console.log(isChecked, 'isChecked');
                           phone={address.phone}
                           zipCode={address.zipCode}
                           addressId={address.id}
+                          standard={address.standard}
                         />
                       </RadioGroup.Item>
                     )
@@ -100,14 +99,10 @@ console.log(isChecked, 'isChecked');
               )
             }}
           />
-          {!isChecked && (
-            <div className="text-red-500 text-center mt-5">Selecione um endereço</div>
-          )}
+          
           <div className="my-10 w-full flex items-center justify-center ">
             <Button type="submit" className="w-4/5 font-semibold  bg-orange-500 text-gray-100 text-lg haver:bg-orange-600 ">
-              <NavLink to={"/cart"}>
                  Continuar
-              </NavLink>
             </Button>
           </div>
         </form>

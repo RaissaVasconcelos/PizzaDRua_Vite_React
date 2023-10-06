@@ -22,26 +22,10 @@ export default function Checkout() {
     const storaged = parseCookies().payment
     return storaged ? JSON.parse(storaged) : []
   });
-  const [tax, setTax] = useState('0.00')
+  
+  const { currentAddress } = ContextApp()
 
-  const { addresses, getAddress } = ContextApp()
-
-  const handleTaxDelivery = () => {
-    if (getPayment.methodDelivery === 'PICKUP') {
-      setTax('0.00')  
-    } else if (getAddress) {
-      setTax(getAddress.neighborhood.tax)
-    } else {
-      setTax(addresses[0].neighborhood.tax)
-    }
-    
-  }
-
-
- useEffect(() => {
-   handleTaxDelivery()
- })
-
+  
 
   return (
     <div className="max-w-[1100px] m-auto  ">
@@ -90,7 +74,7 @@ export default function Checkout() {
         </div>
       </div>
       <div className="w-ful flex flex-col items-center justify-center">
-        <Summary  tax={tax}/>
+        <Summary  tax={getPayment.methodDelivery === 'PICKUP' ? '0.00' : currentAddress ? currentAddress.neighborhood.tax : '0.00'}/>
       </div>
 
       

@@ -14,7 +14,7 @@ interface CardCatalogProps {
     name: string
   }  
   type?: 'TRADITIONAL' | 'SPECIAL',
-  name: string,
+  product: {name: string}[],
   price: string,
   image_url: string
   description: string
@@ -23,6 +23,7 @@ interface CardCatalogProps {
 
 export const CardCatalogDrink = (catalog: CardCatalogProps) => {
 
+console.log(catalog, 'catalog');
 
   const [quantityProduct, setQuantityProduct] = useState(1);
   const { addProductToCart } = ContextApp()
@@ -52,7 +53,7 @@ export const CardCatalogDrink = (catalog: CardCatalogProps) => {
           <img className="object-fit w-full rounded" src={image} alt='' />
         </div>
         <div className="w-full">
-          <p className="font-bold text-lg text-gray-600">{catalog.name}</p>
+          {catalog.product.map((item) => (<p key={item.name} className="font-bold text-lg text-gray-600">{item.name}</p>))}
           <p className="text-gray-600">{catalog.description}</p>
           <div className="w-full flex items-center justify-between mt-3 ">
             <p className="text-gray-500 font-bold text-lg">{priceFormatter.format(parseFloat(catalog.price))}</p>

@@ -11,6 +11,7 @@ export interface AddressProps {
   type: string
   street: string
   number: string
+  standard: boolean,
   neighborhood: {
     name: string
     tax: string
@@ -28,7 +29,7 @@ interface ProductProps {
   category: {
     name: string
   }
-  name: string
+  product: {name: string}[]
   description: string
   price: string
 }
@@ -57,7 +58,7 @@ interface GroupOptions {
 type PizzaDRuaContextType = {
   flavors: ProductProps[]
   addresses: AddressProps[]
-  getAddress: AddressProps
+  currentAddress: AddressProps | null
   groupOptions: GroupOptions[]
   productToCart: OrdersCartProps[]
   productPersonalize: PizzaPersonalizeProps[]
@@ -78,8 +79,8 @@ export const PizzaDRuaContext = createContext<PizzaDRuaContextType>(
 const filterType = (type: string, arr: ProductProps[]) => {
   const arrOption = arr.filter((element) => element.type === type).map((element) => {
     return {
-      value: element.name,
-      label: element.name,
+      value: element.product[0].name,
+      label: element.product[0].name,
       price: element.price,
       type: element.type,
       color: element.type === 'TRADITIONAL' ? '#ae7a47' : '#3f1503',
@@ -92,11 +93,7 @@ const filterType = (type: string, arr: ProductProps[]) => {
 export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [flavors, setFlavors] = useState<ProductProps[]>([])
   const [addresses, setAddresses] = useState<AddressProps[]>([])
-  const [getAddress, setGetAddress] = useState<AddressProps>(
-    () => {
-      const storaged = parseCookies().address
-      return storaged ? JSON.parse(storaged) : null
-    });
+  const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
   const [onChangeCatalog, setonChangeCatalog] = useState('PIZZA')
   const [productPersonalize, setProductPersonalize] = useState<PizzaPersonalizeProps[]>(
     () => {
@@ -200,9 +197,14 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
 
   const getAddresses = async () => {
     const response = await api.get('/address')
-
+    const standardAddress = response.data.find((element: AddressProps) => element.standard === true)  
+    setCurrentAddress(standardAddress)
     setAddresses(response.data)
+    
   }
+
+
+  
 
   useEffect(() => {
     getFlavors()
@@ -214,7 +216,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       addresses,
       flavors,
       onChangeCatalog,
-      getAddress,
+      currentAddress,
       groupOptions,
       productToCart,
       cartProductsTotalPrice,
