@@ -5,23 +5,12 @@ import image from "../../../../../assets/lata.png"
 import { Button } from "../../../../../components/ui/button"
 import { ToastContainer } from "react-toastify";
 import { notify } from "../../../../../utils/toast"
-import { ContextApp } from "../../../../../context/context-app"
+import { ContextApp, ProductProps } from "../../../../../context/context-app"
 import { priceFormatter } from "../../../../../utils/formatter"
 
-interface CardCatalogProps {
-  id: number,
-  category: {
-    name: string
-  }  
-  type?: 'TRADITIONAL' | 'SPECIAL',
-  product: {name: string}[],
-  price: string,
-  image_url: string
-  description: string
 
-}
 
-export const CardCatalogDrink = (catalog: CardCatalogProps) => {
+export const CardCatalogDrink = (catalog: ProductProps) => {
 
 console.log(catalog, 'catalog');
 
@@ -39,6 +28,7 @@ console.log(catalog, 'catalog');
   const handleAddDrinkToCart = () => {
     const drinkToCart = {
       ...catalog,
+      mode: 'SIMPLE',
       quantityProduct
     }
     addProductToCart(drinkToCart)

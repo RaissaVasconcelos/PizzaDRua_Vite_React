@@ -6,15 +6,15 @@ import { Button } from "../../../components/ui/button"
 
 
 interface CartProps {
-    id: number
-    name: string
+    id: string
+    product: { name: string }[]
     price: string
     description: string
     quantityProduct: number
 
 }
 
-export const CardDrink = ({ name, price, quantityProduct, id, description }: CartProps) => {
+export const CardDrink = ({ product, price, quantityProduct, id, description }: CartProps) => {
     const { removeProductFromCart } = ContextApp()
     const priceString = price.replace(',', '.')
     const totalPrice = (parseFloat(priceString) * quantityProduct).toFixed(2)
@@ -31,7 +31,7 @@ export const CardDrink = ({ name, price, quantityProduct, id, description }: Car
                 <div className="flex flex-col items-start justify-center">
                     <div className="flex  items-center justify-start gap-2 ">
 
-                        <span className="text-gray-600 font-semibold">{name}</span>
+                       {product.map(item => (<span key={item.name} className="text-gray-600 font-semibold">{item.name}</span>))}
 
                     </div>
                     <span>{description}</span>

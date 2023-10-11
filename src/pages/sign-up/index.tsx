@@ -4,9 +4,9 @@ import logo from '../../assets/logo.png'
 import { z } from 'zod'
 import InputMask from 'react-input-mask';
 import { zodResolver } from '@hookform/resolvers/zod'
-// import { api } from '@/services/api'
 import { AxiosError } from 'axios'
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { api } from '../../utils/axios';
 
 
 
@@ -43,15 +43,17 @@ export default function Page() {
     } = useForm<CreateCustomerFormData>({
         resolver: zodResolver(createCustomerFormSchema),
     })
+    const navigate = useNavigate()
 
     const handleCreateCustomer = async (data: CreateCustomerFormData) => {
         try {
-            // await api.post('/customer', data)
+            await api.post('/customer', data)
 
-            // router.push('/')
+            navigate('/sign-in')
         } catch (error: unknown) {
             const customError = error as AxiosError
-
+            console.log('customError', customError.response?.status);
+                
             if (customError.response?.status === 400) {
                 setError('root', {
                     type: 'manual',
@@ -122,6 +124,13 @@ export default function Page() {
                         {errors.password?.message}
                     </span>
                 )}
+
+                {errors.root && (
+                    <span className="text-red-500 mt-3">
+                        {errors.root?.message}
+                    </span>
+                )}
+
                 <button
                     className="bg-orange-500 w-10/12 mt-8  py-4 rounded text-gray-200 font-bold text-sm  uppercase hover:bg-orange-600"
                     type="submit"
