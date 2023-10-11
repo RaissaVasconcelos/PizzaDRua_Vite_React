@@ -7,15 +7,16 @@ import delivey from '../../assets/delivery.png'
 import delivered from '../../assets/delivered.png'
 import whatsapp from '../../assets/whatsapp.svg'
 import { CardAddress } from '../../components/CardAddress'
-import { Summary } from '../cart/components/summary'
 import { useEffect, useState } from 'react'
 import { api } from '../../utils/axios'
 import { ChefHat, Package } from 'lucide-react'
+import { ContextApp } from '../../context/context-app'
 
 
 export default function Tracking() {
   const [status, setStatus] = useState('RECEIVED')
   const [statusColor, setStatusColor] = useState('#f97316');
+  const {cartTotalPrice} = ContextApp()
 
   const getStatus = async () => {
     const response = await api.get('/orders')
@@ -51,7 +52,7 @@ export default function Tracking() {
     }
   }, [status])
 
-  console.log(status);
+  
 
   const statusToClassName = {
     WAITING: 'waiting',
@@ -73,7 +74,7 @@ export default function Tracking() {
             <img src={pizza} alt="" />
             <div className='flex flex-col items-start gap-2 text-gray-500 font-semibold text-lg'>
               <span >Seus pedidos</span>
-              <span className='font-bold'>R$ 100,00</span>
+              <span className='font-bold'>R$ {cartTotalPrice}</span>
               <span className='text-orange-500 text-base bg-orange-100 font-semibold rounded-md p-1'>{status}</span>
             </div>
           </div>

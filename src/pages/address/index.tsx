@@ -1,50 +1,14 @@
 import { Plus } from "lucide-react";
 import { CardAddress } from "./components/card";
-import { Controller, useForm } from "react-hook-form";
 import { NavLink } from 'react-router-dom'
-import { z } from 'zod'
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as RadioGroup from "@radix-ui/react-radio-group";
-import { useState } from "react";
-import { setCookie } from "nookies";
-import { AddressProps, ContextApp } from "../../context/context-app";
+import {  ContextApp } from "../../context/context-app";
 import { HeaderOrder } from "../../components/HeaderOrder";
 import { Button } from "../../components/ui/button";
 
-const addressSChemaBody = z.object({
-  type: z.enum(['Casa', 'Trabalho', 'Outros'])
-
-})
-
-type AddressSchema = z.infer<typeof addressSChemaBody>
 
 export default function Address() {
-  const [isChecked, setIsChecked] = useState<AddressProps | null>(null);
 
   const { addresses } = ContextApp()
-
-  const {
-    control,
-    handleSubmit,
-  } = useForm<AddressSchema>({
-    resolver: zodResolver(addressSChemaBody)
-
-  });
-  const handleCheckboxChange = (address: AddressProps) => {
-
-    setIsChecked(address)
-
-  };
-
-  const handleSubmitForm = () => {
-
-    setCookie(undefined, 'address', JSON.stringify(isChecked), {
-      maxAge: 60 * 60 * 24 * 30,
-    })
-    console.log('isChecked');
-    
-  }
-
 
   return (
     <div className="h-screen max-w-[1100px] m-auto  flex flex-col items-center justify-start">
@@ -58,54 +22,28 @@ export default function Address() {
             <span className="text-base ">Adicionar Endereco</span>
           </NavLink>
         </Button>
-        <form className="w-full" onSubmit={handleSubmit(handleSubmitForm)}>
-          <Controller
-            control={control}
-            name="type"
-            rules={{ required: true }}
-            render={({ field }) => {
-              return (
-                <RadioGroup.Root
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  className="flex flex-col items-center justify-center gap-5 w-full "
-                >
-                  {addresses.map((address) => {
-                    return (
-                      <RadioGroup.Item
-                        {...field}
-                        value={address.type}
-                        onClick={() => handleCheckboxChange(address)} // Chama a função handleCheckboxChange
-                        key={address.id}
-                        className="w-full flex items-center justify-center "
+      <div className="w-full flex flex-col items-center justify-center gap-5">
+          {addresses.map((address) => (
+            <CardAddress
+              neighborhood={address.neighborhood}
+              number={address.number}
+              street={address.street}
+              type={address.type}
+              phone={address.phone}
+              zipCode={address.zipCode}
+              addressId={address.id}
+              standard={address.standard}
+            />
+          ))}
+      </div>
 
 
-                      >
-                        <CardAddress
-                          neighborhood={address.neighborhood}
-                          number={address.number}
-                          street={address.street}
-                          type={address.type}
-                          phone={address.phone}
-                          zipCode={address.zipCode}
-                          addressId={address.id}
-                          standard={address.standard}
-                        />
-                      </RadioGroup.Item>
-                    )
-                  })}
+        <div className="my-10 w-full flex items-center justify-center ">
+          <Button type="submit" className="w-11/12 font-semibold  bg-orange-500 text-gray-100 text-lg haver:bg-orange-600 ">
+            Continuar
+          </Button>
+        </div>
 
-                </RadioGroup.Root>
-              )
-            }}
-          />
-          
-          <div className="my-10 w-full flex items-center justify-center ">
-            <Button type="submit" className="w-4/5 font-semibold  bg-orange-500 text-gray-100 text-lg haver:bg-orange-600 ">
-                 Continuar
-            </Button>
-          </div>
-        </form>
       </div>
     </div>
   )
