@@ -38,7 +38,7 @@ export default function Cart() {
                   <CardProduct
                     key={item.id}
                     id={item.id}
-                    name={item.name}
+                    ={item.name}
                     price={item.price}
                     quantityProduct={item.quantityProduct}
                   />
@@ -48,10 +48,13 @@ export default function Cart() {
                   <CardDrink
                     key={item.id}
                     id={item.id}
-                    name={item.name}
+                    product={item.product}
                     price={item.price}
                     quantityProduct={item.quantityProduct}
                     description={item.description}
+                    image_url={item.image_url}
+                    category={item.category}
+
                   />
                 ))}
               </Card>

@@ -1,6 +1,6 @@
 import { Trash } from "lucide-react"
 import imageUrl from '../../../../public/coca-cola.png'
-import { ContextApp } from "../../../context/context-app"
+import { ContextApp, OrdersCartProps } from "../../../context/context-app"
 import { CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
 
@@ -14,7 +14,7 @@ interface CartProps {
 
 }
 
-export const CardDrink = ({ name, price, quantityProduct, id, description }: CartProps) => {
+export const CardDrink = ({ product, price, quantityProduct, id, description }: OrdersCartProps) => {
     const { removeProductFromCart } = ContextApp()
     const priceString = price.replace(',', '.')
     const totalPrice = (parseFloat(priceString) * quantityProduct).toFixed(2)
@@ -31,7 +31,7 @@ export const CardDrink = ({ name, price, quantityProduct, id, description }: Car
                 <div className="flex flex-col items-start justify-center">
                     <div className="flex  items-center justify-start gap-2 ">
 
-                        <span className="text-gray-600 font-semibold">{name}</span>
+                        <span className="text-gray-600 font-semibold">{product.map((product) => product.name)}</span>
 
                     </div>
                     <span>{description}</span>
