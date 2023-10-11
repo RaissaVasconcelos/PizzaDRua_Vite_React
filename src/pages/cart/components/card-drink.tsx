@@ -1,20 +1,14 @@
 import { Trash } from "lucide-react"
 import imageUrl from '../../../../public/coca-cola.png'
-import { ContextApp, OrdersCartProps } from "../../../context/context-app"
+import { ContextApp } from "../../../context/context-app"
 import { CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
+import { CartProps } from "../../../@types/interface"
 
 
-interface CartProps {
-    id: number
-    name: string
-    price: string
-    description: string
-    quantityProduct: number
 
-}
 
-export const CardDrink = ({ product, price, quantityProduct, id, description }: OrdersCartProps) => {
+export const CardDrink = ({ product, price, quantityProduct, id, description }: CartProps) => {
     const { removeProductFromCart } = ContextApp()
     const priceString = price.replace(',', '.')
     const totalPrice = (parseFloat(priceString) * quantityProduct).toFixed(2)

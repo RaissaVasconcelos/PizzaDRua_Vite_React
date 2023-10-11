@@ -8,20 +8,11 @@ interface taxProps {
 export const Summary = ({ tax }: taxProps) => {
  
   
-  const { cartProductsTotalPrice, productPersonalize } = ContextApp()
+  const { cartProductsTotalPrice } = ContextApp()
 
-  const priceProductPersonalize = productPersonalize.reduce((acc, product) => {
-    const priceString = product.finalPrice.replace(',', '.')
-    const price = parseFloat(priceString)
-    return acc + price
-  }, 0)
-
- 
-
-  const totalPriceProduct = (cartProductsTotalPrice  + priceProductPersonalize).toFixed(2)
+  const totalPriceProduct = (cartProductsTotalPrice).toFixed(2)
   const totalPrice = (parseFloat(totalPriceProduct) + parseFloat(tax)).toFixed(2)
   
-
   return (
     <>
       <div className="font-semibold text-xl text-gray-600 border-b-2 border-gray-500 flex flex-col py-3 items-center justify-center gap-5 mt-10 w-11/12">
@@ -31,7 +22,7 @@ export const Summary = ({ tax }: taxProps) => {
         </div>
         <div className="flex items-center justify-between w-full">
           <span>Entrega</span>
-          <span>{tax ? priceFormatter.format(Number(tax)) : priceFormatter.format(Number("0.00"))}</span>
+          <span>{tax ? priceFormatter.format(Number(tax)) : <span className="text-orange-500">Gratis</span>}</span>
         </div>
         <div className="flex items-center justify-between w-full font-bold">
           <span>Total</span>

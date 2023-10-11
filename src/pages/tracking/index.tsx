@@ -10,11 +10,14 @@ import { CardAddress } from '../../components/CardAddress'
 import { useEffect, useState } from 'react'
 import { api } from '../../utils/axios'
 import { ChefHat, Package } from 'lucide-react'
+import { ContextApp } from '../../context/context-app'
 
 
 export default function Tracking() {
+  const {cartTotalPrice} = ContextApp()
   const [status, setStatus] = useState('WAITING')
   
+
 
   const getStatus = async () => {
     const response = await api.get('/orders')
@@ -26,7 +29,7 @@ export default function Tracking() {
     getStatus()
   }, [])
 
-  console.log(status);
+  
 
   return (
     <div className="max-w-[1100px] m-auto flex flex-col items-center justify-start mb-10">
@@ -39,7 +42,7 @@ export default function Tracking() {
             <img src={pizza} alt="" />
             <div className='flex flex-col items-start gap-2 text-gray-500 font-semibold text-lg'>
               <span >Seus pedidos</span>
-              <span className='font-bold'>R$ 100,00</span>
+              <span className='font-bold'>R$ {cartTotalPrice}</span>
               <span className='text-orange-500 text-base bg-orange-100 font-semibold rounded-md p-1'>{status}</span>
             </div>
           </div>

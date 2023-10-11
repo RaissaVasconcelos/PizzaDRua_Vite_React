@@ -12,10 +12,12 @@ import { useState } from 'react';
 import Select, { StylesConfig } from 'react-select';
 import makeAnimated from 'react-select/animated';
 import chroma from 'chroma-js';
+import uuid from 'react-uuid';
 import { ContextApp } from '../../context/context-app';
 import { Button } from '../../components/ui/button';
 import { priceFormatter } from '../../utils/formatter';
-import { useNavigate } from 'react-router-dom';
+import { ToastContainer } from "react-toastify";
+import { notify } from '../../utils/toast'
 
 const colourStyles: StylesConfig<ColourOption, true> = {
   control: (styles) => ({ ...styles, backgroundColor: 'white' }),
@@ -77,6 +79,20 @@ export interface ColourOption {
   readonly isFixed?: boolean;
   readonly isDisabled?: boolean;
 }
+interface ProductProps {
+  id: string
+  type?: 'TRADITIONAL' | 'SPECIAL'
+  image_url?: string
+  category: {
+    name: string
+  }
+  product: { name: string }[]
+  description: string
+  size: string
+  mode?: string  
+  price: string
+  quantityProduct: number
+}
 
 export default function Personalize() {
   const flavorSchema = z.object({
@@ -99,7 +115,7 @@ export default function Personalize() {
   type FlavorSchema = z.infer<typeof flavorSchema>
 
 
-  const { addProductPersonalize, groupOptions, flavors } = ContextApp();
+  const { addProductToCart, groupOptions, flavors } = ContextApp();
 
   const [isChecked, setIsChecked] = useState('MEDIUM');
   const [isSelectSpecial, setIsSelectSpecial] = useState(false);
@@ -120,14 +136,32 @@ export default function Personalize() {
     }
   });
 
-  const navigate = useNavigate();
-
+  
   const handleSubmitForm = (data: CustomizeSchema) => {
-    console.log(data);
-    
-    addProductPersonalize({ ...data, finalPrice: price });
+   
+    const product: ProductProps = {
+      id: uuid(),
+      category: {
+        name: 'pizza',
+      },
+      description: data.flavor[0].label,
+      image_url: data.flavor[0].image,
+      price,
+      size: data.size,
+      product: data.flavor.map((name: any) => {
+        return {
+          name: name.label
+        }}),
+      type: isSelectSpecial ? 'SPECIAL' : 'TRADITIONAL',
+      mode: 'MIXED',
+      quantityProduct: 1   
+
+    }
+
+    addProductToCart(product);
     setValue('flavor', []);
-    navigate('/cart')
+    notify()
+    
   }
 
   const handleFlavorChange = (selectedOptions: FlavorSchema[]) => {
@@ -225,7 +259,7 @@ export default function Personalize() {
 
                     onClick={() => {
                       setIsChecked('MEDIUM'),
-                      setValue('flavor', [])
+                        setValue('flavor', [])
                       handleSelectSize('MEDIUM')
                     }}
                     className={`${isChecked === 'MEDIUM' ? 'bg-orange-500' : 'bg-[#f9f9f9]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
@@ -241,7 +275,7 @@ export default function Personalize() {
                     className={`${isChecked === 'HALF' ? 'bg-orange-500' : 'bg-[#f9f9f9]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
                     value="HALF"
                   >
-                    {isChecked === 'MEDIUM' ? <img src={half } width={60} height={60} alt='' /> : <img src={halfWhite} width={60} height={60} alt='' />}
+                    {isChecked === 'MEDIUM' ? <img src={half} width={60} height={60} alt='' /> : <img src={halfWhite} width={60} height={60} alt='' />}
 
                   </RadioGroup.Item>
                 </RadioGroup.Root>
@@ -317,6 +351,7 @@ export default function Personalize() {
           </Button>
         </div>
       </form>
+      <ToastContainer />
     </div>
   )
 }
