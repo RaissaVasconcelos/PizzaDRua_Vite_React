@@ -11,6 +11,7 @@ import Checkout from '../pages/checkout'
 import Pix from '../pages/pix'
 import Success from '../pages/success'
 import Tracking from '../pages/tracking'
+import MethodDelivery from '../pages/delivery/delivery-method-page'
 
 export const Router = () => {
   return (
@@ -27,6 +28,7 @@ export const Router = () => {
       <Route path='/pix' element={<Pix />} />
       <Route path='/success' element={<Success />} />
       <Route path='/tracking' element={<Tracking />} />
+      <Route path='/delivery' element={<MethodDelivery />} />
     </Routes>
   )
 }
