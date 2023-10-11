@@ -5,15 +5,10 @@ import { ContextApp } from "../../../context/context-app"
 import { CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
 import { priceFormatter } from "../../../utils/formatter"
+import { CartProps } from "../../../@types/interface"
 
 
-interface CartProps {
-    id: string
-    product: { name: string }[]
-    price: string
-    quantityProduct: number
 
-}
 
 export const CardProduct = ({ product, price, quantityProduct, id }: CartProps) => {
     const { removeProductFromCart } = ContextApp()

@@ -3,16 +3,10 @@ import imageUrl from '../../../../public/coca-cola.png'
 import { ContextApp } from "../../../context/context-app"
 import { CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
+import { CartProps } from "../../../@types/interface"
 
 
-interface CartProps {
-    id: string
-    product: { name: string }[]
-    price: string
-    description: string
-    quantityProduct: number
 
-}
 
 export const CardDrink = ({ product, price, quantityProduct, id, description }: CartProps) => {
     const { removeProductFromCart } = ContextApp()
@@ -31,7 +25,7 @@ export const CardDrink = ({ product, price, quantityProduct, id, description }: 
                 <div className="flex flex-col items-start justify-center">
                     <div className="flex  items-center justify-start gap-2 ">
 
-                       {product.map(item => (<span key={item.name} className="text-gray-600 font-semibold">{item.name}</span>))}
+                        <span className="text-gray-600 font-semibold">{product.map((product) => product.name)}</span>
 
                     </div>
                     <span>{description}</span>

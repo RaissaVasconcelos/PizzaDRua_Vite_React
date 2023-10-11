@@ -31,6 +31,9 @@ export default function Cart() {
                     product={item.product}
                     price={item.price}
                     quantityProduct={item.quantityProduct}
+                    description={item.description}
+                    image_url={item.image_url}
+                    size={item.size}
                   />
                 ))}
 
@@ -42,6 +45,9 @@ export default function Cart() {
                     price={item.price}
                     quantityProduct={item.quantityProduct}
                     description={item.description}
+                    image_url={item.image_url}
+                    size={item.size}
+
                   />
                 ))}
               </Card>
@@ -64,7 +70,7 @@ export default function Cart() {
         {currentAddress &&
           <div className={'w-full flex items-center justify-center'} >
             <Button disabled={productToCart.length === 0 } className="rounded-[8px]  text-gray-100 text-lg mt-5 w-11/12 bg-orange-500 hover:bg-orange-600 ">
-              <NavLink to={"/payment"}>
+              <NavLink to={"/delivery"}>
                 Finalizar Compra
               </NavLink>
             </Button>

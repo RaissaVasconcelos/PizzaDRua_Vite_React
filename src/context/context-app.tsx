@@ -24,7 +24,7 @@ export interface AddressProps {
 export interface ProductProps {
   id: string
   type?: 'TRADITIONAL' | 'SPECIAL'
-  image_url?: string
+  image_url: string
   category: {
     name: string
   }

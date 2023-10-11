@@ -13,12 +13,16 @@ import { Button } from "../../components/ui/button";
 
 interface PaymentProps {
   methodPayment: string
-  methodDelivery: string
+}
+
+interface MethodDeliveryProps {
+  deliveryMethod: string
 }
 
 interface OrderProps {
   payment: string
   totalPrice: string
+  methodDelivery: string
   itemsOrder: {
     mode?: string,
     size: string,
@@ -33,6 +37,10 @@ export default function Checkout() {
     const storaged = parseCookies().payment
     return storaged ? JSON.parse(storaged) : []
   });
+  const [methodDelivery, setMethodDelivery] = useState<MethodDeliveryProps>(() => {
+    const storaged = parseCookies().delivery
+    return storaged ? JSON.parse(storaged) : []
+  });
 
   const { currentAddress, productToCart, cartTotalPrice } = ContextApp()
 
@@ -40,6 +48,7 @@ export default function Checkout() {
     const order: OrderProps = {
       payment: getPayment.methodPayment,
       totalPrice: cartTotalPrice,
+      methodDelivery: methodDelivery.deliveryMethod,
       itemsOrder: productToCart.map((item) => ({
         mode: item.mode,
         size: item.size,
@@ -55,7 +64,7 @@ export default function Checkout() {
       <HeaderOrder link="/payment" title="Revisão do Pedido" />
       <div className="w-full bg-white p-3 flex flex-col items-center justify-center my-5">
         <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500 ">Metodo de Entrega</h2>
-        {getPayment.methodDelivery === 'DELIVERY'
+        {methodDelivery.deliveryMethod === 'DELIVERY'
           ? (
 
             <div className="w-full bg-white  flex items-center justify-center">
@@ -68,7 +77,7 @@ export default function Checkout() {
                 <img src={pickupOrange} alt="" className="w-11" />
                 <span className="text-gray-500 text-xl font-semibold">Retirada</span>
               </div>
-              <NavLink to={"/payment"}>
+              <NavLink to={"/delivery"}>
                 <Edit size={25} className="text-gray-500" />
               </NavLink>
             </div>
@@ -97,7 +106,7 @@ export default function Checkout() {
         </div>
       </div>
       <div className="w-ful flex flex-col items-center justify-center">
-        <Summary tax={getPayment.methodDelivery === 'PICKUP' ? '0.00' : currentAddress ? currentAddress.neighborhood.tax : '0.00'} />
+        <Summary tax={methodDelivery.deliveryMethod === 'PICKUP' ? '0.00' : currentAddress ? currentAddress.neighborhood.tax : '0.00'} />
       </div>
 
 

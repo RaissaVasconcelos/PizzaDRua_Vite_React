@@ -42,9 +42,9 @@ export default function MethodDelivery() {
 
   return (
     <div className="max-w-[1100px] m-auto">
-      <HeaderOrder title="Pagamento" link="/cart" />
+      <HeaderOrder title="Metodo de entrega" link="/cart" />
       <div className="w-full flex flex-col items-center justify-center my-10">
-        <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500">Selecione um metodo de pagamento</h2>
+        <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500">Selecione um metodo de entrega</h2>
         <form onSubmit={handleSubmit(handleSubmitForm)} className='w-full ' action="">
           <div className='w-11/12 flex flex-col items-center justify-center m-5'>
             <Controller
@@ -55,7 +55,7 @@ export default function MethodDelivery() {
                   <RadioGroup.Root
                     onValueChange={field.onChange}
                     value={field.value}
-                    className="w-9/12 bg-white flex flex-col items-start justify-center p-5  rounded-md gap-10 mt-10 font-semibold"
+                    className="w-11/12 bg-white flex flex-col items-start justify-center p-5  rounded-md gap-10 mt-10 font-semibold"
                   >
                     <RadioGroup.Item
                       value="DELIVERY"
@@ -80,8 +80,8 @@ export default function MethodDelivery() {
             />
            
           </div>
-          <div className="w-full flex  items-center justify-center">
-            <Button className="w-10/12 bg-orange-500 hover:bg-orange-600 text-lg mt-10" type="submit">
+          <div className="w-full flex bg-white rounded-t-xl  absolute bottom-0 items-center justify-center">
+            <Button className="w-10/12 relative bg-orange-500 hover:bg-orange-600 text-lg my-10 " type="submit">
               Prossiga para o pagamento
             </Button>
           </div>
