@@ -57,9 +57,8 @@ type PizzaDRuaContextType = {
   isAuthenticated: boolean
   setCartTotalPrice: (price: string) => void
   addProductToCart: (product: OrdersCartProps) => void
-  setonChangeCatalog: (catalog: string) => void
+  setOnChangeCatalog: (catalog: string) => void
   removeProductFromCart: (productId: string) => void
-
   onChangeCatalog: string
   cartProductsTotalPrice: number
   totalItemsOnCart: number
@@ -88,8 +87,9 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [addresses, setAddresses] = useState<AddressProps[]>([])
   const [neighborhoods, setNeighborhoods] = useState([])
   const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
-  const [onChangeCatalog, setonChangeCatalog] = useState('PIZZA')
+  const [onChangeCatalog, setOnChangeCatalog] = useState('PIZZA')
   const [cartTotalPrice, setCartTotalPrice] = useState('')
+
   const [productToCart, setProductToCart] = useState<OrdersCartProps[]>(
     () => {
       const storagedCart = parseCookies().product
@@ -230,9 +230,12 @@ console.log(addresses);
       cartProductsTotalPrice,
       isAuthenticated,
       totalItemsOnCart,
+      productPersonalize,
+      addProductPersonalize,
+      setOnChangeCatalog,
       cartTotalPrice,
       setCartTotalPrice,
-      setonChangeCatalog,
+
       addProductToCart,
       removeProductFromCart,
     }}>
