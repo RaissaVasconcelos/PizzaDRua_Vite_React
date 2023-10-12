@@ -8,18 +8,17 @@ interface childrenProps {
 }
 
 export interface AddressProps {
-  props: {
-    type: string
-    street: string
-    number: string
-    standard: boolean,
-    neighborhood: {
-      name: string
-      tax: string
-    }
-    zipCode: string
-    phone: string
-    id: number
+  id: string
+  type: "HOME" | "WORK" | "OTHER"
+  street: string
+  number: string
+  zipCode: string
+  phone: string
+  standard: boolean,
+  neighborhood: {
+    id: string
+    name: string
+    tax: string
   }
 }
 
@@ -48,8 +47,8 @@ interface GroupOptions {
 
 type PizzaDRuaContextType = {
   flavors: ProductProps[]
-  addresses: AddressProps[]
   currentAddress: AddressProps | null
+  setCurrentAddress: (standardAddress: AddressProps) => void
   groupOptions: GroupOptions[]
   productToCart: OrdersCartProps[]
   neighborhoods: any[]
@@ -84,7 +83,7 @@ const filterType = (type: string, arr: ProductProps[]) => {
 
 export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [flavors, setFlavors] = useState<ProductProps[]>([])
-  const [addresses, setAddresses] = useState<AddressProps[]>([])
+  // const [addresses, setAddresses] = useState<AddressProps[]>([])
   const [neighborhoods, setNeighborhoods] = useState([])
   const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
   const [onChangeCatalog, setOnChangeCatalog] = useState('PIZZA')
@@ -98,8 +97,6 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   )
   const [groupOptions, setGroupOptions] = useState<any[]>([])
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-
-  
 
   const getFlavors = async () => {
 
@@ -131,7 +128,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }
     const data = parseCookies().delivery
     const methodDelivery = JSON.parse(data)
-    const dataAddressTax = currentAddress ? currentAddress.props.neighborhood.tax : '0.00' 
+    const dataAddressTax = currentAddress ? currentAddress.neighborhood.tax : '0.00' 
     
     const tax = methodDelivery.deliveryMethod === 'DELIVERY' ? dataAddressTax : '0.00';
     const totalPriceProduct = cartProductsTotalPrice.toFixed(2);
@@ -175,20 +172,23 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     setProductToCart(findProduct)
   };
 
-  const getAddresses = async () => {
-    const token = parseCookies().accessToken
-    console.log(token);
+  // const getAddresses = async () => {
+  //   const token = parseCookies().accessToken
+  //   console.log(token);
     
-    const response = await api.get('/address', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    const standardAddress = response.data.find((element: AddressProps) => element.props.standard === true)
-    setCurrentAddress(standardAddress)
-    setAddresses(response.data)
+  //   const response = await api.get('/address', {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`
+  //     }
+  //   })
 
-  }
+  //   console.log('response', response)
+
+  //   const standardAddress = response.data.find((element: AddressProps) => element.props.standard === true)
+  //   setCurrentAddress(standardAddress)
+  //   setAddresses(response.data)
+
+  // }
 
  const getNeighborhoods = async  () => {
    const response = await api.get('/neighborhood')
@@ -211,19 +211,19 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
 
   useEffect(() => {
     getFlavors()
-    getAddresses()
+    // getAddresses()
     getNeighborhoods()
   
   }, [])
 
-console.log(addresses);
+// console.log(addresses);
 
   return (
     <PizzaDRuaContext.Provider value={{
-      addresses,
+      currentAddress,
+      setCurrentAddress,
       flavors,
       onChangeCatalog,
-      currentAddress,
       groupOptions,
       productToCart,
       neighborhoods,
@@ -233,7 +233,6 @@ console.log(addresses);
       setOnChangeCatalog,
       cartTotalPrice,
       setCartTotalPrice,
-
       addProductToCart,
       removeProductFromCart,
     }}>

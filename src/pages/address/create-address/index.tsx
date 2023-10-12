@@ -6,12 +6,19 @@ import  { useNavigate }  from 'react-router-dom'
 import InputMask from 'react-input-mask';
 import { api } from '../../../utils/axios';
 import { Label } from '@radix-ui/react-label';
+
 import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
-import { ContextApp } from '../../../context/context-app';
+// import { ContextApp } from '../../../context/context-app';
+import { useEffect, useState } from 'react';
 
-
-
+interface INeighborhood {
+  props: {
+    id: string,
+    name:string,
+    tax: string,
+  }
+}
 
 const addressSchemaBody = z.object({
   neighborhood: z.object({
@@ -43,7 +50,6 @@ type AddressSchema = z.infer<typeof addressSchemaBody>
 
 
 export default function CreateAddress() {
-
   const {
     control,
     register,
@@ -53,7 +59,9 @@ export default function CreateAddress() {
     resolver: zodResolver(addressSchemaBody),
 
   });
-  const {neighborhoods} = ContextApp()
+  const [neighborhoods, setNeighborhoods] = useState<any[]>([])
+  // const {neighborhoods} = ContextApp()
+  console.log(neighborhoods)
   const navigate = useNavigate()
 
   const handleSubmitForm = async (data: AddressSchema) => {
@@ -64,11 +72,24 @@ export default function CreateAddress() {
       type: data.type.value,
       zipCode: data.zipCode,
       phone: data.phone
-
     })
 
     navigate('/address')
   }
+
+  const getNeighborhoods = async  () => {
+    const response = await api.get('/neighborhood')
+    setNeighborhoods(response?.data?.neighborhoods.map((element: INeighborhood) => {
+      return {
+        label: element.props.name,
+        value: element.props.name
+      }
+    }))
+  }
+
+  useEffect(() => {
+    getNeighborhoods()
+  }, [])
 
   return (
     <div className="h-screen max-w-[1100px] m-auto  flex flex-col items-center justify-start">
@@ -125,7 +146,6 @@ export default function CreateAddress() {
                     { value: 'Outro', label: 'Outro' },
                   ]}
                 />
-
               )}
             />
           </div>
