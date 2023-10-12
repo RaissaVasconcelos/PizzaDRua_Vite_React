@@ -1,18 +1,35 @@
 import { ContextApp } from "../../../context/context-app"
-import pizza from '../../../assets/pizza.png'
-import drink from '../../../assets/drink.png'
+import { GlassWater, Pizza }from 'lucide-react'
 
 export const Navigate = () => {
-  const { onChangeCatalog, setonChangeCatalog } = ContextApp()
+  const { onChangeCatalog, setOnChangeCatalog } = ContextApp()
+
+  console.log(onChangeCatalog);
+  
 
   return (
-    <nav className="flex items-center justify-center gap-10 mt-10 w-full text-orange-500">
-      <div onClick={() => setonChangeCatalog('PIZZA')} className={`${onChangeCatalog === 'PIZZA' ? 'bg-orange-100' : 'bg-white'} p-4 rounded-full hover:bg-orange-100`}>
-        <img src={pizza} className="w-10" alt="" />
-      </div>
-      <div onClick={() => setonChangeCatalog('DRINK')} className={`${onChangeCatalog === 'DRINK' ? 'bg-orange-100' : 'bg-white'} p-4 rounded-full hover:bg-orange-100`}>
-        <img src={drink} className="w-10" alt="" />
-      </div>
+    <nav className="flex items-center scrollbar justify-center gap-2 mt-8 w-full text-orange-500">
+      <button
+        data-active={onChangeCatalog == "PIZZA"}
+        className='flex group items-center justify-center gap-2 py-1 pr-3 pl-1 text-lg font-medium rounded-3xl border-2 border-orange-500 bg-white text-orange-500  data-[active=true]:bg-orange-500 data-[active=true]:text-white'
+        onClick={() => setOnChangeCatalog('PIZZA')}   
+      >
+        <div className="flex items-center border-1 justify-center rounded-full p-2 relative right-0  text-white bg-orange-500 group-data-[active=true]:bg-white group-data-[active=true]:text-orange-500">
+          <Pizza />
+        </div>
+        Pizza's
+      </button>
+
+      <button
+        data-active={onChangeCatalog == "DRINK"}
+        className='flex group items-center justify-center gap-2 py-1 pr-3 pl-1 text-lg font-medium rounded-3xl border-2 border-orange-500 bg-white text-orange-500  data-[active=true]:bg-orange-500 data-[active=true]:text-white'
+        onClick={() => setOnChangeCatalog('DRINK')}   
+      >
+        <div className="flex items-center border-1 justify-center rounded-full p-2 relative right-0  text-white bg-orange-500 group-data-[active=true]:bg-white group-data-[active=true]:text-orange-500">
+          <GlassWater />
+        </div>
+        Bebidas
+      </button>
     </nav>
   )
 }
