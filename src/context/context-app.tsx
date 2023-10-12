@@ -230,8 +230,6 @@ console.log(addresses);
       cartProductsTotalPrice,
       isAuthenticated,
       totalItemsOnCart,
-      productPersonalize,
-      addProductPersonalize,
       setOnChangeCatalog,
       cartTotalPrice,
       setCartTotalPrice,
