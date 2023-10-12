@@ -7,15 +7,17 @@ import delivey from '../../assets/delivery.png'
 import delivered from '../../assets/delivered.png'
 import whatsapp from '../../assets/whatsapp.svg'
 import { CardAddress } from '../../components/CardAddress'
-import { Summary } from '../cart/components/summary'
 import { useEffect, useState } from 'react'
 import { api } from '../../utils/axios'
 import { ChefHat, Package } from 'lucide-react'
+import { ContextApp } from '../../context/context-app'
 
 
 export default function Tracking() {
-  const [status, setStatus] = useState('RECEIVED')
-  const [statusColor, setStatusColor] = useState('#f97316');
+  const {cartTotalPrice} = ContextApp()
+  const [status, setStatus] = useState('WAITING')
+  
+
 
   const getStatus = async () => {
     const response = await api.get('/orders')
@@ -25,42 +27,9 @@ export default function Tracking() {
 
   useEffect(() => {
     getStatus()
+  }, [])
 
-    switch (status) {
-      case 'WAITING':
-        setStatusColor('#f97316'); // Laranja para RECEIVED
-        break;
-      case 'ACCEPTED':
-        setStatusColor('#00B894'); // Verde para ACCEPTED
-        break;
-
-      case 'DELIVERY':
-        setStatusColor('#f97316');
-        break;
-
-      case "PREPARING":
-        setStatusColor('#f97316');
-        break;
-
-      case "FINISHED":
-        setStatusColor('#f97316');
-        break;
-      // Adicione mais casos para outros status aqui
-      default:
-        setStatusColor('#4b5563'); // Cinza para outros status
-    }
-  }, [status])
-
-  console.log(status);
-
-  const statusToClassName = {
-    WAITING: 'waiting',
-    ACCEPTED: 'accepted',
-    DELIVERY: 'delivery',
-    FINISHED: 'finished',
-    PREPARING: 'preparing',
-    // Outros status aqui
-  };
+  
 
   return (
     <div className="max-w-[1100px] m-auto flex flex-col items-center justify-start mb-10">
@@ -73,7 +42,7 @@ export default function Tracking() {
             <img src={pizza} alt="" />
             <div className='flex flex-col items-start gap-2 text-gray-500 font-semibold text-lg'>
               <span >Seus pedidos</span>
-              <span className='font-bold'>R$ 100,00</span>
+              <span className='font-bold'>R$ {cartTotalPrice}</span>
               <span className='text-orange-500 text-base bg-orange-100 font-semibold rounded-md p-1'>{status}</span>
             </div>
           </div>
@@ -92,23 +61,23 @@ export default function Tracking() {
                     <Package
                       size={38}
                       strokeWidth={1}
-                      className={`text-orange-500`}
+                      className={`text-gray-500`}
                     />
                   )
               }
 
-              <span className={`${status === "RECEIVED" ? 'text-orange-500' : 'text-orange-500'}`}>Aguadando recebimento</span>
+              <span className={`${status === "WAITING" ? 'text-orange-500' : 'text-gray-500'}`}>Aguadando recebimento</span>
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className=' flex items-center justify-center gap-3'>
-              <Package size={38} strokeWidth={1} style={{ color: statusColor }} />
+              <Package size={38} strokeWidth={1}  />
 
-              <span style={{ color: statusColor }} className='text-orange-500' >Pedido aceito</span>
+              <span className={`${status === 'ACCEPTED' ? 'text-orange-500' : 'text-gray-500'}`} >Pedido em aceito</span>
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className=' flex items-center justify-center gap-3 my-1'>
-              <ChefHat size={38} strokeWidth={1} style={{ color: statusColor }} />
-              <span style={{ color: statusColor }} className='text-orange-500' >Pedido em producao</span>
+              <ChefHat size={38} strokeWidth={1}  />
+              <span className={`${status === 'PREPARING' ? 'text-orange-500': 'text-gray-500'}`} >Pedido em producao</span>
 
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />

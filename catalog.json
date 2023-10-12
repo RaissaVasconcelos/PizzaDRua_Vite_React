@@ -14,6 +14,7 @@
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "TRADITIONAL",
+      "size":"MEDIUM",
       "price": "49.99"
     },
     {
@@ -30,6 +31,7 @@
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "TRADITIONAL",
+"size": "MEDIUM",
       "price": "49.99"
     },
     {
@@ -46,6 +48,7 @@
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "TRADITIONAL",
+"size": "MEDIUM",
       "price": "49.99"
     },
     {
@@ -62,6 +65,7 @@
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "SPECIAL",
+"size": "MEDIUM",
       "price": "59.99"
     },
     {
@@ -78,6 +82,7 @@
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "SPECIAL",
+"size": "MEDIUM",
       "price": "59.99"
     },
     {
@@ -94,13 +99,14 @@
       "image_url": "/public/coca-cola.png",
       "description": "Coca lata zero",
       "type": null,
+      "size": "500ML",
       "price": "5,00"
     },
     {
       "id": "7",
       "product": [
         {
-          "name": "Coca 1L"
+          "name": "Coca Cola"
         }
       ],
       "category": {
@@ -110,6 +116,7 @@
       "image_url": "/public/coca-cola.png",
       "description": "Coca 1L pet",
       "type": null,
+"size": "1 LT",
       "price": "10,00"
     },
     {
@@ -126,6 +133,7 @@
       "image_url": "/public/coca-cola.png",
       "description": "Suco de laranja 500ML sem acucar",
       "type": null,
+      "size": "500ML",
       "price": "7,00"
     }
   ],
@@ -146,7 +154,7 @@
     {
       "neighborhood": {
         "name": "Bairro02",
-        "tax": "8.00"
+"tax": "5.00"
       },
       "number": "1234",
       "standard": false,

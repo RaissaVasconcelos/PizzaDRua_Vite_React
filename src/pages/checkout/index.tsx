@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { AddressProps, ContextApp } from "../../context/context-app";
+import { useState } from "react";
+import { ContextApp } from "../../context/context-app";
 import { HeaderOrder } from "../../components/HeaderOrder";
 import { parseCookies } from "nookies";
 import { CardAddress } from "../../components/CardAddress";
@@ -13,7 +13,22 @@ import { Button } from "../../components/ui/button";
 
 interface PaymentProps {
   methodPayment: string
+}
+
+interface MethodDeliveryProps {
+  deliveryMethod: string
+}
+
+interface OrderProps {
+  payment: string
+  totalPrice: string
   methodDelivery: string
+  itemsOrder: {
+    mode?: string,
+    size: string,
+    product: string[]
+    quantityProduct: number
+  }[]
 }
 
 export default function Checkout() {
@@ -22,21 +37,38 @@ export default function Checkout() {
     const storaged = parseCookies().payment
     return storaged ? JSON.parse(storaged) : []
   });
-  
-  const { currentAddress } = ContextApp()
+  const [methodDelivery, setMethodDelivery] = useState<MethodDeliveryProps>(() => {
+    const storaged = parseCookies().delivery
+    return storaged ? JSON.parse(storaged) : []
+  });
 
-  
+  const { currentAddress, productToCart, cartTotalPrice } = ContextApp()
+
+  const handleFinishOrder = () => {
+    const order: OrderProps = {
+      payment: getPayment.methodPayment,
+      totalPrice: cartTotalPrice,
+      methodDelivery: methodDelivery.deliveryMethod,
+      itemsOrder: productToCart.map((item) => ({
+        mode: item.mode,
+        size: item.size,
+        product: item.product.map(item => item.name),
+        quantityProduct: item.quantityProduct
+      }))
+    }
+  }
+
 
   return (
     <div className="max-w-[1100px] m-auto  ">
-      <HeaderOrder  link="/payment" title="Revisão do Pedido" />
+      <HeaderOrder link="/payment" title="Revisão do Pedido" />
       <div className="w-full bg-white p-3 flex flex-col items-center justify-center my-5">
         <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500 ">Metodo de Entrega</h2>
-        {getPayment.methodDelivery === 'DELIVERY'
+        {methodDelivery.deliveryMethod === 'DELIVERY'
           ? (
 
             <div className="w-full bg-white  flex items-center justify-center">
-              <CardAddress/>
+              <CardAddress />
             </div>
           ) : (
 
@@ -45,9 +77,9 @@ export default function Checkout() {
                 <img src={pickupOrange} alt="" className="w-11" />
                 <span className="text-gray-500 text-xl font-semibold">Retirada</span>
               </div>
-              <NavLink to={"/payment"}>
+              <NavLink to={"/delivery"}>
                 <Edit size={25} className="text-gray-500" />
-              </NavLink> 
+              </NavLink>
             </div>
           )}
         <div className="w-10/12 h-[2px] bg-gray-400 mt-7" />
@@ -70,18 +102,18 @@ export default function Checkout() {
           </div>
           <NavLink to={"/cart"}>
             <Edit size={25} className="text-gray-500" />
-          </NavLink>  
+          </NavLink>
         </div>
       </div>
       <div className="w-ful flex flex-col items-center justify-center">
-        <Summary  tax={getPayment.methodDelivery === 'PICKUP' ? '0.00' : currentAddress ? currentAddress.neighborhood.tax : '0.00'}/>
+        <Summary tax={methodDelivery.deliveryMethod === 'PICKUP' ? '0.00' : currentAddress ? currentAddress.neighborhood.tax : '0.00'} />
       </div>
 
-      
-        <NavLink className="w-full flex items-center justify-center my-10" to={getPayment.methodPayment === 'PIX' ? "/pix" : "/success"} >
-          <Button className="bg-orange-500 hover:bg-orange-600 text-lg flex w-11/12 items-center justify-center">Finalizar Compra</Button>  
-        </NavLink>
-    
+
+      <div className="w-full flex items-center justify-center my-10"  >
+        <Button onClick={handleFinishOrder} className="bg-orange-500 hover:bg-orange-600 text-lg flex w-11/12 items-center justify-center">Finalizar Compra</Button>
+      </div>
+
     </div>
   )
 }

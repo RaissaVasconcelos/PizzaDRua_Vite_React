@@ -27,6 +27,7 @@ export const Catalog = () => {
                     image_url={flavor.image_url}
                     description={flavor.description}
                     category={flavor.category}
+                    size={flavor.size}
                   />
                 ))
 
@@ -39,6 +40,7 @@ export const Catalog = () => {
                     image_url={flavor.image_url}
                     description={flavor.description}
                     category={flavor.category}
+                    size={flavor.size}
                   />
                 ))
 
@@ -59,6 +61,7 @@ export const Catalog = () => {
                 image_url={drink.image_url}
                 description={drink.description}
                 category={drink.category}
+                size={drink.size}
               />
             ))}
           </div>

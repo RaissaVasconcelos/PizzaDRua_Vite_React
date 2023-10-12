@@ -5,17 +5,12 @@ import { ContextApp } from "../../../context/context-app"
 import { CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
 import { priceFormatter } from "../../../utils/formatter"
+import { CartProps } from "../../../@types/interface"
 
 
-interface CartProps {
-    id: number
-    name: string
-    price: string
-    quantityProduct: number
 
-}
 
-export const CardProduct = ({ name, price, quantityProduct, id }: CartProps) => {
+export const CardProduct = ({ product, price, quantityProduct, id }: CartProps) => {
     const { removeProductFromCart } = ContextApp()
     const priceString = price.replace(',', '.')
     const totalPrice = (parseFloat(priceString) * quantityProduct)
@@ -32,7 +27,7 @@ export const CardProduct = ({ name, price, quantityProduct, id }: CartProps) => 
                 <div className="flex flex-col items-start justify-center">
                     <div className="flex  items-center justify-start gap-2 ">
 
-                        <span className="text-gray-600 font-semibold">{name}</span>
+                    { product.map(item => (<span key={item.name} className="text-gray-600 font-semibold">{item.name}</span>))}
 
                     </div>
                     <span>Tamanho M</span>
