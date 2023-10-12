@@ -64,7 +64,7 @@ type PizzaDRuaContextType = {
   productPersonalize: PizzaPersonalizeProps[]
   addProductPersonalize: (product: PizzaPersonalizeProps) => void
   addProductToCart: (product: OrdersCartProps) => void
-  setonChangeCatalog: (catalog: string) => void
+  setOnChangeCatalog: (catalog: string) => void
   removeProductFromCart: (productId: number) => void
   removeProductPersonalizeFromCart: (productSize: string) => void
   onChangeCatalog: string
@@ -94,7 +94,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [flavors, setFlavors] = useState<ProductProps[]>([])
   const [addresses, setAddresses] = useState<AddressProps[]>([])
   const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
-  const [onChangeCatalog, setonChangeCatalog] = useState('PIZZA')
+  const [onChangeCatalog, setOnChangeCatalog] = useState('PIZZA')
   const [productPersonalize, setProductPersonalize] = useState<PizzaPersonalizeProps[]>(
     () => {
       const storagedCart = parseCookies().productPersonalize
@@ -223,7 +223,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       totalItemsOnCart,
       productPersonalize,
       addProductPersonalize,
-      setonChangeCatalog,
+      setOnChangeCatalog,
       addProductToCart,
       removeProductFromCart,
       removeProductPersonalizeFromCart
