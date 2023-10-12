@@ -7,19 +7,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { EditAddressModal } from "./EditAddressModal";
 
 
-
 type AddressProps  = {
-  type: string
+  type: "HOME" | "WORK" | "OTHER"
   street: string
   number: string
   neighborhood: {
+    id: string
     name: string
     tax: string
   }
   standard: boolean
   zipCode: string
   phone: string
-  addressId: number
+  addressId: string
 }
 
 type AddressCardProps  = AddressProps & React.HTMLAttributes<HTMLDivElement>  
@@ -32,7 +32,7 @@ export const CardAddress: React.FC<AddressCardProps> = ({addressId ,className, t
       <CardHeader className="mb-[-10px]" >
         <div className="flex items-center justify-between">
           <div className="flex items-start justify-start gap-2 text-orange-500">
-            {type === "Casa" ? <Home size={20} /> : type === "Trabalho" ? <Building2 size={18} /> : <MapPin />}
+            {type === "HOME" ? <Home size={20} /> : type === "WORK" ? <Building2 size={18} /> : <MapPin />}
             <CardTitle className="text-md">{type}</CardTitle>
           </div>
           <Dialog.Root >

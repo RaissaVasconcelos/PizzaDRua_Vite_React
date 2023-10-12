@@ -1,14 +1,49 @@
-import { Plus } from "lucide-react";
-import { CardAddress } from "./components/card";
+import { useEffect, useState } from "react";
+import { api } from "../../utils/axios";
 import { NavLink } from 'react-router-dom'
-import {  ContextApp } from "../../context/context-app";
+import { parseCookies } from "nookies";
+import { Plus } from "lucide-react";
+
+import { CardAddress } from "./components/card";
+import { ContextApp } from "../../context/context-app";
 import { HeaderOrder } from "../../components/HeaderOrder";
 import { Button } from "../../components/ui/button";
 
+export interface AddressProps {
+  id: string
+  type: "HOME" | "WORK" | "OTHER"
+  street: string
+  number: string
+  zipCode: string
+  phone: string
+  standard: boolean,
+  neighborhood: {
+    id: string
+    name: string
+    tax: string
+  }
+}
 
 export default function Address() {
+  const [addresses, setAddresses] = useState<AddressProps[]>([])
+  const { setCurrentAddress } = ContextApp()
 
-  const { addresses } = ContextApp()
+  const getAddresses = async () => {
+    const token = parseCookies().accessToken    
+    const response = await api.get('/address', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    const standardAddress = response.data.find((element: AddressProps) => element.standard === true)
+    setCurrentAddress(standardAddress)
+    setAddresses(response.data)
+  }
+
+  useEffect(() => {
+    getAddresses()
+  }, []) 
 
   return (
     <div className="h-screen max-w-[1100px] m-auto  flex flex-col items-center justify-start">
@@ -16,7 +51,9 @@ export default function Address() {
         <HeaderOrder title="Selecione um Endereço" link="/cart" />
       </div>
       <div className="w-full flex flex-col items-center justify-center mt-10">
-        <Button disabled={addresses.length >= 3} className="w-4/5 text-orange-500 font-semibold  bg-transparent border-2 border-orange-500 my-4 rounded-md  py-2 px-4 ">
+        <Button
+          disabled={addresses.length >= 3}
+          className="w-4/5 text-orange-500 font-semibold  bg-transparent border-2 border-orange-500 my-4 rounded-md  py-2 px-4 ">
           <NavLink className="flex items-center justify-center gap-2" to="/create-address">
             <Plus />
             <span className="text-base ">Adicionar Endereco</span>
@@ -25,14 +62,14 @@ export default function Address() {
       <div className="w-full flex flex-col items-center justify-center gap-5">
           {addresses.map((address) => (
             <CardAddress
-              neighborhood={address.props.neighborhood}
-              number={address.props.number}
-              street={address.props.street}
-              type={address.props.type}
-              phone={address.props.phone}
-              zipCode={address.props.zipCode}
-              addressId={address.props.id}
-              standard={address.props.standard}
+              neighborhood={address.neighborhood}
+              number={address.number}
+              street={address.street}
+              type={address.type}
+              phone={address.phone}
+              zipCode={address.zipCode}
+              addressId={address.id}
+              standard={address.standard}
             />
           ))}
       </div>
