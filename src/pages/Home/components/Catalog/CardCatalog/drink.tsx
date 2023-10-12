@@ -32,7 +32,7 @@ console.log(catalog, 'catalog');
       quantityProduct
     }
     addProductToCart(drinkToCart)
-    notify()
+    notify('Adicionado ao carrinho')
   }
 
 

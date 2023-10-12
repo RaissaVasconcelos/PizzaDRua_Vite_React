@@ -7,7 +7,7 @@ import pickupOrange from '../../assets/pickup-orange.png'
 import pizza from '../../assets/Vector.svg'
 import pixOrange from '../../assets/pix-orange.svg'
 import { CreditCard, Banknote, Edit } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Summary } from "../cart/components/summary";
 import { Button } from "../../components/ui/button";
 
@@ -43,6 +43,7 @@ export default function Checkout() {
   });
 
   const { currentAddress, productToCart, cartTotalPrice } = ContextApp()
+  const navigate = useNavigate();
 
   const handleFinishOrder = () => {
     const order: OrderProps = {
@@ -56,6 +57,7 @@ export default function Checkout() {
         quantityProduct: item.quantityProduct
       }))
     }
+    navigate('/pix')
   }
 
 
@@ -72,7 +74,7 @@ export default function Checkout() {
             </div>
           ) : (
 
-            <div className="w-10/12 flex items-center justify-between">
+            <div className="w-10/12 flex items-center justify-between mt-5">
               <div className=" flex items-center justify-center gap-5">
                 <img src={pickupOrange} alt="" className="w-11" />
                 <span className="text-gray-500 text-xl font-semibold">Retirada</span>

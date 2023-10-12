@@ -6,7 +6,6 @@ import './statusColor.css'
 import delivey from '../../assets/delivery.png'
 import delivered from '../../assets/delivered.png'
 import whatsapp from '../../assets/whatsapp.svg'
-import { CardAddress } from '../../components/CardAddress'
 import { useEffect, useState } from 'react'
 import { api } from '../../utils/axios'
 import { ChefHat, Package } from 'lucide-react'
@@ -70,15 +69,13 @@ export default function Tracking() {
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className=' flex items-center justify-center gap-3'>
-              <Package size={38} strokeWidth={1}  />
-
+              {status === 'ACCEPTED' ? <Package size={38} strokeWidth={1} className='text-orange-500' /> : <Package size={38} strokeWidth={1} />}
               <span className={`${status === 'ACCEPTED' ? 'text-orange-500' : 'text-gray-500'}`} >Pedido em aceito</span>
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className=' flex items-center justify-center gap-3 my-1'>
-              <ChefHat size={38} strokeWidth={1}  />
+              {status === 'PREPARING' ? <ChefHat size={38} strokeWidth={1} className='text-orange-500' /> : <ChefHat size={38} strokeWidth={1} />}
               <span className={`${status === 'PREPARING' ? 'text-orange-500': 'text-gray-500'}`} >Pedido em producao</span>
-
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className=' flex items-center justify-center gap-3'>
@@ -92,11 +89,8 @@ export default function Tracking() {
             </div>
 
           </main>
-          <div className=' flex items-center justify-center my-10'>
-            <CardAddress />
-          </div>
-
-          <div className='w-full flex flex-col items-center justify-center gap-3 mt-5'>
+         
+          <div className='w-full flex flex-col items-center justify-center gap-3 mt-10'>
             <Button className='w-full bg-gray-200 text-gray-700 hover:bg-gray-400 text-lg'>Cancelar Pedido</Button>
             <Button className='w-full bg-orange-500 text-gray-100 hover:bg-orange-600 text-lg flex gap-4'>
               <img src={whatsapp} className='w-6' alt="" />

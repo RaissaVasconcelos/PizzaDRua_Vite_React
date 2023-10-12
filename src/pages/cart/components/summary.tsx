@@ -22,7 +22,7 @@ export const Summary = ({ tax }: taxProps) => {
         </div>
         <div className="flex items-center justify-between w-full">
           <span>Entrega</span>
-          <span>{tax ? priceFormatter.format(Number(tax)) : <span className="text-orange-500">Gratis</span>}</span>
+          <span>{tax ? priceFormatter.format(Number(tax)) : priceFormatter.format(Number('0.00')) }</span>
         </div>
         <div className="flex items-center justify-between w-full font-bold">
           <span>Total</span>

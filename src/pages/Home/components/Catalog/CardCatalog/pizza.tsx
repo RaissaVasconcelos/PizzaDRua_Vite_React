@@ -31,7 +31,7 @@ export const CardCatalogPizza = (catalog: ProductProps) => {
       quantityProduct
     }
     addProductToCart(productToCart)
-    notify()
+    notify('Adicionado ao carrinho')
   }
 
 

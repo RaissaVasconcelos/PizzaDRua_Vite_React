@@ -1,4 +1,4 @@
-import { api } from '../utils/axios'
+import { api, jsonServer } from '../utils/axios'
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
 import { produce } from "immer";
 import { setCookie, parseCookies } from "nookies";
@@ -8,17 +8,19 @@ interface childrenProps {
 }
 
 export interface AddressProps {
-  type: string
-  street: string
-  number: string
-  standard: boolean,
-  neighborhood: {
-    name: string
-    tax: string
+  props: {
+    type: string
+    street: string
+    number: string
+    standard: boolean,
+    neighborhood: {
+      name: string
+      tax: string
+    }
+    zipCode: string
+    phone: string
+    id: number
   }
-  zipCode: string
-  phone: string
-  id: number
 }
 
 export interface ProductProps {
@@ -50,7 +52,9 @@ type PizzaDRuaContextType = {
   currentAddress: AddressProps | null
   groupOptions: GroupOptions[]
   productToCart: OrdersCartProps[]
+  neighborhoods: any[]
   cartTotalPrice: string
+  isAuthenticated: boolean
   setCartTotalPrice: (price: string) => void
   addProductToCart: (product: OrdersCartProps) => void
   setOnChangeCatalog: (catalog: string) => void
@@ -81,6 +85,7 @@ const filterType = (type: string, arr: ProductProps[]) => {
 export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [flavors, setFlavors] = useState<ProductProps[]>([])
   const [addresses, setAddresses] = useState<AddressProps[]>([])
+  const [neighborhoods, setNeighborhoods] = useState([])
   const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
   const [onChangeCatalog, setOnChangeCatalog] = useState('PIZZA')
   const [cartTotalPrice, setCartTotalPrice] = useState('')
@@ -92,12 +97,13 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }
   )
   const [groupOptions, setGroupOptions] = useState<any[]>([])
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   
 
   const getFlavors = async () => {
 
-    const response = await api.get('/catalog')
+    const response = await jsonServer.get('/catalog')
     const groupData = [
       {
         label: 'TRADITIONAL',
@@ -123,10 +129,14 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     if (!productToCart) {
       return;
     }
-
-    const tax = currentAddress ? currentAddress.neighborhood.tax : '0.00';
+    const data = parseCookies().delivery
+    const methodDelivery = JSON.parse(data)
+    const dataAddressTax = currentAddress ? currentAddress.props.neighborhood.tax : '0.00' 
+    
+    const tax = methodDelivery.deliveryMethod === 'DELIVERY' ? dataAddressTax : '0.00';
     const totalPriceProduct = cartProductsTotalPrice.toFixed(2);
     const totalPrice = (parseFloat(totalPriceProduct) + parseFloat(tax)).toFixed(2);
+    
 
     setCartTotalPrice(totalPrice);
   }, [productToCart, currentAddress])
@@ -166,18 +176,47 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   };
 
   const getAddresses = async () => {
-    const response = await api.get('/address')
-    const standardAddress = response.data.find((element: AddressProps) => element.standard === true)
+    const token = parseCookies().accessToken
+    console.log(token);
+    
+    const response = await api.get('/address', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    const standardAddress = response.data.find((element: AddressProps) => element.props.standard === true)
     setCurrentAddress(standardAddress)
     setAddresses(response.data)
 
   }
 
+ const getNeighborhoods = async  () => {
+   const response = await api.get('/neighborhood')
+   setNeighborhoods(response.data.map((element: any) => {
+     return {
+       label: element.props.name,
+       value: element.props.name
+     }
+   }))
+ }
+
+  useEffect(() => {
+   const token = parseCookies().accessToken
+   if (token) {
+     setIsAuthenticated(true)
+   }else {
+     setIsAuthenticated(false)
+    }
+  }, [])
+
   useEffect(() => {
     getFlavors()
     getAddresses()
+    getNeighborhoods()
   
   }, [])
+
+console.log(addresses);
 
   return (
     <PizzaDRuaContext.Provider value={{
@@ -187,10 +226,10 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       currentAddress,
       groupOptions,
       productToCart,
+      neighborhoods,
       cartProductsTotalPrice,
+      isAuthenticated,
       totalItemsOnCart,
-      productPersonalize,
-      addProductPersonalize,
       setOnChangeCatalog,
       cartTotalPrice,
       setCartTotalPrice,

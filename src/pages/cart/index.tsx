@@ -5,14 +5,17 @@ import { Card } from "../../components/ui/card";
 import { CardProduct } from "./components/card-product";
 import { CardDrink } from "./components/card-drink";
 import { Button } from "../../components/ui/button";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { CardAddress } from "../../components/CardAddress";
 import { ShoppingCart } from "lucide-react";
+import { parseCookies } from "nookies";
 
 export default function Cart() {
 
   const { currentAddress, productToCart } = ContextApp()
-  
+ 
+
+
   return (
     <div className=" max-w-[1100px] m-auto">
       <div className="w-full flex flex-col items-center justify-center mb-10">
@@ -51,7 +54,7 @@ export default function Cart() {
                   />
                 ))}
               </Card>
-              <Summary tax={currentAddress  ? currentAddress.neighborhood.tax : '0.00'} />
+              <Summary tax={currentAddress  ? currentAddress.props.neighborhood.tax : '0.00'} />
             </>
           )
           : (
