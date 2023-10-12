@@ -8,6 +8,7 @@ import { api } from '../../../utils/axios';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
+import { ContextApp } from '../../../context/context-app';
 
 
 
@@ -40,34 +41,6 @@ const addressSchemaBody = z.object({
 
 type AddressSchema = z.infer<typeof addressSchemaBody>
 
-const data = [
-  {
-    value: 'Bairro 1',
-    label: 'Bairro 1',
-    rate: '3',
-  },
-  {
-    value: 'Bairro 2',
-    label: 'Bairro 2',
-    rate: '3',
-  },
-  {
-    value: 'Bairro 3',
-    label: 'Bairro 3',
-    rate: '3',
-  },
-  {
-    value: 'Bairro 4',
-    label: 'Bairro 4',
-    rate: '5',
-  },
-  {
-    value: 'Bairro 5',
-    label: 'Bairro 5',
-    rate: '5',
-  },
-
-]
 
 export default function CreateAddress() {
 
@@ -80,7 +53,7 @@ export default function CreateAddress() {
     resolver: zodResolver(addressSchemaBody),
 
   });
-
+  const {neighborhoods} = ContextApp()
   const navigate = useNavigate()
 
   const handleSubmitForm = async (data: AddressSchema) => {
@@ -113,7 +86,7 @@ export default function CreateAddress() {
             <ReactSelect
               onChange={field.onChange}
               className='w-full'
-              options={data}
+              options={neighborhoods}
               value={field.value}
 
             />

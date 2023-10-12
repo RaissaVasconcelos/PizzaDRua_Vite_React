@@ -39,7 +39,7 @@ export default function SignIn() {
 
       const response = await api.post('/sessions', data)
       const { access_token } = response.data
-      setCookie(undefined, 'access-token', access_token, {
+      setCookie(undefined, 'accessToken', access_token, {
         maxAge: 60 * 60 * 24, // 1 days
       })
 
