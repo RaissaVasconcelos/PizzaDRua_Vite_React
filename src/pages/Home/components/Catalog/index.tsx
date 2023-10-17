@@ -5,7 +5,7 @@ import { ContextApp } from "../../../../context/context-app";
 import { useState } from "react";
 
 export const Catalog = () => {
-  const { flavors, onChangeCatalog } = ContextApp()
+  const { products, onChangeCatalog } = ContextApp()
   const [onChangeType, setOnChangeType] = useState('TRADITIONAL')
 
   return (
@@ -19,28 +19,42 @@ export const Catalog = () => {
                 <h2 onClick={() => setOnChangeType('SPECIAL')} className={`text-start ${onChangeType === 'SPECIAL' ? "text-gray-100 bg-orange-500 p-2 rounded-md" : "text-gray-500"}`}>Especial</h2>
               </div>
               {onChangeType === 'TRADITIONAL' ? (
-                flavors.filter((flavor) => flavor.type === 'TRADITIONAL').map((flavor) => (
+                products.filter(product => 
+                  product.category.name === 'pizza' 
+                  && product.status === 'ACTIVE' 
+                  && product.type === 'TRADITIONAL')
+                  .map((product) => (
                   <CardCatalogPizza
-                    id={flavor.id}
-                    product={flavor.product}
-                    price={flavor.price}
-                    image_url={flavor.image_url}
-                    description={flavor.description}
-                    category={flavor.category}
-                    size={flavor.size}
+                    key={product.id}
+                    id={product.id}
+                    product={product.product}
+                    price={product.price}
+                    image_url={product.image_url}
+                    description={product.description}
+                    category={product.category}
+                    size={product.size}
+                    status={product.status}
+                    type={product.type}  
                   />
                 ))
 
               ) : (
-                flavors.filter((flavor) => flavor.type === 'SPECIAL').map((flavor) => (
+                  products.filter((product) => 
+                    product.status === 'ACTIVE'
+                    && product.category.name === 'pizza'
+                    && product.type === 'SPECIAL')
+                    .map((product) => (
                   <CardCatalogPizza
-                    id={flavor.id}
-                    product={flavor.product}
-                    price={flavor.price}
-                    image_url={flavor.image_url}
-                    description={flavor.description}
-                    category={flavor.category}
-                    size={flavor.size}
+                    key={product.id}
+                    id={product.id}
+                    product={product.product}
+                    price={product.price}
+                    image_url={product.image_url}
+                    description={product.description}
+                    category={product.category}
+                    size={product.size}
+                    status={product.status}
+                      type={product.type}
                   />
                 ))
 
@@ -53,8 +67,9 @@ export const Catalog = () => {
 
           <div className="mb-10 w-full flex flex-col items-center justify-center gap-5">
             <h2 className="text-start w-11/12 font-bold text-gray-500 text-xl my-3">Bebidas</h2>
-            {flavors.filter((flavor) => flavor.category.name === 'drink').map((drink) => (
+            {products.filter((drink) => drink.category.name === 'drink' && drink.status === 'ACTIVE').map((drink) => (
               <CardCatalogDrink
+                key={drink.id}
                 id={drink.id}
                 product={drink.product}
                 price={drink.price}
@@ -62,6 +77,8 @@ export const Catalog = () => {
                 description={drink.description}
                 category={drink.category}
                 size={drink.size}
+                status={drink.status}
+                type={drink.type}
               />
             ))}
           </div>

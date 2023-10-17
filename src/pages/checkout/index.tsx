@@ -57,12 +57,16 @@ export default function Checkout() {
         quantityProduct: item.quantityProduct
       }))
     }
-    navigate('/pix')
+    navigate(`${getPayment.methodPayment === 'PIX' ? '/pix' : '/success'}`, {
+      state: {
+        order
+      }
+    })
   }
 
 
   return (
-    <div className="max-w-[1100px] m-auto  ">
+    <>
       <HeaderOrder link="/payment" title="Revisão do Pedido" />
       <div className="w-full bg-white p-3 flex flex-col items-center justify-center my-5">
         <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500 ">Metodo de Entrega</h2>
@@ -107,7 +111,7 @@ export default function Checkout() {
           </NavLink>
         </div>
       </div>
-      <div className="w-ful flex flex-col items-center justify-center">
+      <div className="w-full flex flex-col items-center justify-center">
         <Summary tax={methodDelivery.deliveryMethod === 'PICKUP' ? '0.00' : currentAddress ? currentAddress.neighborhood.tax : '0.00'} />
       </div>
 
@@ -116,6 +120,6 @@ export default function Checkout() {
         <Button onClick={handleFinishOrder} className="bg-orange-500 hover:bg-orange-600 text-lg flex w-11/12 items-center justify-center">Finalizar Compra</Button>
       </div>
 
-    </div>
+    </>
   )
 }

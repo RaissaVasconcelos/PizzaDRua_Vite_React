@@ -1,14 +1,16 @@
 import { api, jsonServer } from '../utils/axios'
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
 import { produce } from "immer";
-import { setCookie, parseCookies } from "nookies";
+import { setCookie, parseCookies, destroyCookie } from "nookies";
+import jwtDecode from 'jwt-decode';
+import { useNavigate } from 'react-router';
 
 interface childrenProps {
   children: ReactNode
 }
 
 export interface AddressProps {
-  props: {
+  
     type: string
     street: string
     number: string
@@ -20,12 +22,12 @@ export interface AddressProps {
     zipCode: string
     phone: string
     id: number
-  }
+  
 }
 
 export interface ProductProps {
   id: string
-  type?: 'TRADITIONAL' | 'SPECIAL'
+  type: 'TRADITIONAL' | 'SPECIAL'
   image_url: string
   category: {
     name: string
@@ -34,11 +36,17 @@ export interface ProductProps {
   description: string
   size: string
   price: string
+  status: string
   mode?: string
 }
 
 export interface OrdersCartProps extends ProductProps {
   quantityProduct: number;
+}
+
+interface JwtToken {
+  exp: number;
+  // Outros campos do token, se houver
 }
 
 interface GroupOptions {
@@ -47,7 +55,7 @@ interface GroupOptions {
 }
 
 type PizzaDRuaContextType = {
-  flavors: ProductProps[]
+  products: ProductProps[]
   addresses: AddressProps[]
   currentAddress: AddressProps | null
   groupOptions: GroupOptions[]
@@ -83,7 +91,7 @@ const filterType = (type: string, arr: ProductProps[]) => {
 }
 
 export const PizzaDRuaProvider = ({ children }: childrenProps) => {
-  const [flavors, setFlavors] = useState<ProductProps[]>([])
+  const [products, setProducts] = useState<ProductProps[]>([])
   const [addresses, setAddresses] = useState<AddressProps[]>([])
   const [neighborhoods, setNeighborhoods] = useState([])
   const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
@@ -103,7 +111,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
 
   const getFlavors = async () => {
 
-    const response = await jsonServer.get('/catalog')
+    const response = await api.get('/product')
     const groupData = [
       {
         label: 'TRADITIONAL',
@@ -115,7 +123,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       }
     ]
 
-    setFlavors(response.data)
+    setProducts(response.data)
     setGroupOptions(groupData)
   }
 
@@ -131,7 +139,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }
     const data = parseCookies().delivery
     const methodDelivery = JSON.parse(data)
-    const dataAddressTax = currentAddress ? currentAddress.props.neighborhood.tax : '0.00' 
+    const dataAddressTax = currentAddress ? currentAddress.neighborhood.tax : '0.00' 
     
     const tax = methodDelivery.deliveryMethod === 'DELIVERY' ? dataAddressTax : '0.00';
     const totalPriceProduct = cartProductsTotalPrice.toFixed(2);
@@ -177,21 +185,22 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
 
   const getAddresses = async () => {
     const token = parseCookies().accessToken
-    console.log(token);
     
     const response = await api.get('/address', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-    const standardAddress = response.data.find((element: AddressProps) => element.props.standard === true)
+    const standardAddress = response.data.find((element: AddressProps) => element.standard === true)
     setCurrentAddress(standardAddress)
     setAddresses(response.data)
-
+    console.log(response.data);
+    
   }
 
  const getNeighborhoods = async  () => {
    const response = await api.get('/neighborhood')
+   
    setNeighborhoods(response.data.map((element: any) => {
      return {
        label: element.props.name,
@@ -199,6 +208,20 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
      }
    }))
  }
+
+
+
+  const isTokenExpired = () => {
+    const token = parseCookies().accessToken
+    if (!token) return true
+    const decodedToken: JwtToken = jwtDecode(token)
+    const currentTime = Date.now() / 1000
+    if (decodedToken.exp < currentTime) {
+        destroyCookie(null, 'accessToken')
+    }
+  }
+
+  
 
   useEffect(() => {
    const token = parseCookies().accessToken
@@ -213,15 +236,14 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     getFlavors()
     getAddresses()
     getNeighborhoods()
-  
+    isTokenExpired()
   }, [])
 
-console.log(addresses);
 
   return (
     <PizzaDRuaContext.Provider value={{
       addresses,
-      flavors,
+      products,
       onChangeCatalog,
       currentAddress,
       groupOptions,

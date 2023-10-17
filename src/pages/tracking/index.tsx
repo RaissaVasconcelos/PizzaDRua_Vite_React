@@ -31,7 +31,7 @@ export default function Tracking() {
   
 
   return (
-    <div className="max-w-[1100px] m-auto flex flex-col items-center justify-start mb-10">
+    <div className="mb-10">
       <div className='w-11/12 flex flex-col items-center justify-center'>
         <header className='w-full flex items-center  justify-center mt-6 font-semibold text-2xl text-gray-500'>
           <h2>Statos do pedido</h2>
@@ -45,7 +45,7 @@ export default function Tracking() {
               <span className='text-orange-500 text-base bg-orange-100 font-semibold rounded-md p-1'>{status}</span>
             </div>
           </div>
-          <main className='mt-14 flex flex-col items-start  text-gray-500 font-semibold text-lg'>
+          <div className='mt-14 flex flex-col items-start  text-gray-500 font-semibold text-lg'>
             <div className='flex items-center justify-center gap-3'>
               {
                 status === 'WAITING'
@@ -88,7 +88,7 @@ export default function Tracking() {
               <span>Entrega efetuada</span>
             </div>
 
-          </main>
+          </div>
          
           <div className='w-full flex flex-col items-center justify-center gap-3 mt-10'>
             <Button className='w-full bg-gray-200 text-gray-700 hover:bg-gray-400 text-lg'>Cancelar Pedido</Button>

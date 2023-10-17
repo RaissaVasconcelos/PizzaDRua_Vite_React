@@ -1,5 +1,4 @@
-import { RouteProps, redirect, useNavigate } from 'react-router-dom';
-import { parseCookies } from 'nookies';
+import { useNavigate } from 'react-router-dom';
 import { ReactNode } from 'react';
 import { ContextApp } from '../context/context-app';
 
@@ -12,11 +11,12 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   const navigate = useNavigate();
   console.log(isAuthenticated, 'authToken');
 
-  if (isAuthenticated) {
-    return <>{children}</>;
-  } else {
-    return navigate('/sign-in');
+  if (!isAuthenticated) {
+    navigate('/sign-in');
+    return <></>;
   }
+
+  return <>{children}</>;
 
 }
 

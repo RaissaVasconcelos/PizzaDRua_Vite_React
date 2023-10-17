@@ -41,7 +41,7 @@ export default function MethodDelivery() {
   }
 
   return (
-    <div className="max-w-[1100px] m-auto">
+    <>
       <HeaderOrder title="Metodo de entrega" link="/cart" />
       <div className="w-full flex flex-col items-center justify-center my-10">
         <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500">Selecione um metodo de entrega</h2>
@@ -87,6 +87,6 @@ export default function MethodDelivery() {
           </div>
         </form>
       </div>
-    </div>
+    </>
   )
 }

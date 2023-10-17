@@ -4,7 +4,7 @@ import { Button } from '../../components/ui/button'
 
 export default function Success() {
   return (
-    <div className="h-screen max-w-[1100px] m-auto  flex flex-col items-center justify-start">
+    
       <div className='w-full flex flex-col items-center justify-center mt-36'>
           <img src={success} alt="" className='w-60'/>
           <div className='w-10/12 flex flex-col items-center justify-center mt-10 gap-5'>
@@ -16,6 +16,6 @@ export default function Success() {
             </NavLink>
           </div>
       </div>
-    </div>
+    
   )
 }
