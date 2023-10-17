@@ -71,11 +71,11 @@ export default function CreateAddress() {
   }
 
   return (
-    <div className="h-screen max-w-[1100px] m-auto  flex flex-col items-center justify-start">
+    <>
       <h1 className="mt-5 font-semibold text-xl">
         Criar um novo endereço
       </h1>
-      <form onSubmit={handleSubmit(handleSubmitForm)} className="w-3/4 flex flex-col items-start gap-3 justify-start mt-10 mx-5">
+      <form onSubmit={handleSubmit(handleSubmitForm)} className="w-11/12 flex flex-col items-start gap-3 justify-start mt-10 mx-5">
         <h2>Endereço de entrega</h2>
         <Label className='mt-5 text-gray-500'>Bairro</Label>
         <Controller
@@ -167,6 +167,6 @@ export default function CreateAddress() {
         {errors.phone && <p className='text-red-500'>{errors.phone.message}</p>}
         <Button className='w-full mt-4 bg-red-500 hover:bg-red-400' type='submit'>Cadastrar</Button>
       </form>
-    </div>
+    </>
   )
 }

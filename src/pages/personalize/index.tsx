@@ -115,11 +115,11 @@ export default function Personalize() {
   type FlavorSchema = z.infer<typeof flavorSchema>
 
 
-  const { addProductToCart, groupOptions, flavors } = ContextApp();
+  const { addProductToCart, groupOptions, products } = ContextApp();
 
   const [isChecked, setIsChecked] = useState('MEDIUM');
   const [isSelectSpecial, setIsSelectSpecial] = useState(false);
-  const [price, setPrice] = useState('49.99');
+  const [price, setPrice] = useState('00.00');
   // const router = useRouter();
   const animatedComponents = makeAnimated();
 
@@ -145,8 +145,8 @@ export default function Personalize() {
         name: 'pizza',
       },
       description: data.flavor[0].label,
-      image_url: data.flavor[0].image,
-      price,
+      image_url: data.flavor[0]!.image,
+      price, 
       size: data.size,
       product: data.flavor.map((name: any) => {
         return {
@@ -160,7 +160,7 @@ export default function Personalize() {
 
     addProductToCart(product);
     setValue('flavor', []);
-    notify()
+    notify('Produto adicionado ao carrinho', 'bottom');
     
   }
 
@@ -217,18 +217,18 @@ export default function Personalize() {
 
   const handleSelectSize = (size: string) => {
     if (size === 'HALF') {
-      flavors.forEach((flavor) => {
-        if (flavor.type === 'TRADITIONAL') {
-          const flavorPrice = (parseFloat(flavor.price) / 2).toFixed(2);
-          setPrice(flavorPrice);
+      products.forEach((product) => {
+        if (product.type === 'TRADITIONAL') {
+          const productPrice = (parseFloat(product.price) / 2).toFixed(2);
+          setPrice(productPrice);
         }
       })
     } else {
-      flavors.forEach((flavor) => {
-        if (flavor.type === 'TRADITIONAL') {
-          const priceString = (flavor.price).replace(',', '.');
-          const flavorPrice = (parseFloat(priceString)).toFixed(2);
-          setPrice(flavorPrice);
+      products.forEach((products) => {
+        if (products.type === 'TRADITIONAL') {
+          const priceString = (products.price).replace(',', '.');
+          const productsPrice = (parseFloat(priceString)).toFixed(2);
+          setPrice(productsPrice);
 
         }
       })
@@ -236,7 +236,7 @@ export default function Personalize() {
   }
 
   return (
-    <div className="h-screen max-w-[1100px] m-auto flex flex-col items-center justify-start">
+    <>
       <img src={pizza} className='w-full' width={450} height={350} alt='' />
       <div className='flex flex-col items-center mt-4 '>
         <h2 className=' text-gray-700 font-semibold text-xl'>Personalize sua Pizza</h2>
@@ -352,6 +352,6 @@ export default function Personalize() {
         </div>
       </form>
       <ToastContainer />
-    </div>
+    </>
   )
 }

@@ -67,7 +67,7 @@ export default function Page() {
 
 
     return (
-        <main className='mt-32 flex items-center justify-center'>
+        <div className='mt-32 w-11/12 flex items-center justify-center'>
             <form
                 onSubmit={handleSubmit(handleCreateCustomer)}
                 className="bg-white w-11/12 flex flex-col items-center justify-between py-2 rounded-xl"
@@ -147,6 +147,6 @@ export default function Page() {
                     </p>
                 </NavLink>
             </form>
-        </main>
+        </div>
     )
 }

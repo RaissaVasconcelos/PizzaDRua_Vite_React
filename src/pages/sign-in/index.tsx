@@ -63,7 +63,7 @@ export default function SignIn() {
 
 
   return (
-    <main className='mt-40 flex items-center justify-center'>
+    <div className='mt-40 w-11/12 flex items-center justify-center'>
       <form
         onSubmit={handleSubmit(handleSignIn)}
         className="bg-white w-11/12 text-gray-600 flex flex-col items-center justify-between py-2 rounded-xl"
@@ -112,6 +112,6 @@ export default function SignIn() {
           </p>
         </NavLink>
       </form>
-    </main>
+    </div>
   )
 }

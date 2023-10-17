@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+
 import { api } from "../../utils/axios";
 import { ContextApp } from "../../context/context-app";
 import { useEffect, useState } from "react";
@@ -44,11 +44,8 @@ export default function Pix() {
   }, [cartTotalPrice])
 
 
-  console.log(qrCodeData?.imagemQrcode, 'teste');
-
   return (
-    <div className="max-w-[1100px]  m-auto">
-
+    <>
       <div className="w-full px-3 h-72 bg-orange-600 flex  items-start justify-center">
         <h2 className="text-center text-lg mt-10 text-gray-50">Leia ou copie o <span className="font-bold">QR Code Pix</span> e pague utilizando o aplicativo do seu banco.</h2>
         <div className="border-2 border-gray-300 rounded bg-white absolute top-64">
@@ -67,7 +64,7 @@ export default function Pix() {
             </div>
         </div>
       <ToastContainer />
-    </div>
+    </>
   )
 }
 

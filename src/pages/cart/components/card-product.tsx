@@ -1,6 +1,5 @@
 
 import { Trash } from "lucide-react"
-import imageUrl from '../../../assets/pizza.svg'
 import { ContextApp } from "../../../context/context-app"
 import { CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
@@ -10,7 +9,7 @@ import { CartProps } from "../../../@types/interface"
 
 
 
-export const CardProduct = ({ product, price, quantityProduct, id }: CartProps) => {
+export const CardProduct = ({ product, price, quantityProduct, id, image_url }: CartProps) => {
     const { removeProductFromCart } = ContextApp()
     const priceString = price.replace(',', '.')
     const totalPrice = (parseFloat(priceString) * quantityProduct)
@@ -19,10 +18,9 @@ export const CardProduct = ({ product, price, quantityProduct, id }: CartProps) 
         <CardContent className="flex items-center justify-between ">
             <div className="flex items-center justify-center gap-2">
                 <img
-                    className="w-28 rounded h-28"
-                    src={imageUrl}
-                    width={100}
-                    height={150}
+                    className="w-28 rounded object-contain " 
+                    src={image_url}
+                    
                     alt="" />
                 <div className="flex flex-col items-start justify-center">
                     <div className="flex  items-center justify-start gap-2 ">

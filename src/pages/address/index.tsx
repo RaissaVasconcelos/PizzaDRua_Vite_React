@@ -11,7 +11,7 @@ export default function Address() {
   const { addresses } = ContextApp()
 
   return (
-    <div className="h-screen max-w-[1100px] m-auto  flex flex-col items-center justify-start">
+    <>
       <div className="w-full flex flex-col items-start justify-center ">
         <HeaderOrder title="Selecione um Endereço" link="/cart" />
       </div>
@@ -25,14 +25,14 @@ export default function Address() {
       <div className="w-full flex flex-col items-center justify-center gap-5">
           {addresses.map((address) => (
             <CardAddress
-              neighborhood={address.props.neighborhood}
-              number={address.props.number}
-              street={address.props.street}
-              type={address.props.type}
-              phone={address.props.phone}
-              zipCode={address.props.zipCode}
-              addressId={address.props.id}
-              standard={address.props.standard}
+              neighborhood={address.neighborhood}
+              number={address.number}
+              street={address.street}
+              type={address.type}
+              phone={address.phone}
+              zipCode={address.zipCode}
+              addressId={address.id}
+              standard={address.standard}
             />
           ))}
       </div>
@@ -45,6 +45,6 @@ export default function Address() {
         </div>
 
       </div>
-    </div>
+    </>
   )
 }

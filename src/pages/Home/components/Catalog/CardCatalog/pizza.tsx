@@ -31,17 +31,17 @@ export const CardCatalogPizza = (catalog: ProductProps) => {
       quantityProduct
     }
     addProductToCart(productToCart)
-    notify('Adicionado ao carrinho')
+    notify('Adicionado ao carrinho', 'bottom')
   }
 
 
   return (
     <Card className="bg-white border-0  rounded w-11/12 py-2 box-border">
       <CardContent className="w-full flex items-center justify-between gap-2">
-        <div className="w-80">
-          <img className="object-fit w-full" src={image} alt='' />
+        <div className="">
+          <img className="w-72 object-fit  rounded" src={catalog.image_url} alt='' />
         </div>
-        <div className="w-full">
+        <div className="w-full flex flex-col items-start justify-start">
           {catalog.product.map((item) => (<p key={item.name} className="font-bold text-lg text-gray-600">{item.name}</p>))}
           <p className="text-gray-600">{catalog.description}</p>
           <div className="w-full flex items-center justify-between mt-3 ">

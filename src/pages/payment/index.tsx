@@ -40,7 +40,7 @@ export default function Payment() {
   }
 
   return (
-    <div className="max-w-[1100px] m-auto">
+    <>
       <HeaderOrder title="Pagamento" link="/cart" />
       <div className="w-full flex flex-col items-center justify-center my-10">
         <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500">Selecione um metodo de pagamento</h2>
@@ -55,7 +55,7 @@ export default function Payment() {
                   <RadioGroup.Root
                     onValueChange={field.onChange}
                     value={field.value}
-                    className="w-9/12  flex flex-col items-start justify-center gap-5 mt-10 font-semibold"
+                    className="w-11/12  flex flex-col items-start justify-center gap-5 mt-10 font-semibold"
                   >
                     <RadioGroup.Item
                       value="PIX"
@@ -99,6 +99,6 @@ export default function Payment() {
           </div>
         </form>
       </div>
-    </div>
+    </>
   )
 }
