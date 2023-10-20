@@ -8,7 +8,8 @@ import { api } from '../../../utils/axios';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
-import { ContextApp } from '../../../context/context-app';
+import { AddressProps, ContextApp } from '../../../context/context-app';
+import { parseCookies } from 'nookies';
 
 
 
@@ -53,11 +54,13 @@ export default function CreateAddress() {
     resolver: zodResolver(addressSchemaBody),
 
   });
-  const {neighborhoods} = ContextApp()
+  const {neighborhoods, setAddresses, addresses} = ContextApp()
   const navigate = useNavigate()
 
+  
   const handleSubmitForm = async (data: AddressSchema) => {
-    await api.post('/address', {
+    
+   const response = await api.post('/address', {
       neighborhood: data.neighborhood.value,
       number: data.number,
       street: data.street,
@@ -65,8 +68,13 @@ export default function CreateAddress() {
       zipCode: data.zipCode,
       phone: data.phone
 
+    }, 
+    {
+      headers: {
+        Authorization: `Bearer ${parseCookies().accessToken}`
+      }
     })
-
+    
     navigate('/address')
   }
 
@@ -120,9 +128,9 @@ export default function CreateAddress() {
                   onChange={field.onChange}
                   className='w-full'
                   options={[
-                    { value: 'Casa', label: 'Casa' },
-                    { value: 'Trabalho', label: 'Trabalho' },
-                    { value: 'Outro', label: 'Outro' },
+                    { value: 'HOME', label: 'Casa' },
+                    { value: 'WORK', label: 'Trabalho' },
+                    { value: 'OTHER', label: 'Outro' },
                   ]}
                 />
 

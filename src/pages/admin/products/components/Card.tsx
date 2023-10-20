@@ -45,7 +45,8 @@ export const CardProducts = ({product}: CardProductsProps) => {
           <DeleteModal
             openModal={openModalDelete}
             setOpenModal={setOpenModalDelete}
-            url="product"
+            notifyText="Produto excluido com sucesso"  
+            url="/product"
             text="Tem certeza que deseja excluir esse Produto ?"
             id={product.id} />
         </div>
