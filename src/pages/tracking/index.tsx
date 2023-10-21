@@ -1,5 +1,4 @@
 
-import { HeaderOrder } from '../../components/HeaderOrder'
 import { Button } from '../../components/ui/button'
 import pizza from '../../assets/Vector.svg'
 import './statusColor.css'
@@ -12,13 +11,12 @@ import { ChefHat, Package } from 'lucide-react'
 import { ContextApp } from '../../context/context-app'
 import { parseCookies } from 'nookies'
 import { Orders } from '../../@types/interface'
-import socketIo from 'socket.io-client'
+import socket from '../../utils/socketIO'
 
 export default function Tracking() {
-  const {cartTotalPrice} = ContextApp()
+  const { cartTotalPrice } = ContextApp()
   const [status, setStatus] = useState('WAITING')
   
-
     // useEffect(() => {
     //   const socket = socketIo('http://localhost:3001', {
     //     transports: ['websocket']
@@ -44,7 +42,18 @@ export default function Tracking() {
       getOrders()
     }, [])
 
-  
+  useEffect(() => {
+     // evento socket
+    socket.on('statusUpdate', (data: any) => {
+      console.log('evento disparado')
+      console.log('chegando do servidor', data)
+      setStatus(data.status)
+    })
+
+    return () => {
+      socket.disconnect()
+    }
+  }, [status])
 
   return (
     <div className="mb-10 w-full flex items-center justify-center">

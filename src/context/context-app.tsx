@@ -57,6 +57,8 @@ interface GroupOptions {
 type PizzaDRuaContextType = {
   products: ProductProps[]
   addresses: AddressProps[]
+  statusOrder: string
+  setStatusOrder: (status: string) => void
   currentAddress: AddressProps | null
   groupOptions: GroupOptions[]
   productToCart: OrdersCartProps[]
@@ -98,6 +100,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
   const [onChangeCatalog, setOnChangeCatalog] = useState('PIZZA')
   const [cartTotalPrice, setCartTotalPrice] = useState('')
+  const [statusOrder, setStatusOrder] = useState('')
 
   const [productToCart, setProductToCart] = useState<OrdersCartProps[]>(
     () => {
@@ -107,8 +110,6 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   )
   const [groupOptions, setGroupOptions] = useState<any[]>([])
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-
-
 
   const getFlavors = async () => {
 
@@ -147,9 +148,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       const tax = methodDelivery.deliveryMethod === 'DELIVERY' ? dataAddressTax : '0.00';
       const totalPriceProduct = cartProductsTotalPrice.toFixed(2);
       const totalPrice = (parseFloat(totalPriceProduct) + parseFloat(tax)).toFixed(2);
-      setCartTotalPrice(totalPrice);
-      
-      
+      setCartTotalPrice(totalPrice); 
     }
 
   }, [productToCart, currentAddress])
@@ -260,6 +259,8 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       setCartTotalPrice,
       addProductToCart,
       removeProductFromCart,
+      statusOrder,
+      setStatusOrder
     }}>
       {children}
     </PizzaDRuaContext.Provider>
