@@ -16,44 +16,27 @@ import socket from '../../utils/socketIO'
 export default function Tracking() {
   const { cartTotalPrice } = ContextApp()
   const [status, setStatus] = useState('WAITING')
-  
-    // useEffect(() => {
-    //   const socket = socketIo('http://localhost:3001', {
-    //     transports: ['websocket']
-    //   })
-    //   socket.on('orders', () => {
-    //     console.log('nova order criada');
-        
-    //   })
-    // }, [])
 
-    const getOrders = async () => {
-      const token = parseCookies().accessToken
-      const response = await api.get('/order', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      const orderStatus = response.data.find((order: Orders) => order.status !== 'FINISHED' && order.status !== 'CANCELLED')   
+  socket.on('statusUpdate', (data: any) => {
+    console.log('chegando do servidor', data) 
+    setStatus(data[0]?.status)
+  })
 
-    }
-
-    useEffect(() => {
-      getOrders()
-    }, [])
-
-  useEffect(() => {
-     // evento socket
-    socket.on('statusUpdate', (data: any) => {
-      console.log('evento disparado')
-      console.log('chegando do servidor', data)
-      setStatus(data.status)
+  const getOrders = async () => {
+    const token = parseCookies().accessToken
+    const response = await api.get('/order', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     })
 
-    return () => {
-      socket.disconnect()
-    }
-  }, [status])
+    const orderStatus = response.data.orders.find((order: Orders) => order.status !== 'FINISHED' && order.status !== 'CANCELLED')   
+    setStatus(orderStatus.status)
+  }
+
+  useEffect(() => {
+    getOrders()
+  }, [])
 
   return (
     <div className="mb-10 w-full flex items-center justify-center">
@@ -105,14 +88,13 @@ export default function Tracking() {
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className=' flex items-center justify-center gap-3'>
               <img src={delivey} className='w-10' alt="" />
-              <span>Saiu para entrega</span>
+              <span className={`${status === 'DELIVERY' ? 'text-orange-500': 'text-gray-500'}`} >Saiu para entrega</span>
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className='mt-1 flex items-center justify-center gap-3'>
               <img src={delivered} className='w-10' alt="" />
-              <span>Entrega efetuada</span>
+              <span className={`${status === 'FINISHED' ? 'text-orange-500': 'text-gray-500'}`}>Entrega efetuada</span>
             </div>
-
           </div>
          
           <div className='w-full flex flex-col items-center justify-center gap-3 mt-10'>
