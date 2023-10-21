@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ContextApp } from "../../context/context-app";
 import { HeaderOrder } from "../../components/HeaderOrder";
-import { parseCookies } from "nookies";
+import { destroyCookie, parseCookies } from "nookies";
 import { CardAddress } from "../../components/CardAddress";
 import pickupOrange from '../../assets/pickup-orange.png'
 import pizza from '../../assets/Vector.svg'
@@ -10,6 +10,7 @@ import { CreditCard, Banknote, Edit } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Summary } from "../cart/components/summary";
 import { Button } from "../../components/ui/button";
+import { api } from "../../utils/axios";
 
 interface PaymentProps {
   methodPayment: string
@@ -23,11 +24,13 @@ interface OrderProps {
   payment: string
   totalPrice: string
   methodDelivery: string
-  itemsOrder: {
+  status: string  
+  itensOrder: {
     mode?: string,
     size: string,
+    price: string
     product: string[]
-    quantityProduct: number
+    quantity: number
   }[]
 }
 
@@ -44,24 +47,49 @@ export default function Checkout() {
 
   const { currentAddress, productToCart, cartTotalPrice } = ContextApp()
   const navigate = useNavigate();
+  console.log(cartTotalPrice, 'productToCart');
+  
+  const handleFinishOrder = async () => {
+    try {
+      const token = parseCookies().accessToken;
+      if (getPayment.methodPayment === 'PIX') {
+        navigate('/pix')
+      } else {
+        console.log(cartTotalPrice, 'cartTotalPrice');
+        const order: OrderProps = {
+          payment: getPayment.methodPayment,
+          totalPrice: cartTotalPrice,
+          status: 'WAITING',
+          methodDelivery: methodDelivery.deliveryMethod,
+          itensOrder: productToCart.map((item) => ({
+            mode: item.mode,
+            size: item.size,
+            price: item.price,
+            product: item.product.map(item => item.name),
+            quantity: item.quantityProduct
+          }))
+        }
 
-  const handleFinishOrder = () => {
-    const order: OrderProps = {
-      payment: getPayment.methodPayment,
-      totalPrice: cartTotalPrice,
-      methodDelivery: methodDelivery.deliveryMethod,
-      itemsOrder: productToCart.map((item) => ({
-        mode: item.mode,
-        size: item.size,
-        product: item.product.map(item => item.name),
-        quantityProduct: item.quantityProduct
-      }))
-    }
-    navigate(`${getPayment.methodPayment === 'PIX' ? '/pix' : '/success'}`, {
-      state: {
-        order
+        await api.post('/order', order, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+    
+        })        
+        // destroyCookie(null, 'product')
+        // destroyCookie(null, 'payment')
+        // destroyCookie(null, 'delivery')
+        // navigate('/success')
+        console.log(order);
+        
       }
-    })
+      
+    } catch (error) {
+      console.error(error);
+      
+    }
+
+   
   }
 
 

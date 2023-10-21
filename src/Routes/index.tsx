@@ -32,16 +32,16 @@ export const Router = () => {
         <Route path='/sign-up' element={<SignUp />} />
 
         //Rotas protegidas que requerem autenticação
-        <Route path='/payment' element={<Payment />} />
-        <Route path='/checkout' element={<Checkout />} />
-        <Route path='/personalize' element={<Personalize />} />
-        <Route path='/address' element={<Address />} />
+        <Route path='/payment' element={<ProtectedRoute><Payment /></ProtectedRoute>} />
+        <Route path='/checkout' element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+        <Route path='/personalize' element={<ProtectedRoute><Personalize /></ProtectedRoute>} />
+        <Route path='/address' element={<ProtectedRoute><Address /></ProtectedRoute>} />
         <Route path='/cart' element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-        <Route path='/create-address' element={<CreateAddress />} />
-        <Route path='/pix' element={<Pix />} />
-        <Route path='/success' element={<Success />} />
-        <Route path='/tracking' element={<Tracking />} />
-        <Route path='/delivery' element={<MethodDelivery />} />
+        <Route path='/create-address' element={<ProtectedRoute><CreateAddress /></ProtectedRoute>} />
+        <Route path='/pix' element={<ProtectedRoute><Pix /></ProtectedRoute>} />
+        <Route path='/success' element={<ProtectedRoute><Success /></ProtectedRoute>} />
+        <Route path='/tracking' element={<ProtectedRoute><Tracking /></ProtectedRoute>} />
+        <Route path='/delivery' element={<ProtectedRoute><MethodDelivery /></ProtectedRoute>} />
       </Route>
 
       //Rotas admin

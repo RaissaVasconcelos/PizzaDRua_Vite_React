@@ -48,6 +48,8 @@ type ProductSchema = z.infer<typeof productSchemaBody>
 export default function ModalRegisterProduct() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [errorFieldImage, setErrorFieldImage] = useState<string | null>(null);
+  
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {

@@ -10,31 +10,47 @@ import { useEffect, useState } from 'react'
 import { api } from '../../utils/axios'
 import { ChefHat, Package } from 'lucide-react'
 import { ContextApp } from '../../context/context-app'
-
+import { parseCookies } from 'nookies'
+import { Orders } from '../../@types/interface'
+import socketIo from 'socket.io-client'
 
 export default function Tracking() {
   const {cartTotalPrice} = ContextApp()
   const [status, setStatus] = useState('WAITING')
   
 
+    // useEffect(() => {
+    //   const socket = socketIo('http://localhost:3001', {
+    //     transports: ['websocket']
+    //   })
+    //   socket.on('orders', () => {
+    //     console.log('nova order criada');
+        
+    //   })
+    // }, [])
 
-  const getStatus = async () => {
-    const response = await api.get('/orders')
-    const statusData = response.data.filter((item: string) => item !== 'FINISHED')
-    setStatus(statusData[0].status)
-  }
+    const getOrders = async () => {
+      const token = parseCookies().accessToken
+      const response = await api.get('/order', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      const orderStatus = response.data.find((order: Orders) => order.status !== 'FINISHED' && order.status !== 'CANCELLED')   
 
-  useEffect(() => {
-    getStatus()
-  }, [])
+    }
+
+    useEffect(() => {
+      getOrders()
+    }, [])
 
   
 
   return (
-    <div className="mb-10">
+    <div className="mb-10 w-full flex items-center justify-center">
       <div className='w-11/12 flex flex-col items-center justify-center'>
         <header className='w-full flex items-center  justify-center mt-6 font-semibold text-2xl text-gray-500'>
-          <h2>Statos do pedido</h2>
+          <h2>Status do pedido</h2>
         </header>
         <div className='w-full'>
           <div className='w-full mt-10 flex items-center justify-start gap-5 p-2 bg-white'>

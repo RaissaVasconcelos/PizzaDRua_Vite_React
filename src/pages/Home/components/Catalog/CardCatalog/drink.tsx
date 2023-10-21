@@ -12,7 +12,6 @@ import { priceFormatter } from "../../../../../utils/formatter"
 
 export const CardCatalogDrink = (catalog: ProductProps) => {
 
-console.log(catalog, 'catalog');
 
   const [quantityProduct, setQuantityProduct] = useState(1);
   const { addProductToCart } = ContextApp()

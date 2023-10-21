@@ -25,21 +25,15 @@ export default function Address() {
       <div className="w-full flex flex-col items-center justify-center gap-5">
           {addresses.map((address) => (
             <CardAddress
-              neighborhood={address.neighborhood}
-              number={address.number}
-              street={address.street}
-              type={address.type}
-              phone={address.phone}
-              zipCode={address.zipCode}
-              addressId={address.id}
-              standard={address.standard}
+              address={address}
+              key={address.id}
             />
           ))}
       </div>
 
 
-        <div className="my-10 w-full flex items-center justify-center ">
-          <Button type="submit" className="w-11/12 font-semibold  bg-orange-500 text-gray-100 text-lg haver:bg-orange-600 ">
+        <div className=" absolute  rounded-tl py-10 rounded-tr bottom-0 bg-white w-full flex items-center justify-center ">
+          <Button type="submit" className="w-11/12 relative h-12 font-semibold  bg-orange-500 text-gray-100 text-xl haver:bg-orange-600 ">
             Continuar
           </Button>
         </div>

@@ -4,9 +4,6 @@ import { GlassWater, Pizza }from 'lucide-react'
 export const Navigate = () => {
   const { onChangeCatalog, setOnChangeCatalog } = ContextApp()
 
-  console.log(onChangeCatalog);
-  
-
   return (
     <nav className="flex items-center scrollbar justify-center gap-6 mt-8 w-full text-orange-500">
       <button

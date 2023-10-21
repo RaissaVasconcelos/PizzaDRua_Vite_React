@@ -2,6 +2,7 @@
 import { ShoppingBag, User } from "lucide-react";
 import { ContextApp } from "../context/context-app";
 import { NavLink } from 'react-router-dom'
+import { Profile } from "./Profile";
 export const Header = () => {
 
   const { totalItemsOnCart } = ContextApp()
@@ -19,9 +20,7 @@ export const Header = () => {
             {totalItemsOnCart && <span className="text-orange-100 bg-orange-500 px-2 -ml-5 mb-8 rounded-full">{totalItemsOnCart}</span>}
           </div>
         </a>
-        <NavLink to="/sign-in" className="bg-gray-500 hover:bg-gray-700 text-white font-bold p-4 rounded-full">
-          <User />
-        </NavLink>
+        <Profile />      
       </div>
     </header>
   )
