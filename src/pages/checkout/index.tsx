@@ -11,6 +11,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Summary } from "../cart/components/summary";
 import { Button } from "../../components/ui/button";
 
+
 interface PaymentProps {
   methodPayment: string
 }
@@ -72,12 +73,10 @@ export default function Checkout() {
         <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500 ">Metodo de Entrega</h2>
         {methodDelivery.deliveryMethod === 'DELIVERY'
           ? (
-
             <div className="w-full bg-white  flex items-center justify-center">
               <CardAddress />
             </div>
           ) : (
-
             <div className="w-10/12 flex items-center justify-between mt-5">
               <div className=" flex items-center justify-center gap-5">
                 <img src={pickupOrange} alt="" className="w-11" />

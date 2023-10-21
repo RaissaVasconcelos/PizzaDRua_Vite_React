@@ -1,5 +1,4 @@
 
-import { HeaderOrder } from '../../components/HeaderOrder'
 import { Button } from '../../components/ui/button'
 import pizza from '../../assets/Vector.svg'
 import './statusColor.css'
@@ -10,13 +9,13 @@ import { useEffect, useState } from 'react'
 import { api } from '../../utils/axios'
 import { ChefHat, Package } from 'lucide-react'
 import { ContextApp } from '../../context/context-app'
+import io from 'socket.io-client';
 
+const socket = io('http://localhost:3001');
 
 export default function Tracking() {
-  const {cartTotalPrice} = ContextApp()
+  const { cartTotalPrice } = ContextApp()
   const [status, setStatus] = useState('WAITING')
-  
-
 
   const getStatus = async () => {
     const response = await api.get('/orders')
@@ -28,13 +27,24 @@ export default function Tracking() {
     getStatus()
   }, [])
 
-  
+  useEffect(() => {
+     // evento socket
+    socket.on('statusUpdate', (data: any) => {
+      console.log('evento disparado')
+      console.log('chegando do servidor', data)
+      setStatus(data.status)
+    })
+
+    return () => {
+      socket.disconnect()
+    }
+  }, [status])
 
   return (
     <div className="mb-10">
       <div className='w-11/12 flex flex-col items-center justify-center'>
         <header className='w-full flex items-center  justify-center mt-6 font-semibold text-2xl text-gray-500'>
-          <h2>Statos do pedido</h2>
+          <h2>Status do pedido</h2>
         </header>
         <div className='w-full'>
           <div className='w-full mt-10 flex items-center justify-start gap-5 p-2 bg-white'>

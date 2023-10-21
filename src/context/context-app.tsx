@@ -3,7 +3,6 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { produce } from "immer";
 import { setCookie, parseCookies, destroyCookie } from "nookies";
 import jwtDecode from 'jwt-decode';
-import { useNavigate } from 'react-router';
 
 interface childrenProps {
   children: ReactNode
@@ -57,6 +56,8 @@ interface GroupOptions {
 type PizzaDRuaContextType = {
   products: ProductProps[]
   addresses: AddressProps[]
+  statusOrder: string
+  setStatusOrder: (status: string) => void
   currentAddress: AddressProps | null
   groupOptions: GroupOptions[]
   productToCart: OrdersCartProps[]
@@ -97,6 +98,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
   const [onChangeCatalog, setOnChangeCatalog] = useState('PIZZA')
   const [cartTotalPrice, setCartTotalPrice] = useState('')
+  const [statusOrder, setStatusOrder] = useState('')
 
   const [productToCart, setProductToCart] = useState<OrdersCartProps[]>(
     () => {
@@ -134,19 +136,16 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }, 0);
 
   useEffect(() => {
-    if (!productToCart) {
-      return;
-    }
-    const data = parseCookies().delivery
-    const methodDelivery = JSON.parse(data)
-    const dataAddressTax = currentAddress ? currentAddress.neighborhood.tax : '0.00' 
-    
-    const tax = methodDelivery.deliveryMethod === 'DELIVERY' ? dataAddressTax : '0.00';
-    const totalPriceProduct = cartProductsTotalPrice.toFixed(2);
-    const totalPrice = (parseFloat(totalPriceProduct) + parseFloat(tax)).toFixed(2);
-    
+    if (parseCookies().delivery) {
+      const data = parseCookies().delivery
+      const methodDelivery = JSON.parse(data)
+      const dataAddressTax = currentAddress ? currentAddress.neighborhood.tax : '0.00'
 
-    setCartTotalPrice(totalPrice);
+      const tax = methodDelivery.deliveryMethod === 'DELIVERY' ? dataAddressTax : '0.00';
+      const totalPriceProduct = cartProductsTotalPrice.toFixed(2);
+      const totalPrice = (parseFloat(totalPriceProduct) + parseFloat(tax)).toFixed(2);
+      setCartTotalPrice(totalPrice);
+    }
   }, [productToCart, currentAddress])
 
 
@@ -221,8 +220,6 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }
   }
 
-  
-
   useEffect(() => {
    const token = parseCookies().accessToken
    if (token) {
@@ -255,9 +252,10 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       setOnChangeCatalog,
       cartTotalPrice,
       setCartTotalPrice,
-
       addProductToCart,
       removeProductFromCart,
+      statusOrder,
+      setStatusOrder
     }}>
       {children}
     </PizzaDRuaContext.Provider>

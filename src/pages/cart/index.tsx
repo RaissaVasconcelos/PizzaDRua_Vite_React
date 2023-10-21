@@ -14,8 +14,6 @@ export default function Cart() {
 
   const { currentAddress, productToCart } = ContextApp()
 
-
-
   return (
 
     <div className="w-full flex flex-col items-center justify-center mb-10">
