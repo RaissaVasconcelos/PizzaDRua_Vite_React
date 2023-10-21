@@ -81,17 +81,18 @@ export interface ColourOption {
 }
 interface ProductProps {
   id: string
-  type?: 'TRADITIONAL' | 'SPECIAL'
+  type: 'TRADITIONAL' | 'SPECIAL'
   image_url?: string
   category: {
     name: string
   }
   product: { name: string }[]
   description: string
-  size: string
+  size: 'ENTIRE' | 'HALF'
   mode?: string  
   price: string
   quantityProduct: number
+  status: string
 }
 
 export default function Personalize() {
@@ -104,7 +105,7 @@ export default function Personalize() {
 
   })
   const customizeSchemaBody = z.object({
-    size: z.enum(['MEDIUM', 'HALF']),
+    size: z.enum(['ENTIRE', 'HALF']),
     finalPrice: z.string().optional(),
     flavor: z.array(flavorSchema).refine(flavors => flavors.length > 0, {
       message: 'Selecione pelo menos um sabor',
@@ -117,7 +118,7 @@ export default function Personalize() {
 
   const { addProductToCart, groupOptions, products } = ContextApp();
 
-  const [isChecked, setIsChecked] = useState('MEDIUM');
+  const [isChecked, setIsChecked] = useState('ENTIRE');
   const [isSelectSpecial, setIsSelectSpecial] = useState(false);
   const [price, setPrice] = useState('00.00');
   // const router = useRouter();
@@ -131,7 +132,7 @@ export default function Personalize() {
   } = useForm<CustomizeSchema>({
     resolver: zodResolver(customizeSchemaBody),
     defaultValues: {
-      size: 'MEDIUM',
+      size: 'ENTIRE',
       flavor: [],
     }
   });
@@ -145,7 +146,7 @@ export default function Personalize() {
         name: 'pizza',
       },
       description: data.flavor[0].label,
-      image_url: data.flavor[0]!.image,
+      image_url: data.flavor[0].image,
       price, 
       size: data.size,
       product: data.flavor.map((name: any) => {
@@ -154,7 +155,8 @@ export default function Personalize() {
         }}),
       type: isSelectSpecial ? 'SPECIAL' : 'TRADITIONAL',
       mode: 'MIXED',
-      quantityProduct: 1   
+      quantityProduct: 1,
+      status: 'WAITING'   
 
     }
 
@@ -255,16 +257,16 @@ export default function Personalize() {
                   className="flex items-center justify-center gap-5 py-5"
                 >
                   <RadioGroup.Item
-                    value="MEDIUM"
+                    value="ENTIRE"
 
                     onClick={() => {
-                      setIsChecked('MEDIUM'),
+                      setIsChecked('ENTIRE'),
                         setValue('flavor', [])
-                      handleSelectSize('MEDIUM')
+                      handleSelectSize('ENTIRE')
                     }}
-                    className={`${isChecked === 'MEDIUM' ? 'bg-orange-500' : 'bg-[#f9f9f9]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
+                    className={`${isChecked === 'ENTIRE' ? 'bg-orange-500' : 'bg-[#f9f9f9]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
                   >
-                    {isChecked === 'MEDIUM' ? <img src={pizzaWhite} width={60} height={60} alt='' /> : <img src={pizzaImg} width={60} height={60} alt='' />}
+                    {isChecked === 'ENTIRE' ? <img src={pizzaWhite} width={60} height={60} alt='' /> : <img src={pizzaImg} width={60} height={60} alt='' />}
                   </RadioGroup.Item>
                   <RadioGroup.Item
                     onClick={() => {
@@ -275,7 +277,7 @@ export default function Personalize() {
                     className={`${isChecked === 'HALF' ? 'bg-orange-500' : 'bg-[#f9f9f9]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
                     value="HALF"
                   >
-                    {isChecked === 'MEDIUM' ? <img src={half} width={60} height={60} alt='' /> : <img src={halfWhite} width={60} height={60} alt='' />}
+                    {isChecked === 'ENTIRE' ? <img src={half} width={60} height={60} alt='' /> : <img src={halfWhite} width={60} height={60} alt='' />}
 
                   </RadioGroup.Item>
                 </RadioGroup.Root>
@@ -285,7 +287,7 @@ export default function Personalize() {
           <div className='h-[2px] bg-blue-500 mx-2'></div>
           <div className='mx-2 p-2 text-gray-500 font-semibold'>
             {
-              isChecked === 'MEDIUM'
+              isChecked === 'ENTIRE'
                 ? <p>Pizza de 40 centimetros, com 12 fatias</p>
                 : <p>Metade, 20 centimetros, com 6 fatias </p>
             }
@@ -299,7 +301,7 @@ export default function Personalize() {
               name="flavor"
               rules={{ required: true }}
               render={({ field }) => (
-                isChecked === 'MEDIUM' ? (
+                isChecked === 'ENTIRE' ? (
                   <Select
                     onChange={(selectedOptions: any) => {
                       field.onChange(selectedOptions); // Atualiza o campo "flavor" com as opções selecionadas
@@ -335,7 +337,7 @@ export default function Personalize() {
               <p className="border-2 border-yellow-500 bg-yellow-100 p-2 rounded-md text-yellow-500 font-semibold mt-4 flex gap-2 "><AlertCircle className='text-yellow-500' /> Sabor especial selecionado.</p>
             )}
             <div className='h-[2px] bg-blue-500 mt-4' />
-            <p className='text-gray-500 mt-2 font-semibold'>{isChecked === 'MEDIUM' ? 'Voce pode selecionar até 3 sabores' : 'Voce pode selecionar até 2 sabores'}</p>
+            <p className='text-gray-500 mt-2 font-semibold'>{isChecked === 'ENTIRE' ? 'Voce pode selecionar até 3 sabores' : 'Voce pode selecionar até 2 sabores'}</p>
           </div>
         </div>
         <div className='bg-white  m-5 flex items-center justify-between gap-3 p-5'>

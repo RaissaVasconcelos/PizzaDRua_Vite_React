@@ -14,7 +14,7 @@
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "TRADITIONAL",
-      "size":"MEDIUM",
+      "size": "MEDIUM",
       "price": "49.99"
     },
     {
@@ -31,7 +31,7 @@
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "TRADITIONAL",
-"size": "MEDIUM",
+      "size": "MEDIUM",
       "price": "49.99"
     },
     {
@@ -48,7 +48,7 @@
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "TRADITIONAL",
-"size": "MEDIUM",
+      "size": "MEDIUM",
       "price": "49.99"
     },
     {
@@ -65,7 +65,7 @@
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "SPECIAL",
-"size": "MEDIUM",
+      "size": "MEDIUM",
       "price": "59.99"
     },
     {
@@ -82,7 +82,7 @@
       "image_url": "../../../../../public/Vector.svg",
       "description": "Pizza de Quatro Queijos com borda tradicional",
       "type": "SPECIAL",
-"size": "MEDIUM",
+      "size": "MEDIUM",
       "price": "59.99"
     },
     {
@@ -116,7 +116,7 @@
       "image_url": "/public/coca-cola.png",
       "description": "Coca 1L pet",
       "type": null,
-"size": "1 LT",
+      "size": "1 LT",
       "price": "10,00"
     },
     {
@@ -154,7 +154,7 @@
     {
       "neighborhood": {
         "name": "Bairro02",
-"tax": "5.00"
+        "tax": "5.00"
       },
       "number": "1234",
       "standard": false,
@@ -179,16 +179,110 @@
   ],
   "orders": [
     {
-      "id": 1,
-      "status": "ACCEPTED"
+      "id": "1",
+      "status": "IN_PRODUCTION",
+      "totalPrice": "114.00",
+      "methodDelivery": "DELIVERY",
+      "payment": "PIX",
+      "itemsOrder": [
+        {
+          "id": "1",
+          "mode": "SIMPLE",
+          "product": [
+            "Calabresa"
+          ],
+          "size": "MEDIUM",
+          "price": "49.99",
+          "quantity": 2
+        },
+        {
+          "id": "3",
+          "mode": "MIXED",
+          "product": [
+            "Bacon, Frongo Catupiry"
+          ],
+          "size": "MEDIUM",
+          "price": "49.99",
+          "quantity": 1
+        },
+        {
+          "id": "2",
+          "mode": "MIXED",
+          "product": [
+            "Calabresa",
+            "Mussarela"
+          ],
+          "size": "MEDIUM",
+          "price": "59.99",
+          "quantity": 1
+        }
+      ],
+      "neighborhood": {
+        "id": "1",
+        "name": "Bairro 01",
+        "tax": "5.00"
+      },
+      "customer": {
+        "id": "1",
+        "name": "Hudson Felipe",
+        "email": "hudson@email.com",
+        "phone": "9999999999"
+      },
+      "address": {
+        "type": "Casa",
+        "street": "Rua amaral celio",
+        "number": "0000",
+        "phone": "9999999999",
+        "zipCode": "66666666"
+      }
     },
     {
-      "id": 2,
-      "status": "FINISHED"
-    },
-    {
-      "id": 3,
-      "status": "FINISHED"
+      "id": "2",
+      "status": "DELIVERED",
+      "totalPrice": "90.00",
+      "methodDelivery": "DELIVERY",
+      "payment": "PIX",
+      "neighborhood": {
+        "id": "2",
+        "name": "Bairro 02",
+        "tax": "6.00"
+      },
+      "customer": {
+        "id": "1",
+        "name": "Felix Felipe",
+        "email": "felixn@email.com",
+        "phone": "9999999999"
+      },
+      "itemsOrder": [
+        {
+          "id": "1",
+          "mode": "SIMPLE",
+          "product": [
+            "Bacon"
+          ],
+          "size": "MEDIUM",
+          "price": "49.99",
+          "quantity": 1
+        },
+        {
+          "id": "2",
+          "mode": "MIXED",
+          "product": [
+            "Calabresa",
+            "Frango"
+          ],
+          "size": "MEDIUM",
+          "price": "59.99",
+          "quantity": 1
+        }
+      ],
+      "address": {
+        "type": "Casa",
+        "street": "Rua Joao celio",
+        "number": "7777",
+        "phone": "9999999999",
+        "zipCode": "66666666"
+      }
     }
   ]
 }

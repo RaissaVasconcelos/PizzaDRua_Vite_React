@@ -9,23 +9,38 @@ import { useEffect, useState } from 'react'
 import { api } from '../../utils/axios'
 import { ChefHat, Package } from 'lucide-react'
 import { ContextApp } from '../../context/context-app'
-import io from 'socket.io-client';
-
-const socket = io('http://localhost:3001');
+import { parseCookies } from 'nookies'
+import { Orders } from '../../@types/interface'
+import socket from '../../utils/socketIO'
 
 export default function Tracking() {
   const { cartTotalPrice } = ContextApp()
   const [status, setStatus] = useState('WAITING')
+  
+    // useEffect(() => {
+    //   const socket = socketIo('http://localhost:3001', {
+    //     transports: ['websocket']
+    //   })
+    //   socket.on('orders', () => {
+    //     console.log('nova order criada');
+        
+    //   })
+    // }, [])
 
-  const getStatus = async () => {
-    const response = await api.get('/orders')
-    const statusData = response.data.filter((item: string) => item !== 'FINISHED')
-    setStatus(statusData[0].status)
-  }
+    const getOrders = async () => {
+      const token = parseCookies().accessToken
+      const response = await api.get('/order', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      const orderStatus = response.data.find((order: Orders) => order.status !== 'FINISHED' && order.status !== 'CANCELLED')   
 
-  useEffect(() => {
-    getStatus()
-  }, [])
+    }
+
+    useEffect(() => {
+      getOrders()
+    }, [])
 
   useEffect(() => {
      // evento socket
@@ -41,7 +56,7 @@ export default function Tracking() {
   }, [status])
 
   return (
-    <div className="mb-10">
+    <div className="mb-10 w-full flex items-center justify-center">
       <div className='w-11/12 flex flex-col items-center justify-center'>
         <header className='w-full flex items-center  justify-center mt-6 font-semibold text-2xl text-gray-500'>
           <h2>Status do pedido</h2>

@@ -24,6 +24,9 @@ export default function Neighborhoods() {
 useEffect(() => {
   getNeighborhoods()
 },[])
+
+ console.log(neighborhoods, 'neighborhoods');
+  
   return (
    
       <div className="w-11/12 overflow-auto mt-8 flex flex-col items-center justify-center">
@@ -58,12 +61,14 @@ useEffect(() => {
             </tr>
           </thead>
           <tbody className="flex-col items-center justify-center gap-2 text-gray-200">
-          {neighborhoods?.map((item) => (
-            <TrTable 
-              id={item.id} 
-              name={item.name} 
-              tax={item.tax}/>
-            ))}
+          {neighborhoods && 
+            neighborhoods.map((item) => (
+              <TrTable
+                id={item.id}
+                name={item.name}
+                tax={item.tax} />
+            ))
+          }
           </tbody>
         </table>
       </div>

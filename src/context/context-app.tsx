@@ -1,4 +1,4 @@
-import { api, jsonServer } from '../utils/axios'
+import { api } from '../utils/axios'
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
 import { produce } from "immer";
 import { setCookie, parseCookies, destroyCookie } from "nookies";
@@ -9,25 +9,26 @@ interface childrenProps {
 }
 
 export interface AddressProps {
-  
-    type: string
-    street: string
-    number: string
-    standard: boolean,
-    neighborhood: {
-      name: string
-      tax: string
-    }
-    zipCode: string
-    phone: string
-    id: number
-  
+  customerId: string
+  type: "HOME" | "WORK" | "OTHER"
+  street: string
+  number: string
+  standard: boolean,
+  neighborhood: {
+    id: string
+    name: string
+    tax: string
+  }
+  zipCode: string
+  phone: string
+  id: string
+
 }
 
 export interface ProductProps {
   id: string
   type: 'TRADITIONAL' | 'SPECIAL'
-  image_url: string
+  image_url?: string
   category: {
     name: string
   }
@@ -65,6 +66,7 @@ type PizzaDRuaContextType = {
   cartTotalPrice: string
   isAuthenticated: boolean
   setCartTotalPrice: (price: string) => void
+  setAddresses:(Address: AddressProps[]) => void
   addProductToCart: (product: OrdersCartProps) => void
   setOnChangeCatalog: (catalog: string) => void
   removeProductFromCart: (productId: string) => void
@@ -109,8 +111,6 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [groupOptions, setGroupOptions] = useState<any[]>([])
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  
-
   const getFlavors = async () => {
 
     const response = await api.get('/product')
@@ -129,13 +129,17 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     setGroupOptions(groupData)
   }
 
-    const cartProductsTotalPrice = productToCart.reduce((acc, item) => {
-      const priceString = item.price.replace(',', '.');
-      const price = parseFloat(priceString);
-      return acc + price * item.quantityProduct;
-    }, 0);
+  const cartProductsTotalPrice = productToCart.reduce((acc, item) => {
+    const priceString = item.price.replace(',', '.');
+    const price = parseFloat(priceString);
+    return acc + price * item.quantityProduct;
+  }, 0);
 
   useEffect(() => {
+    if (!productToCart) {
+      return;
+    }
+
     if (parseCookies().delivery) {
       const data = parseCookies().delivery
       const methodDelivery = JSON.parse(data)
@@ -144,12 +148,13 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       const tax = methodDelivery.deliveryMethod === 'DELIVERY' ? dataAddressTax : '0.00';
       const totalPriceProduct = cartProductsTotalPrice.toFixed(2);
       const totalPrice = (parseFloat(totalPriceProduct) + parseFloat(tax)).toFixed(2);
-      setCartTotalPrice(totalPrice);
+      setCartTotalPrice(totalPrice); 
     }
+
   }, [productToCart, currentAddress])
 
 
-  
+
   const totalItemsOnCart = (productToCart.length)
 
   const addProductToCart = (product: OrdersCartProps) => {
@@ -184,7 +189,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
 
   const getAddresses = async () => {
     const token = parseCookies().accessToken
-    
+
     const response = await api.get('/address', {
       headers: {
         Authorization: `Bearer ${token}`
@@ -193,20 +198,20 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     const standardAddress = response.data.find((element: AddressProps) => element.standard === true)
     setCurrentAddress(standardAddress)
     setAddresses(response.data)
-    console.log(response.data);
     
   }
 
- const getNeighborhoods = async  () => {
-   const response = await api.get('/neighborhood')
-   
-   setNeighborhoods(response.data.map((element: any) => {
-     return {
-       label: element.props.name,
-       value: element.props.name
-     }
-   }))
- }
+  const getNeighborhoods = async () => {
+    const response = await api.get('/neighborhood')
+
+    setNeighborhoods(response.data.map((element: any) => {
+      return {
+        label: element.name,
+        value: element.name,
+        id: element.id
+      }
+    }))
+  }
 
 
 
@@ -216,16 +221,16 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     const decodedToken: JwtToken = jwtDecode(token)
     const currentTime = Date.now() / 1000
     if (decodedToken.exp < currentTime) {
-        destroyCookie(null, 'accessToken')
+      destroyCookie(null, 'accessToken')
     }
   }
 
   useEffect(() => {
-   const token = parseCookies().accessToken
-   if (token) {
-     setIsAuthenticated(true)
-   }else {
-     setIsAuthenticated(false)
+    const token = parseCookies().accessToken
+    if (token) {
+      setIsAuthenticated(true)
+    } else {
+      setIsAuthenticated(false)
     }
   }, [])
 
@@ -235,8 +240,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     getNeighborhoods()
     isTokenExpired()
   }, [])
-
-
+ 
   return (
     <PizzaDRuaContext.Provider value={{
       addresses,
@@ -249,6 +253,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       cartProductsTotalPrice,
       isAuthenticated,
       totalItemsOnCart,
+      setAddresses,
       setOnChangeCatalog,
       cartTotalPrice,
       setCartTotalPrice,
