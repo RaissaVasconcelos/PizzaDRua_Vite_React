@@ -4,7 +4,9 @@ import { ContextApp } from "../../context/context-app";
 import { useEffect, useState } from "react";
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Countdown } from "./components/Countdown";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 import { Copy } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import { notify } from "../../utils/toast";
@@ -39,8 +41,32 @@ export default function Pix() {
     setQrCodeData(response.data)
 
   }
+
+  const navigate = useNavigate()
+
+  const onConfirmationPix = async () => {
+    const response = await api.get('/pix')
+   if (response.status === 200) {
+    toast.success('Pix recebido com sucesso', {
+      position: "bottom-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
+   }
+    
+   
+
+    navigate('/success')
+  }
+
   useEffect(() => {
     handleQRcodePix()
+    onConfirmationPix()
   }, [cartTotalPrice])
 
 
@@ -59,7 +85,7 @@ export default function Pix() {
             </div>
             <div className="mt-10">
                 <CopyToClipboard text={qrCodeData?.qrcode ? qrCodeData.qrcode : ''}>
-                  <button onClick={() => notify('Codigo copiado com sucesso')} className="bg-orange-500 p-4 rounded text-gray-100 flex items-center gap-2 hover:bg-orange-600 ">Capia codigo <Copy/> </button>
+                  <button onClick={() => notify('Codigo copiado com sucesso', 'bottom')} className="bg-orange-500 p-4 rounded text-gray-100 flex items-center gap-2 hover:bg-orange-600 ">Capia codigo <Copy/> </button>
                 </CopyToClipboard>
             </div>
         </div>

@@ -9,13 +9,10 @@ interface ProtectedRouteProps {
 function ProtectedRoute({ children }: ProtectedRouteProps) {
   const {isAuthenticated} = ContextApp()
   const navigate = useNavigate();
-  console.log(isAuthenticated, 'authToken');
-
   if (!isAuthenticated) {
     navigate('/sign-in');
-    return <></>;
+    return;
   }
-
   return <>{children}</>;
 
 }

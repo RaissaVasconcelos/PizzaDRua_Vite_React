@@ -3,6 +3,9 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { produce } from "immer";
 import { setCookie, parseCookies, destroyCookie } from "nookies";
 import jwtDecode from 'jwt-decode';
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import { app } from '../services/firebaseConfig';
+
 
 interface childrenProps {
   children: ReactNode
@@ -54,20 +57,25 @@ interface GroupOptions {
   options: ProductProps[]
 }
 
+const provider = new GoogleAuthProvider();
+const auth = getAuth(app);
+
 type PizzaDRuaContextType = {
   products: ProductProps[]
   addresses: AddressProps[]
+  customer: any
+  isAuthenticated: boolean
   currentAddress: AddressProps | null
   groupOptions: GroupOptions[]
   productToCart: OrdersCartProps[]
   neighborhoods: any[]
   cartTotalPrice: string
-  isAuthenticated: boolean
   setCartTotalPrice: (price: string) => void
-  setAddresses:(Address: AddressProps[]) => void
+  setAddresses: (Address: AddressProps[]) => void
   addProductToCart: (product: OrdersCartProps) => void
   setOnChangeCatalog: (catalog: string) => void
   removeProductFromCart: (productId: string) => void
+  handleSignInGoogle: () => void
   onChangeCatalog: string
   cartProductsTotalPrice: number
   totalItemsOnCart: number
@@ -98,7 +106,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
   const [onChangeCatalog, setOnChangeCatalog] = useState('PIZZA')
   const [cartTotalPrice, setCartTotalPrice] = useState('')
-
+  const [customer, setCustomer] = useState<any>(null)
   const [productToCart, setProductToCart] = useState<OrdersCartProps[]>(
     () => {
       const storagedCart = parseCookies().product
@@ -106,10 +114,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }
   )
   const [groupOptions, setGroupOptions] = useState<any[]>([])
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-
-
-
+  
   const getFlavors = async () => {
 
     const response = await api.get('/product')
@@ -148,8 +153,8 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       const totalPriceProduct = cartProductsTotalPrice.toFixed(2);
       const totalPrice = (parseFloat(totalPriceProduct) + parseFloat(tax)).toFixed(2);
       setCartTotalPrice(totalPrice);
-      
-      
+
+
     }
 
   }, [productToCart, currentAddress])
@@ -199,7 +204,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     const standardAddress = response.data.find((element: AddressProps) => element.standard === true)
     setCurrentAddress(standardAddress)
     setAddresses(response.data)
-    
+
   }
 
   const getNeighborhoods = async () => {
@@ -214,34 +219,41 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }))
   }
 
+  const handleSignInGoogle = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential?.accessToken;
+        const user = result.user;
+        setCustomer(user)
+        setCookie(undefined, 'accessToken', JSON.stringify(token))
+        setCookie(undefined, 'customer', JSON.stringify(user))
 
+      }).catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        const email = error.customData.email;
+        const credential = GoogleAuthProvider.credentialFromError(error);
+      });
+  }
 
-  const isTokenExpired = () => {
+  const loadCookiesAuth = () => {
     const token = parseCookies().accessToken
-    if (!token) return true
-    const decodedToken: JwtToken = jwtDecode(token)
-    const currentTime = Date.now() / 1000
-    if (decodedToken.exp < currentTime) {
-      destroyCookie(null, 'accessToken')
+    const customer = parseCookies().customer
+    if (token && customer) {
+      setCustomer(JSON.parse(customer))  
     }
   }
 
-  useEffect(() => {
-    const token = parseCookies().accessToken
-    if (token) {
-      setIsAuthenticated(true)
-    } else {
-      setIsAuthenticated(false)
-    }
-  }, [])
+
 
   useEffect(() => {
     getFlavors()
     getAddresses()
     getNeighborhoods()
-    isTokenExpired()
+    loadCookiesAuth()
   }, [])
- 
+
   return (
     <PizzaDRuaContext.Provider value={{
       addresses,
@@ -250,12 +262,14 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       currentAddress,
       groupOptions,
       productToCart,
+      customer,
+      isAuthenticated: !!parseCookies().accessToken,
       neighborhoods,
       cartProductsTotalPrice,
-      isAuthenticated,
       totalItemsOnCart,
       setAddresses,
       setOnChangeCatalog,
+      handleSignInGoogle,
       cartTotalPrice,
       setCartTotalPrice,
       addProductToCart,

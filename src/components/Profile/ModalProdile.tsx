@@ -1,8 +1,10 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { Mail, Phone, MapPin , X, ExternalLink, StickyNote } from 'lucide-react'
+import { Mail, Phone, MapPin , X, ExternalLink, StickyNote, User } from 'lucide-react'
+import { ContextApp } from '../../context/context-app'
 
 
 export const ModalProfile = () => {
+  const { customer } = ContextApp()
   return (
     <Dialog.Portal>
       <Dialog.Overlay className=" fixed w-screen h-screen inset-0 bg-gray-900/[.6]" />
@@ -16,18 +18,25 @@ export const ModalProfile = () => {
             Perfil
           </h2>
           <button className="flex items-center justify-start gap-4 hover:bg-gray-200 w-full  rounded-md">
-            <img
-              className="rounded-full bg-black w-12 h-12 object-fill"
-              src="https://images.unsplash.com/photo-1693854317580-1f4e46e7f846?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
-              alt=""
-            />
-            <span className="text-gray-500 font-light text-xl">
-              Hudson felipe
-            </span>
+            {customer ? (
+              <img src={customer.photoURL} className='rounded-full w-14' alt="" />
+            ) : (
+              <a href='/sign-in' className="bg-gray-500 hover:bg-gray-700 text-white font-bold p-4 rounded-full">
+                <User />
+              </a>
+            )}
+            {customer && (
+              <span className="text-gray-600 font-semibold text-base">
+                {customer.displayName}
+              </span>
+            )}
           </button>
           <div className='flex items-center justify-start gap-4'>
             <Mail size={24}/>
-            <span className='text-gray-500 text-lg'>pZyvZ@example.com</span>
+            {customer && (
+              <span className='text-gray-500 text-lg'>{customer.email}</span>
+            )}
+            
           </div>
           <div className='flex items-center justify-start gap-4'>
             <Phone size={24} />

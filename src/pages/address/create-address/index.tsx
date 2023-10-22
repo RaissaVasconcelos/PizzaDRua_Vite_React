@@ -8,7 +8,7 @@ import { api } from '../../../utils/axios';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
-import { AddressProps, ContextApp } from '../../../context/context-app';
+import { ContextApp } from '../../../context/context-app';
 import { parseCookies } from 'nookies';
 
 

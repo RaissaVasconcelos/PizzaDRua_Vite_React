@@ -2,20 +2,37 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { User, UserCircle, XCircle } from 'lucide-react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { ModalProfile } from './ModalProdile'
-
+import { ContextApp } from '../../context/context-app'
+import { destroyCookie } from 'nookies'
+import { useNavigate } from 'react-router-dom' 
 
 
 export const Profile = () => {
+  const { isAuthenticated, customer } = ContextApp()
+  const navigate = useNavigate()
+  const signOut = () => {
+    destroyCookie(undefined, 'accessToken')
+    destroyCookie(undefined, 'customer')
+    navigate('/')
+  }
+
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <button className="IconButton" aria-label="Customise options">
-          <div  className="bg-gray-500 hover:bg-gray-700 text-white font-bold p-4 rounded-full">
-            <User />
-          </div>
-        </button>
-      </DropdownMenu.Trigger>
-
+      {isAuthenticated ? (
+        <DropdownMenu.Trigger >
+          {customer ? (
+            <img src={customer.photoURL} className='rounded-full w-14' alt="" />
+          ) : (
+            <a href='/sign-in' className="bg-gray-500 hover:bg-gray-700 text-white font-bold p-4 rounded-full">
+              <User />
+            </a>
+          )}
+        </DropdownMenu.Trigger>
+      ) : (
+        <a href='/sign-in' className="bg-gray-500 hover:bg-gray-700 text-white font-bold p-4 rounded-full">
+          <User />
+        </a>
+      )}
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           align="end"
@@ -23,12 +40,19 @@ export const Profile = () => {
         >
           <DropdownMenu.Item className="cursor-pointer ">
             <div className="flex items-center justify-start gap-4">
-              <div className="bg-gray-500 hover:bg-gray-700 text-white font-bold p-4 rounded-full">
-                <User />
-              </div>
-              <span className="text-gray-600 font-semibold text-base hover:text-purple-300">
-                Hudson Felipe
-              </span>
+              {customer ? (
+                <img src={customer.photoURL} className='rounded-full w-14' alt="" />
+              ) : (
+                <a href='/sign-in' className="bg-gray-500 hover:bg-gray-700 text-white font-bold p-4 rounded-full">
+                  <User />
+                </a>
+              )}
+              {customer && (
+                <span className="text-gray-600 font-semibold text-base hover:text-purple-300">
+                  {customer.displayName}
+                </span>
+              )}
+              
             </div>
           </DropdownMenu.Item>
 
@@ -47,9 +71,9 @@ export const Profile = () => {
           <DropdownMenu.Item className="cursor-pointer">
             <div className="flex items-center justify-start gap-4  ">
               <XCircle className="text-orange-500 w-8" />
-              <span className="text-gray-600 font-semibold text-base hover:text-purple-300">
+              <button onClick={() => signOut()} className="text-gray-600 font-semibold text-base hover:text-purple-300">
                 Sair da plataforma
-              </span>
+              </button>
             </div>
           </DropdownMenu.Item>
           <DropdownMenu.Item className="cursor-pointer">
