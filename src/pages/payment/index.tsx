@@ -6,7 +6,7 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 import { useState } from "react";
 import pix from '../../assets/pix.svg'
 import pixOrange from '../../assets/pix-orange.svg'
-import { Banknote, CreditCard } from "lucide-react";
+import { AlertCircle, Banknote, CreditCard } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { setCookie } from "nookies";
 import { useNavigate } from 'react-router-dom';
@@ -77,6 +77,7 @@ export default function Payment() {
                       <CreditCard size={38} strokeWidth={1} className="font-light" />
                       <h3>CARTAO DE CREDITO</h3>
                     </RadioGroup.Item>
+                    
                     <div className="w-10/12 h-[2px] bg-gray-400" />
                     <RadioGroup.Item
                       value="MONEY"
@@ -86,7 +87,12 @@ export default function Payment() {
                       <Banknote size={38} strokeWidth={1} />
                       <h3>DINHEIRO</h3>
                     </RadioGroup.Item>
-
+                    {(isCheckedPayment === 'MONEY' || isCheckedPayment === 'CARD') && (
+                      <p className="border-2 border-yellow-500 bg-yellow-50 p-2 rounded-md text-yellow-500 font-semibold mt-4 flex items-center gap-2 ">
+                        <AlertCircle size={25} className='text-yellow-500' /> 
+                        O pagamento será processado no ato da entrega
+                      </p>
+                    )}
                   </RadioGroup.Root>
                 )
               }}

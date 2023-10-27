@@ -4,10 +4,12 @@ import { NavLink } from "react-router-dom";
 import { ContextApp } from "../context/context-app";
 import { Button } from "./ui/button";
 
+interface CardAddressProps {
+  textLink:string
+}
 
 
-
-export const CardAddress = () => {
+export const CardAddress = ({textLink}: CardAddressProps) => {
   const { currentAddress} = ContextApp()
 
   return (
@@ -16,10 +18,10 @@ export const CardAddress = () => {
         <div className="w-11/12  flex bg-white  rounded flex-col items-center justify-center p-4">
           <header className="flex items-center justify-between w-full">
             <div className="flex items-center justify-between gap-2 text-orange-500">
-              {currentAddress.type === "Casa" ? <Home size={20} /> : currentAddress.type === "Trabalho" ? <Building2 size={18} /> : <MapPin />}
+              {currentAddress.type === "HOME" ? <Home size={20} /> : currentAddress.type === "WORK" ? <Building2 size={18} /> : <MapPin />}
               <span>{currentAddress.type}</span>
             </div>
-            <NavLink to="/address">
+            <NavLink to={textLink}>
               <Edit size={24} className="text-gray-500" />
             </NavLink>
           </header>

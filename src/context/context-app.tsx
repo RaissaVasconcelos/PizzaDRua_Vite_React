@@ -57,6 +57,13 @@ interface GroupOptions {
   options: ProductProps[]
 }
 
+interface CustomerProps {
+  uid: string
+  displayName: string
+  email: string
+  photoURL: string
+}
+
 const provider = new GoogleAuthProvider();
 const auth = getAuth(app);
 
@@ -65,12 +72,12 @@ type PizzaDRuaContextType = {
   addresses: AddressProps[]
   customer: any
   isAuthenticated: boolean
+  statusOrder: string
+  setStatusOrder: (status: string) => void
   currentAddress: AddressProps | null
   groupOptions: GroupOptions[]
   productToCart: OrdersCartProps[]
   neighborhoods: any[]
-  cartTotalPrice: string
-  setCartTotalPrice: (price: string) => void
   setAddresses: (Address: AddressProps[]) => void
   addProductToCart: (product: OrdersCartProps) => void
   setOnChangeCatalog: (catalog: string) => void
@@ -105,8 +112,9 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [neighborhoods, setNeighborhoods] = useState([])
   const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
   const [onChangeCatalog, setOnChangeCatalog] = useState('PIZZA')
-  const [cartTotalPrice, setCartTotalPrice] = useState('')
-  const [customer, setCustomer] = useState<any>(null)
+  const [customer, setCustomer] = useState<any>()
+  const [statusOrder, setStatusOrder] = useState('')
+
   const [productToCart, setProductToCart] = useState<OrdersCartProps[]>(
     () => {
       const storagedCart = parseCookies().product
@@ -114,7 +122,8 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }
   )
   const [groupOptions, setGroupOptions] = useState<any[]>([])
-  
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
   const getFlavors = async () => {
 
     const response = await api.get('/product')
@@ -138,28 +147,6 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     const price = parseFloat(priceString);
     return acc + price * item.quantityProduct;
   }, 0);
-
-  useEffect(() => {
-    if (!productToCart) {
-      return;
-    }
-
-    if (parseCookies().delivery) {
-      const data = parseCookies().delivery
-      const methodDelivery = JSON.parse(data)
-      const dataAddressTax = currentAddress ? currentAddress.neighborhood.tax : '0.00'
-
-      const tax = methodDelivery.deliveryMethod === 'DELIVERY' ? dataAddressTax : '0.00';
-      const totalPriceProduct = cartProductsTotalPrice.toFixed(2);
-      const totalPrice = (parseFloat(totalPriceProduct) + parseFloat(tax)).toFixed(2);
-      setCartTotalPrice(totalPrice);
-
-
-    }
-
-  }, [productToCart, currentAddress])
-
-
 
   const totalItemsOnCart = (productToCart.length)
 
@@ -219,15 +206,16 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }))
   }
 
-  const handleSignInGoogle = () => {
+  const handleSignInGoogle = async () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
         const user = result.user;
-        setCustomer(user)
-        setCookie(undefined, 'accessToken', JSON.stringify(token))
+        user.getIdToken().then((token) => {
+          setCookie(undefined, 'accessToken', JSON.stringify(token))
+        }) 
         setCookie(undefined, 'customer', JSON.stringify(user))
+        setCustomer(user)
 
       }).catch((error) => {
         const errorCode = error.code;
@@ -235,6 +223,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
         const email = error.customData.email;
         const credential = GoogleAuthProvider.credentialFromError(error);
       });
+  
   }
 
   const loadCookiesAuth = () => {
@@ -254,6 +243,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     loadCookiesAuth()
   }, [])
 
+  
   return (
     <PizzaDRuaContext.Provider value={{
       addresses,
@@ -270,10 +260,10 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       setAddresses,
       setOnChangeCatalog,
       handleSignInGoogle,
-      cartTotalPrice,
-      setCartTotalPrice,
       addProductToCart,
       removeProductFromCart,
+      statusOrder,
+      setStatusOrder
     }}>
       {children}
     </PizzaDRuaContext.Provider>

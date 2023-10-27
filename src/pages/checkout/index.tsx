@@ -12,6 +12,7 @@ import { Summary } from "../cart/components/summary";
 import { Button } from "../../components/ui/button";
 import { api } from "../../utils/axios";
 
+
 interface PaymentProps {
   methodPayment: string
 }
@@ -24,7 +25,7 @@ interface OrderProps {
   payment: string
   totalPrice: string
   methodDelivery: string
-  status: string  
+  status: string
   itensOrder: {
     mode?: string,
     size: string,
@@ -45,25 +46,30 @@ export default function Checkout() {
     return storaged ? JSON.parse(storaged) : []
   });
 
-  const { currentAddress, productToCart, cartTotalPrice } = ContextApp()
+  const { addresses, productToCart, cartProductsTotalPrice } = ContextApp()
+  const currentAddress = addresses.find((address) => address.standard === true )
+  const totalPriceProduct = parseFloat(String(cartProductsTotalPrice)); // Converta para número
+  const tax = currentAddress ? parseFloat(currentAddress.neighborhood.tax) : 0; // Converta para número
+  const totalPrice = (totalPriceProduct + (methodDelivery.deliveryMethod === 'DELIVERY' ? tax : 0)).toFixed(2); // Realize os cálculos como números
+  console.log(totalPrice, 'cartTotalPrice');
+
   const navigate = useNavigate();
-  console.log(cartTotalPrice, 'productToCart');
-  
+
   const handleFinishOrder = async () => {
     try {
       const token = parseCookies().accessToken;
       if (getPayment.methodPayment === 'PIX') {
         navigate('/pix')
       } else {
-        console.log(cartTotalPrice, 'cartTotalPrice');
         const order: OrderProps = {
           payment: getPayment.methodPayment,
-          totalPrice: cartTotalPrice,
+          totalPrice: totalPrice,
           status: 'WAITING',
           methodDelivery: methodDelivery.deliveryMethod,
           itensOrder: productToCart.map((item) => ({
             mode: item.mode,
             size: item.size,
+            image_url: item.image_url,
             price: item.price,
             product: item.product.map(item => item.name),
             quantity: item.quantityProduct
@@ -74,24 +80,18 @@ export default function Checkout() {
           headers: {
             Authorization: `Bearer ${token}`
           }
-    
-        })        
-        // destroyCookie(null, 'product')
-        // destroyCookie(null, 'payment')
-        // destroyCookie(null, 'delivery')
-        // navigate('/success')
-        console.log(order);
-        
+        })
+        destroyCookie(null, 'product')
+        destroyCookie(null, 'payment')
+        destroyCookie(null, 'delivery')
+        navigate('/success')
       }
-      
+
     } catch (error) {
       console.error(error);
-      
+
     }
-
-   
   }
-
 
   return (
     <>
@@ -100,12 +100,10 @@ export default function Checkout() {
         <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500 ">Metodo de Entrega</h2>
         {methodDelivery.deliveryMethod === 'DELIVERY'
           ? (
-
             <div className="w-full bg-white  flex items-center justify-center">
-              <CardAddress />
+              <CardAddress textLink="/delivery" />
             </div>
           ) : (
-
             <div className="w-10/12 flex items-center justify-between mt-5">
               <div className=" flex items-center justify-center gap-5">
                 <img src={pickupOrange} alt="" className="w-11" />

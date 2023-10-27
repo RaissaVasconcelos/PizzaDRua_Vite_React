@@ -2,13 +2,13 @@ import { Minus, Plus } from "lucide-react";
 import { FormEvent } from "react";
 
 interface InputAmountProductsProps {
-    quantityCoffee: number;
+    quantityProduct: number;
     onIncrease: (event: FormEvent) => void
     onDecrease: (event: FormEvent) => void
 }
 
 export const InputQuantityProductInCart = ({
-    quantityCoffee,
+    quantityProduct,
     onIncrease,
     onDecrease,
 }: InputAmountProductsProps) => {
@@ -18,11 +18,11 @@ export const InputQuantityProductInCart = ({
             <button
                 className="text-blue-500 text-xl py-[.5rem]"
                 onClick={onIncrease}
-                disabled={quantityCoffee < 1}
+                disabled={quantityProduct < 1}
             >
                 <Minus size={24} />
             </button>
-            <span className="text-xl">{quantityCoffee}</span>
+            <span className="text-xl">{quantityProduct}</span>
             <button
                 className="text-blue-500 text-xl"
                 onClick={onDecrease}

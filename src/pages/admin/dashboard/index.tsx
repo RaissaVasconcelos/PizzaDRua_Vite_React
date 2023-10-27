@@ -1,48 +1,65 @@
 import { ClipboardCheck, ChefHat, CheckCheck, Truck } from "lucide-react";
-import io from "socket.io-client";
 import { Card } from "./components/Card";
 import { api, jsonServer } from "../../../utils/axios";
 import { useEffect, useState } from "react";
 import { Orders } from "../../../@types/interface";
 import { parseCookies } from "nookies";
+import socket from "../../../utils/socketIO";
 
 export default function Dashboard() {
   const [orders, setOrders] = useState<Orders[]>([])
-  const socket = io('http://localhost:3001', {
-  transports: ['websocket'],  
-  });
-
+  
 
   useEffect(() => {
-    socket.on('orders', (updatedOrders) => {
-      setOrders(updatedOrders);
-      console.log('orders', updatedOrders);
+    // Adicione o ouvinte do evento 'newOrder' ao montar o componente
+    socket.on('newOrder', (data: any) => {
+      if (data) {
+        const existsOrder = orders.some((order) => order.id === data.id);
+        if (!existsOrder) {
+          // Atualize o estado diretamente adicionando a nova ordem
+          setOrders((prevState) => [...prevState, data]);
+        }
+      }
     });
 
+    // Remova o ouvinte quando o componente for desmontado para evitar vazamento de memória
     return () => {
-      socket.off('orders');
+      socket.off('newOrder');
     };
   }, []);
+
+  socket.on('statusUpdate', (data: any) => {
+    if (data.length > 0) {
+      setOrders((prevState) => prevState.map((order) => (
+          {...order, status: data[0].status}
+      )));
+    }
+  })
+
 
   const onChangeOrderStatus = (orderId: string, status: string) => {
     setOrders((prevState) => prevState.map((order) => (
       order.id === orderId ? { ...order, status } : order
     )))
 
-  // const getOrders = async () => {
-  //   const token = parseCookies().accessToken 
-  //   const response = await api.get('/order', {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`
-  //     }  
-  // }) 
-  //   setOrders(response.data) 
-
-  // }
   }
-  // useEffect(() => {
-  //   getOrders()
-  // }, [])
+const onCancelOrder = (orderId:string) => {
+  setOrders((prevState) => prevState.filter((order) => order.id !== orderId))
+}
+
+  const getOrders = async () => {
+    const token = parseCookies().accessToken 
+    const response = await api.get('/order', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }  
+  }) 
+    setOrders(response.data) 
+
+  }
+  useEffect(() => {
+    getOrders()
+  }, [])
 
   return (
     <div className="w-11/12 mx-3 flex mt-10 items-start justify-center gap-5">
@@ -56,6 +73,7 @@ export default function Dashboard() {
             key={order.id}
             order={order}
             onChangeOrderStatus={onChangeOrderStatus}
+            onCancelOrder={onCancelOrder}
           />
         ))}
       </div>
@@ -69,6 +87,7 @@ export default function Dashboard() {
             key={order.id}
             order={order}
             onChangeOrderStatus={onChangeOrderStatus}
+            onCancelOrder={onCancelOrder}
           />
         ))}
       </div>
@@ -82,6 +101,7 @@ export default function Dashboard() {
             key={order.id}
             order={order}
             onChangeOrderStatus={onChangeOrderStatus}
+            onCancelOrder={onCancelOrder}
           />
         ))}
       </div>
@@ -95,6 +115,7 @@ export default function Dashboard() {
             key={order.id}
             order={order}
             onChangeOrderStatus={onChangeOrderStatus}
+            onCancelOrder={onCancelOrder}
           />
         ))}
       </div>

@@ -1,42 +1,78 @@
-
-import { HeaderOrder } from '../../components/HeaderOrder'
 import { Button } from '../../components/ui/button'
 import pizza from '../../assets/Vector.svg'
 import './statusColor.css'
 import delivey from '../../assets/delivery.png'
-import delivered from '../../assets/delivered.png'
+import deliveyOrange from '../../assets/delivery-orange.png'
+import pickup from '../../assets/delivered.png'
+import pickupOrange from '../../assets/pickup-orange.png'
 import whatsapp from '../../assets/whatsapp.svg'
 import { useEffect, useState } from 'react'
 import { api } from '../../utils/axios'
 import { CheckCheck, ChefHat, ClipboardCheck, Package } from 'lucide-react'
-import { ContextApp } from '../../context/context-app'
-import { parseCookies } from 'nookies'
 import { Orders } from '../../@types/interface'
-import socketIo from 'socket.io-client'
+import socket from '../../utils/socketIO'
+import { useParams } from 'react-router-dom'
 import { priceFormatter } from '../../utils/formatter'
+import { ModalHandleCancelOrder } from './components/ModalHandleCancelOrder'
+import { notify } from '../../utils/toast'
+import { parseCookies } from 'nookies'
 
 export default function Tracking() {
-  const {cartTotalPrice} = ContextApp()
-  const [orderStatus, setOrderStatus] = useState<Orders>()
-  
-    const getOrders = async () => {
-      const token = parseCookies().accessToken
-      const response = await api.get('/order', {
-        headers: {
-          Authorization: `Bearer ${token}`
+  const [status, setStatus] = useState('WAITING')
+  const [order, setOrder] = useState<Orders>()
+  const [openModalCancelOrder, setOpenModalCancelOrder] = useState(false)
+
+
+  socket.on('statusUpdate', (data: any) => {
+    console.log(data[0].status);
+      
+    setStatus(data[0]?.status)
+    
+  })
+
+  const { id } = useParams();
+  const getOrder = async () => {
+    const response = await api.get(`/order/${id}`)
+    
+    setOrder(response.data.order)
+    setStatus(response.data.order.status)
+
+  }
+
+  const handleFinishedOrder = async () => {
+    await api.put('/order', {
+      id: order?.id,
+      totalPrice: order?.totalPrice,
+      customerId: order?.customer.id,
+      payment: order?.payment,
+      methodDelivery: order?.methodDelivery,
+      status: 'FINISHED',
+      itensOrder: [
+        {
+          product: order?.itensOrder[0].product,
+          quantity: order?.itensOrder[0].quantity,
+          size: order?.itensOrder[0].size,
+          mode: order?.itensOrder[0].mode,
+          price: order?.itensOrder[0].price
         }
-      })
-      const orderStatus = response.data.filter((order: Orders) => order.status !== 'FINISHED')   
-      setOrderStatus(orderStatus[0])
-    }
+      ]
+    },
+      {
+        headers: {
+          Authorization: `Bearer ${parseCookies().accessToken}`
+        }
+      }
+    )
+    notify(`Entrega efetuada com sucesso`, 'bottom')
 
-    useEffect(() => {
-      getOrders()
-    }, [])
 
-  console.log(orderStatus);
+  }
+
+
+  useEffect(() => {
+    getOrder()
+  }, [])
   
-
   return (
     <div className="mb-10 w-full flex items-center justify-center">
       <div className='w-11/12 flex flex-col items-center justify-center'>
@@ -48,68 +84,83 @@ export default function Tracking() {
             <img src={pizza} alt="" />
             <div className='flex flex-col items-start gap-2 text-gray-500 font-semibold text-lg'>
               <span >Seus pedidos</span>
-              <span className='font-bold'>{priceFormatter.format(Number(orderStatus?.totalPrice))}</span>
-              <span className='text-orange-500 text-base bg-orange-100 font-semibold rounded-md p-1'>
-                {orderStatus?.status === 'WAITING' && 'Aguardando'}
-                {orderStatus?.status === 'ACCEPTED' && 'Aceito'}
-                {orderStatus?.status === 'PREPARING' && 'Preparando'}
-                {orderStatus?.status === 'DELIVERY' && 'Entrega'}
-                {orderStatus?.status === 'FINISHED' && 'Entregue'}
+              <span className='font-bold'>{priceFormatter.format(Number(order?.totalPrice))}</span>
+              <span className={`${status === 'CANCELED' ? 'text-red-500 bg-red-100' : 'text-orange-500 bg-orange-100'}  text-base  font-semibold rounded-md p-1`}>
+                {status === 'WAITING' && 'AGUARDE'}
+                {status === 'ACCEPTED' && 'ACEITO'}
+                {status === 'PREPARING' && 'PREPARANDO'}
+                {status === 'DELIVERY' && 'SAIU PARA ENTREGA'}
+                {status === 'FINISHED' && 'ENTREGUE'}
+                {status === 'CANCELED' && 'CANCELADO'}
               </span>
             </div>
           </div>
           <div className='mt-14 flex flex-col items-start  text-gray-500 font-semibold text-lg'>
             <div className='flex items-center justify-center gap-3'>
               {
-                orderStatus?.status === 'WAITING'
+                status === 'WAITING'
                   ? (
-                    <ClipboardCheck size={38} strokeWidth={1} className="text-orange-500" />
+                    <ClipboardCheck
+                      size={38}
+                      strokeWidth={1}
+                      className={` text-orange-500`}
+                    />
                   )
                   : (
-                    <ClipboardCheck size={38} strokeWidth={1} className={`text-gray-500`} /> 
-                   
+                    <ClipboardCheck
+                      size={38}
+                      strokeWidth={1}
+                      className={`text-gray-500`}
+                    />
                   )
               }
 
-              <span className={`${ orderStatus?.status === "WAITING" ? 'text-orange-500' : 'text-gray-500'}`}>Aguadando recebimento</span>
+              <span className={`${status === "WAITING" ? 'text-orange-500' : 'text-gray-500'}`}>Aguardando recebimento</span>
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className=' flex items-center justify-center gap-3'>
-              { orderStatus?.status === 'ACCEPTED' 
-                ? <CheckCheck size={38} strokeWidth={1} className="text-orange-500" /> 
-                : <CheckCheck size={38} strokeWidth={1} />}
-              <span className={`${ orderStatus?.status === 'ACCEPTED' ? 'text-orange-500' : 'text-gray-500'}`} >Pedido em aceito</span>
+              {status === 'ACCEPTED' ? <CheckCheck size={38} strokeWidth={1} className='text-orange-500' /> : <CheckCheck size={38} strokeWidth={1} />}
+              <span className={`${status === 'ACCEPTED' ? 'text-orange-500' : 'text-gray-500'}`} >Pedido em aceito</span>
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className=' flex items-center justify-center gap-3 my-1'>
-              { orderStatus?.status === 'PREPARING' 
-                ? <ChefHat size={38} strokeWidth={1} className='text-orange-500' /> 
-                : <ChefHat size={38} strokeWidth={1} />
-              }
-              <span className={`${ orderStatus?.status === 'PREPARING' ? 'text-orange-500': 'text-gray-500'}`} >Pedido em producao</span>
+              {status === 'PREPARING' ? <ChefHat size={38} strokeWidth={1} className='text-orange-500' /> : <ChefHat size={38} strokeWidth={1} />}
+              <span className={`${status === 'PREPARING' ? 'text-orange-500' : 'text-gray-500'}`} >Pedido em producao</span>
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className=' flex items-center justify-center gap-3'>
-              <img src={delivey} className='w-10' alt="" />
-              <span>Saiu para entrega</span>
+              {status === 'DELIVERY' ? <img src={deliveyOrange} className='w-10' alt="" /> : <img src={delivey} className='w-10' alt="" />}
+              <span className={`${status === 'DELIVERY' ? 'text-orange-500' : 'text-gray-500'}`} >Saiu para entrega</span>
             </div>
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className='mt-1 flex items-center justify-center gap-3'>
-              <img src={delivered} className='w-10' alt="" />
-              <span>Entrega efetuada</span>
+              {status === 'FINISHED' ? <img src={pickupOrange} className='w-10' alt="" /> : <img src={pickup} className='w-10' alt="" />}
+              <span className={`${status === 'FINISHED' ? 'text-orange-500' : 'text-gray-500'}`}>Entrega efetuada</span>
             </div>
-
           </div>
-         
-          <div className='w-full flex flex-col items-center justify-center gap-3 mt-10'>
-            {orderStatus?.status === 'PREPARING' ? (
-              <div>Avaliar Produto</div>  
-            ):(
-            <Button className='w-full bg-gray-200 text-gray-700 hover:bg-gray-400 text-lg'>Cancelar Pedido</Button>
-              
+
+          <div className='w-full flex flex-col  items-center justify-center gap-2 mt-10'>
+            {(status === 'WAITING' || status === 'ACCEPTED' ) && (
+              <Button onClick={() => setOpenModalCancelOrder(true)} className='w-full  bg-gray-200 text-gray-700 hover:bg-gray-400 text-lg'>Cancelar Pedido</Button>
+            )} 
+            {(status === 'DELIVERY') && (
+              <Button  onClick={handleFinishedOrder} className='w-full  bg-gray-700 text-gray-100 hover:bg-gray-400 text-lg'>Confirmar Entrega</Button>
             )}
-            <Button className='w-full bg-orange-500 text-gray-100 hover:bg-orange-600 text-lg flex gap-4'>
-              <img src={whatsapp} className='w-6' alt="" />
+            
+            <ModalHandleCancelOrder 
+              openModalCancelOrder={openModalCancelOrder} 
+              setOpenModalCancelOrder={setOpenModalCancelOrder} 
+              order={order!} 
+            />
+            <Button
+              className='w-full bg-orange-500 text-gray-100 hover:bg-orange-600 text-lg flex gap-4'
+              onClick={() => {
+                const phoneNumber = '9992242967'; // Substitua pelo número de telefone que deseja abrir no WhatsApp
+                const whatsappURL = `https://web.whatsapp.com/send?phone=${phoneNumber}`;
+                window.open(whatsappURL, '_blank');
+              }}
+            >
+              <img src={whatsapp} className='w-6' alt='' />
               Pizzaria
             </Button>
           </div>

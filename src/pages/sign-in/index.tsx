@@ -2,15 +2,14 @@ import { useForm } from 'react-hook-form'
 import logo from '../../assets/logo.png'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AxiosError } from 'axios'
 import { NavLink } from 'react-router-dom'
 import { api } from '../../utils/axios'
-import { setCookie } from 'nookies'
 import { useNavigate } from 'react-router-dom'
-
-import { app } from '../../services/firebaseConfig'
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
 import google from '../../assets/google.svg'
 import { ContextApp } from '../../context/context-app'
+import { ToastContainer } from 'react-toastify'
+import { setCookie } from 'nookies'
 
 
 const createCustomerFormSchema = z.object({
@@ -36,42 +35,69 @@ export default function SignIn() {
   } = useForm<CreateCustomerFormData>({
     resolver: zodResolver(createCustomerFormSchema),
   })
-  const {handleSignInGoogle, isAuthenticated} = ContextApp()
-  
+  const { handleSignInGoogle, isAuthenticated, customer } = ContextApp()
+
   const navigate = useNavigate()
 
   const handleSignIn = async (data: CreateCustomerFormData) => {
-    try {
 
-      const response = await api.post('/sessions', data)
-      const { access_token } = response.data
-      setCookie(undefined, 'accessToken', access_token, {
-        maxAge: 60 * 60 * 24 * 7, // 1 days
+    const auth = getAuth()
+    signInWithEmailAndPassword(auth, data.email, data.password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        // Signed in 
+        if (!user.emailVerified) {
+          setError('root', {
+            type: 'manual',
+            message: 'Email não verificado',
+          })
+          return
+        }
+        user.getIdToken().then((token) => {
+          setCookie(undefined, 'accessToken', JSON.stringify(token))
+        })
+        setCookie(undefined, 'customer', JSON.stringify(user))
+
+        navigate('/')
       })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode);
 
-      navigate('/')
-    } catch (error: unknown) {
-      const customError = error as AxiosError
-      if (customError.response?.status === 401) {
-        setError('email', {
-          type: 'manual',
-          message: 'Email ou senha inválidos',
-        })
-        setError('password', {
-          type: 'manual',
-          message: 'Email ou senha inválidos',
-        })
-      } else {
-        console.error(customError)
-      }
-    }
+        if (errorCode === 'auth/invalid-login-credentials') {
+          setError('email', {
+            type: 'manual',
+            message: 'Email ou senha inválidos',
+          })
+          setError('password', {
+            type: 'manual',
+            message: 'Email ou senha inválidos',
+          })
+        } else {
+          console.error(errorMessage)
+        }
+      });
+
   }
 
   if (isAuthenticated) {
+    const handleCreateCustomerSocialAccount = async () => {
+      if (customer) {
+        await api.post('/sessions/social-login',
+          {
+            id: customer.uid,
+            name: customer.displayName,
+            email: customer.email,
+
+          })
+      }
+
+
+    }
+    handleCreateCustomerSocialAccount()
     navigate('/')
-  }  
-
-
+  }
   return (
     <div className='mt-40 bg-white w-10/12 flex flex-col items-center justify-center'>
       <div className='w-10/12 mb-4 flex items-center justify-start'>
@@ -81,16 +107,16 @@ export default function SignIn() {
       <div className="w-10/12 text-gray-600 mb-8 ">
         <h2 className="text-2xl font-bold">Entrar</h2>
         <p>Continua para PizzaDRua</p>
-        <button onClick={() => handleSignInGoogle()} className='border-[1px] mt-3 gap-2 flex items-center justify-center border-gray-400 rounded p-2 w-full'>
+        <button onClick={() => { handleSignInGoogle() }} className='border-[1px] mt-3 gap-2 flex items-center justify-center border-gray-400 rounded p-2 w-full'>
           <img src={google} className='w-6' alt="logo do google" />
           Continuar com o Google
         </button>
-      </div>  
+      </div>
       <form
         onSubmit={handleSubmit(handleSignIn)}
         className=" w-full text-gray-600 flex flex-col items-center justify-between py-2 rounded-xl"
       >
-       
+
         <input
           {...register('email')}
           className="w-10/12 p-4 mb-4 rounded  border border-gray-400 text-sm text-gray-600 placeholder:text-gray-500"
@@ -111,8 +137,13 @@ export default function SignIn() {
             {errors.password?.message}
           </span>
         )}
+        {errors.root && (
+          <span className="text-red-500 mt-3">
+            {errors.root?.message}
+          </span>
+        )}
         <button
-          className="bg-orange-500 w-10/12 mt-8  py-4 rounded text-gray-200 font-bold text-sm  uppercase hover:bg-orange-600"
+          className="bg-orange-500 w-10/12 mt-8  py-2 rounded text-gray-100 font-semibold  hover:bg-orange-600"
           type="submit"
         >
           Entrar
@@ -126,6 +157,7 @@ export default function SignIn() {
             <strong className="text-orange-400">Criar conta!</strong>{' '}
           </p>
         </NavLink>
+        <ToastContainer />
       </form>
     </div>
   )

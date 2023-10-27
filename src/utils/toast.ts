@@ -2,10 +2,10 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 
-export const notify = (text:string, position: string) =>
+export const notify = (text:string, position: string, timeout?: number) =>
   toast.success(text, {
 
-    autoClose: 1500,
+    autoClose: timeout ? timeout : 1500,
     position: position === 'top' ? 'top-right' : 'bottom-center',
     bodyStyle: {
 

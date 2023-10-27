@@ -1,7 +1,6 @@
 import { Card, CardContent } from "../../../../../components/ui/card"
 import { InputQuantityProductInCart } from "../input-quantity-product-in-cart"
 import { useState } from "react"
-import image from "../../../../../assets/Vector.svg"
 import { Button } from "../../../../../components/ui/button"
 import { ToastContainer } from "react-toastify";
 import { notify } from "../../../../../utils/toast"
@@ -49,7 +48,7 @@ export const CardCatalogPizza = (catalog: ProductProps) => {
             <InputQuantityProductInCart
               onDecrease={handleDecrementProduct}
               onIncrease={handleIncrementProduct}
-              quantityCoffee={quantityProduct}
+              quantityProduct={quantityProduct}
             />
           </div>
         </div>

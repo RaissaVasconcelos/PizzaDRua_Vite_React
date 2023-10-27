@@ -88,9 +88,9 @@ export default function ModalRegisterProduct() {
       setErrorFieldImage('O campo de arquivo é obrigatório');
       return;
     }
-    console.log(data);
     
     const imageUrl = await api.post('/upload', data.file)
+    console.log(imageUrl);
     
     await api.post('/product', {
       name: data.name,

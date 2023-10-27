@@ -6,10 +6,11 @@ import { Orders } from "../../../../@types/interface";
 interface CardProps {
   order: Orders
   onChangeOrderStatus: (orderId: string, status: string) => void
+  onCancelOrder: (orderId: string) => void
 }
 
 
-export const Card = ({order, onChangeOrderStatus}: CardProps) => {
+export const Card = ({order, onChangeOrderStatus, onCancelOrder}: CardProps) => {
 
   return (
       <AlertDialog.Root >
@@ -22,7 +23,8 @@ export const Card = ({order, onChangeOrderStatus}: CardProps) => {
           </button>
         </AlertDialog.Trigger>
         <ModalHandleChangeStatus 
-        onChangeOrderStatus={onChangeOrderStatus} 
+          onChangeOrderStatus={onChangeOrderStatus}
+          onCancelOrder={onCancelOrder}
           order={order} 
         />
       </AlertDialog.Root>

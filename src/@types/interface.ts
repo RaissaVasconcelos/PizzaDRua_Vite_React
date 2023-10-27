@@ -33,6 +33,7 @@ export interface Orders {
     }
     itensOrder: {
         mode: "MIXED" | "SIMPLE",
+        image_url: string
         product: string[]
         quantity: number,
         price: string

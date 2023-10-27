@@ -54,13 +54,14 @@ export default function CreateAddress() {
     resolver: zodResolver(addressSchemaBody),
 
   });
-  const {neighborhoods, setAddresses, addresses} = ContextApp()
+  const {neighborhoods} = ContextApp()
   const navigate = useNavigate()
 
+  console.log(parseCookies().accessToken);
   
   const handleSubmitForm = async (data: AddressSchema) => {
     
-   const response = await api.post('/address', {
+   await api.post('/address', {
       neighborhood: data.neighborhood.value,
       number: data.number,
       street: data.street,

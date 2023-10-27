@@ -9,7 +9,7 @@ import deliveryOrange from '../../assets/delivery-orange.png'
 import pickup from '../../assets/pickup.png'
 import pickupOrange from '../../assets/pickup-orange.png'
 import { Button } from "../../components/ui/button";
-import { setCookie } from "nookies";
+import { parseCookies, setCookie } from "nookies";
 import { useNavigate } from 'react-router-dom';
 
 const methodDeliverySchemaBody = z.object({
@@ -37,7 +37,12 @@ export default function MethodDelivery() {
     setCookie(undefined, 'delivery', methodDeliveryData, {
       maxAge: 60 * 60 * 24 * 7, // 7 days
     })
-    navigate('/payment')
+    if (parseCookies().payment) {
+      navigate('/checkout')
+    } else {
+      navigate('/payment')
+    }
+    
   }
 
   return (
