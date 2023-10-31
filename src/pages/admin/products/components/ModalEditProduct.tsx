@@ -2,7 +2,6 @@ import { Controller, useForm } from 'react-hook-form'
 import ReactSelect from 'react-select'
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from 'react-router-dom'
 import { Label } from '../../../../components/ui/label';
 import { Input } from '../../../../components/ui/input';
 import { Button } from '../../../../components/ui/button';
@@ -10,15 +9,14 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Image, Trash, X } from 'lucide-react';
 import { Textarea } from '../../../../components/ui/textarea';
 import { api } from '../../../../utils/axios';
-import { useState, CSSProperties, useRef } from 'react';
-import HashLoader from 'react-spinners/MoonLoader';
+import { useState } from 'react';
 import { ProductProps } from '../../../../context/context-app';
 import { ToastContainer } from 'react-toastify';
 import { notify } from '../../../../utils/toast';
 
 
-const maxFileSize = 5 * 1024 * 1024; // 5MB
-const allowedFileTypes = ["image/jpeg", "image/jpg"];
+// const maxFileSize = 5 * 1024 * 1024; // 5MB
+// const allowedFileTypes = ["image/jpeg", "image/jpg"];
 
 
 const productSchemaBody = z.object({
@@ -52,17 +50,16 @@ interface ModalProductsProps {
 }
 
 export default function ModalEditProduct({ product, setOpenModal, openModal }: ModalProductsProps) {
-  const [previewImage, setPreviewImage] = useState<string | null>(product.image_url);
+  const [previewImage, setPreviewImage] = useState<string | undefined>(product.image_url);
   const [errorFieldImage, setErrorFieldImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  // const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
     control,
     register,
     handleSubmit,
-    setError,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ProductSchema>({
     resolver: zodResolver(productSchemaBody),
     defaultValues: {
@@ -83,13 +80,13 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
       setPreviewImage(file ? URL.createObjectURL(file) : product.image_url);
     }
   };
-  const showFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  // const showFileInput = () => {
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.click();
+  //   }
+  // };
 
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   const formatValue = (value: string) => {
     // Remove tudo que não for dígito ou ponto decimal

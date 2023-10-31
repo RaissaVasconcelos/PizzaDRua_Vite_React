@@ -1,4 +1,3 @@
-import { NavLink } from 'react-router-dom'
 import success from '../../assets/success.svg'
 import { Button } from '../../components/ui/button'
 import { useEffect, useState } from 'react'

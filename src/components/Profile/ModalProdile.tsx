@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { Mail, Phone, MapPin , X, ExternalLink, StickyNote, User } from 'lucide-react'
+import { Mail, Phone, MapPin , X, ExternalLink, User } from 'lucide-react'
 import { ContextApp } from '../../context/context-app'
 import order from '../../assets/order.png'
 

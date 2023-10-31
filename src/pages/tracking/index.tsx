@@ -8,7 +8,7 @@ import pickupOrange from '../../assets/pickup-orange.png'
 import whatsapp from '../../assets/whatsapp.svg'
 import { useEffect, useState } from 'react'
 import { api } from '../../utils/axios'
-import { CheckCheck, ChefHat, ClipboardCheck, Package } from 'lucide-react'
+import { Check, CheckCheck, ChefHat, ClipboardCheck } from 'lucide-react'
 import { Orders } from '../../@types/interface'
 import socket from '../../utils/socketIO'
 import { useParams } from 'react-router-dom'
@@ -24,16 +24,16 @@ export default function Tracking() {
 
 
   socket.on('statusUpdate', (data: any) => {
-    console.log(data[0].status);
-      
-    setStatus(data[0]?.status)
-    
+    console.log(data);
+
+    setStatus(data.status)
+
   })
 
   const { id } = useParams();
   const getOrder = async () => {
     const response = await api.get(`/order/${id}`)
-    
+
     setOrder(response.data.order)
     setStatus(response.data.order.status)
 
@@ -72,7 +72,8 @@ export default function Tracking() {
   useEffect(() => {
     getOrder()
   }, [])
-  
+  console.log(order?.methodDelivery);
+
   return (
     <div className="mb-10 w-full flex items-center justify-center">
       <div className='w-11/12 flex flex-col items-center justify-center'>
@@ -127,30 +128,49 @@ export default function Tracking() {
               {status === 'PREPARING' ? <ChefHat size={38} strokeWidth={1} className='text-orange-500' /> : <ChefHat size={38} strokeWidth={1} />}
               <span className={`${status === 'PREPARING' ? 'text-orange-500' : 'text-gray-500'}`} >Pedido em producao</span>
             </div>
-            <div className='ml-4 h-10 w-[2px] bg-gray-600' />
-            <div className=' flex items-center justify-center gap-3'>
-              {status === 'DELIVERY' ? <img src={deliveyOrange} className='w-10' alt="" /> : <img src={delivey} className='w-10' alt="" />}
-              <span className={`${status === 'DELIVERY' ? 'text-orange-500' : 'text-gray-500'}`} >Saiu para entrega</span>
-            </div>
+            {order?.methodDelivery === 'DELIVERY' && (
+              <>
+                <div className='ml-4 h-10 w-[2px] bg-gray-600' />
+                <div className=' flex items-center justify-center gap-3'>
+                  {status === 'DELIVERY' ? <img src={deliveyOrange} className='w-10' alt="" /> : <img src={delivey} className='w-10' alt="" />}
+                  <span className={`${status === 'DELIVERY' ? 'text-orange-500' : 'text-gray-500'}`} >Saiu para entrega</span>
+                </div>
+              </>
+
+            )}
             <div className='ml-4 h-10 w-[2px] bg-gray-600' />
             <div className='mt-1 flex items-center justify-center gap-3'>
-              {status === 'FINISHED' ? <img src={pickupOrange} className='w-10' alt="" /> : <img src={pickup} className='w-10' alt="" />}
-              <span className={`${status === 'FINISHED' ? 'text-orange-500' : 'text-gray-500'}`}>Entrega efetuada</span>
+              {order?.methodDelivery === 'PICKUP'
+                ? (
+                  <>
+                    {status === 'FINISHED'
+                      ? < Check size={35} className="bg-emerald-500 text-gray-50 rounded-full p-1" />
+                      : < Check size={35} className="bg-gray-200 text-gray-500 rounded-full p-1" />}
+                    <span className={`${status === 'FINISHED' ? 'text-orange-500' : 'text-gray-500'}`}>Pedido pronto</span>
+                  </>
+                )
+                : (
+                  <>
+                    {status === 'FINISHED' ? <img src={pickupOrange} className='w-10' alt="" /> : <img src={pickup} className='w-10' alt="" />}
+                    <span className={`${status === 'FINISHED' ? 'text-orange-500' : 'text-gray-500'}`}>Entrega efetuada</span>
+                  </>
+
+                )}
             </div>
           </div>
 
           <div className='w-full flex flex-col  items-center justify-center gap-2 mt-10'>
-            {(status === 'WAITING' || status === 'ACCEPTED' ) && (
+            {(status === 'WAITING' || status === 'ACCEPTED') && (
               <Button onClick={() => setOpenModalCancelOrder(true)} className='w-full  bg-gray-200 text-gray-700 hover:bg-gray-400 text-lg'>Cancelar Pedido</Button>
-            )} 
-            {(status === 'DELIVERY') && (
-              <Button  onClick={handleFinishedOrder} className='w-full  bg-gray-700 text-gray-100 hover:bg-gray-400 text-lg'>Confirmar Entrega</Button>
             )}
-            
-            <ModalHandleCancelOrder 
-              openModalCancelOrder={openModalCancelOrder} 
-              setOpenModalCancelOrder={setOpenModalCancelOrder} 
-              order={order!} 
+            {(status === 'DELIVERY') && (
+              <Button onClick={handleFinishedOrder} className='w-full  bg-gray-700 text-gray-100 hover:bg-gray-400 text-lg'>Confirmar Entrega</Button>
+            )}
+
+            <ModalHandleCancelOrder
+              openModalCancelOrder={openModalCancelOrder}
+              setOpenModalCancelOrder={setOpenModalCancelOrder}
+              order={order!}
             />
             <Button
               className='w-full bg-orange-500 text-gray-100 hover:bg-orange-600 text-lg flex gap-4'

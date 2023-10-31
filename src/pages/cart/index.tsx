@@ -68,11 +68,11 @@ export default function Cart() {
         <CardAddress textLink="/address"/>
       </div>
 
-      {currentAddress &&
+      {productToCart.length > 0 &&
         <div className={'w-full flex items-center justify-center'} >
-          <Button disabled={productToCart.length === 0} className="rounded-[8px]  text-gray-100 text-lg mt-5 w-11/12 bg-orange-500 hover:bg-orange-600 ">
+          <Button  className="rounded-[8px]  text-gray-100 text-lg mt-5 w-11/12 bg-orange-500 hover:bg-orange-600 ">
             <NavLink to={"/delivery"}>
-              Finalizar Compra
+              Continuar
             </NavLink>
           </Button>
         </div>

@@ -1,8 +1,7 @@
 import { api } from '../utils/axios'
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
 import { produce } from "immer";
-import { setCookie, parseCookies, destroyCookie } from "nookies";
-import jwtDecode from 'jwt-decode';
+import { setCookie, parseCookies } from "nookies";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from '../services/firebaseConfig';
 
@@ -47,22 +46,22 @@ export interface OrdersCartProps extends ProductProps {
   quantityProduct: number;
 }
 
-interface JwtToken {
-  exp: number;
-  // Outros campos do token, se houver
-}
+// interface JwtToken {
+//   exp: number;
+//   // Outros campos do token, se houver
+// }
 
 interface GroupOptions {
   label: string
   options: ProductProps[]
 }
 
-interface CustomerProps {
-  uid: string
-  displayName: string
-  email: string
-  photoURL: string
-}
+// interface CustomerProps {
+//   uid: string
+//   displayName: string
+//   email: string
+//   photoURL: string
+// }
 
 const provider = new GoogleAuthProvider();
 const auth = getAuth(app);
@@ -122,7 +121,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }
   )
   const [groupOptions, setGroupOptions] = useState<any[]>([])
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  // const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const getFlavors = async () => {
 
@@ -209,7 +208,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const handleSignInGoogle = async () => {
     signInWithPopup(auth, provider)
       .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
+        GoogleAuthProvider.credentialFromResult(result);
         const user = result.user;
         user.getIdToken().then((token) => {
           setCookie(undefined, 'accessToken', JSON.stringify(token))
@@ -218,10 +217,12 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
         setCustomer(user)
 
       }).catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        const email = error.customData.email;
-        const credential = GoogleAuthProvider.credentialFromError(error);
+        console.log(error);
+          
+        // const errorCode = error.code;
+        // const errorMessage = error.message;
+        // const email = error.customData.email;
+        // const credential = GoogleAuthProvider.credentialFromError(error);
       });
   
   }

@@ -2,7 +2,6 @@ import { Controller, useForm } from 'react-hook-form'
 import ReactSelect from 'react-select'
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from 'react-router-dom'
 import { Label } from '../../../../components/ui/label';
 import { Input } from '../../../../components/ui/input';
 import { Button } from '../../../../components/ui/button';
@@ -10,8 +9,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Image, Trash, X } from 'lucide-react';
 import { Textarea } from '../../../../components/ui/textarea';
 import { api } from '../../../../utils/axios';
-import { useState, CSSProperties, useRef } from 'react';
-import HashLoader from 'react-spinners/MoonLoader';
+import { useState } from 'react';
 import { formatValue } from '../../../../utils/formatter';
 
 
@@ -50,15 +48,14 @@ export default function ModalRegisterProduct() {
   const [errorFieldImage, setErrorFieldImage] = useState<string | null>(null);
   
 
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  // const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
     control,
     register,
     handleSubmit,
-    setError,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors},
   } = useForm<ProductSchema>({
     resolver: zodResolver(productSchemaBody),
     defaultValues: {
@@ -74,15 +71,12 @@ export default function ModalRegisterProduct() {
       setPreviewImage(URL.createObjectURL(file));
     }
   };
-  const showFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  // const showFileInput = () => {
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.click();
+  //   }
+  // };
 
-  const navigate = useNavigate()
-
- 
   const handleSubmitForm = async (data: ProductSchema) => {
     if (!data.file) {
       setErrorFieldImage('O campo de arquivo é obrigatório');
@@ -90,8 +84,7 @@ export default function ModalRegisterProduct() {
     }
     
     const imageUrl = await api.post('/upload', data.file)
-    console.log(imageUrl);
-    
+
     await api.post('/product', {
       name: data.name,
       size: data.size,
@@ -106,7 +99,6 @@ export default function ModalRegisterProduct() {
     reset()
     setPreviewImage(null)
     setErrorFieldImage(null)
-
   }
 
   return (

@@ -8,7 +8,7 @@ import { api } from '../../../utils/axios';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
-import { ContextApp } from '../../../context/context-app';
+import { AddressProps, ContextApp } from '../../../context/context-app';
 import { parseCookies } from 'nookies';
 
 
@@ -23,8 +23,8 @@ const addressSchemaBody = z.object({
   number: z.string().nonempty('Digite um número'),
   street: z.string().nonempty('O campo rua é obrigatório'),
   type: z.object({
-    label: z.string().optional(),
-    value: z.string().optional(),
+    label: z.enum(['Casa', 'Trabalho', 'Outro']),
+    value: z.enum(['HOME', 'WORK', 'OTHER']),
   }),
   phone: z.string()
     .nonempty('O campo telefone é obrigatório')
@@ -54,11 +54,9 @@ export default function CreateAddress() {
     resolver: zodResolver(addressSchemaBody),
 
   });
-  const {neighborhoods} = ContextApp()
+  const {neighborhoods, setAddresses, addresses} = ContextApp()
   const navigate = useNavigate()
 
-  console.log(parseCookies().accessToken);
-  
   const handleSubmitForm = async (data: AddressSchema) => {
     
    await api.post('/address', {
@@ -75,7 +73,23 @@ export default function CreateAddress() {
         Authorization: `Bearer ${parseCookies().accessToken}`
       }
     })
-    
+
+    const address: AddressProps = {
+      neighborhood: {
+        name: data.neighborhood.label,
+        tax: data.neighborhood.rate!,
+        id: ''
+      },
+      number: data.number,
+      street: data.street,
+      type: data.type.value,
+      zipCode: data.zipCode,
+      phone: data.phone,
+      standard: false,
+      customerId: '',
+      id: '',  
+    }
+    setAddresses( [...addresses, address])
     navigate('/address')
   }
 
@@ -85,7 +99,7 @@ export default function CreateAddress() {
         Criar um novo endereço
       </h1>
       <form onSubmit={handleSubmit(handleSubmitForm)} className="w-11/12 flex flex-col items-start gap-3 justify-start mt-10 mx-5">
-        <h2>Endereço de entrega</h2>
+       
         <Label className='mt-5 text-gray-500'>Bairro</Label>
         <Controller
           control={control}

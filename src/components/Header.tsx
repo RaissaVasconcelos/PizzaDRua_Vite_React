@@ -1,7 +1,6 @@
 
-import { ShoppingBag, User } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { ContextApp } from "../context/context-app";
-import { NavLink } from 'react-router-dom'
 import { Profile } from "./Profile";
 export const Header = () => {
 

@@ -13,17 +13,21 @@ interface ModalOrderProps {
 }
 
 export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOrder }: ModalOrderProps) => {
+    // const [newStatus, setNewStatus] = useState('WAITING')
   const imprimirPedido = () => {
     window.print()
   }
 
   const handleChangeOrderStatus = async () => {
+ 
     const newStatus = order.status === 'WAITING'
       ? 'ACCEPTED'
       : order.status === 'ACCEPTED'
       ? 'PREPARING'
-      : order.status === 'PREPARING' 
-      ? 'DELIVERY' 
+      : order.status === 'PREPARING' && order.methodDelivery === 'PICKUP' 
+      ? 'FINISHED' 
+      : order.status === 'PREPARING' && order.methodDelivery === 'DELIVERY'
+      ? 'DELIVERY'
       : 'FINISHED' 
 
     

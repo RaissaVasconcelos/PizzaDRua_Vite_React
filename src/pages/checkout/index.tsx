@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ContextApp } from "../../context/context-app";
 import { HeaderOrder } from "../../components/HeaderOrder";
 import { destroyCookie, parseCookies } from "nookies";
@@ -11,6 +11,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Summary } from "../cart/components/summary";
 import { Button } from "../../components/ui/button";
 import { api } from "../../utils/axios";
+import { CalculatePrice } from "../../utils/calculate-price";
 
 
 interface PaymentProps {
@@ -46,13 +47,10 @@ export default function Checkout() {
     return storaged ? JSON.parse(storaged) : []
   });
 
-  const { addresses, productToCart, cartProductsTotalPrice } = ContextApp()
-  const currentAddress = addresses.find((address) => address.standard === true )
-  const totalPriceProduct = parseFloat(String(cartProductsTotalPrice)); // Converta para número
-  const tax = currentAddress ? parseFloat(currentAddress.neighborhood.tax) : 0; // Converta para número
-  const totalPrice = (totalPriceProduct + (methodDelivery.deliveryMethod === 'DELIVERY' ? tax : 0)).toFixed(2); // Realize os cálculos como números
-  console.log(totalPrice, 'cartTotalPrice');
-
+  const { productToCart, currentAddress } = ContextApp()
+ 
+  const totalPrice = CalculatePrice();
+  
   const navigate = useNavigate();
 
   const handleFinishOrder = async () => {
@@ -92,6 +90,23 @@ export default function Checkout() {
 
     }
   }
+
+  const getDataCookies = () => {
+    setGetPayment(() => {
+      const storaged = parseCookies().payment
+      return storaged ? JSON.parse(storaged) : []
+    })
+
+    setMethodDelivery(() => {
+      const storaged = parseCookies().delivery
+      return storaged ? JSON.parse(storaged) : []
+    })
+  }
+
+  useEffect(() => {
+    getDataCookies()
+  }, [])
+
 
   return (
     <>

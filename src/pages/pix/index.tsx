@@ -1,6 +1,5 @@
 
 import { api } from "../../utils/axios";
-import { ContextApp } from "../../context/context-app";
 import { useEffect, useState } from "react";
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Countdown } from "./components/Countdown";
@@ -10,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Copy } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import { notify } from "../../utils/toast";
+import { CalculatePrice } from "../../utils/calculate-price";
 
 interface qrCodeProps {
   qrcode: string
@@ -19,8 +19,8 @@ interface qrCodeProps {
 
 export default function Pix() {
   const [qrCodeData, setQrCodeData] = useState<qrCodeProps>()
-  const { cartTotalPrice } = ContextApp()
-  console.log(String(cartTotalPrice), 'total price');
+  const totalPrice = CalculatePrice()
+ 
 
   const handleQRcodePix = async () => {
     const response = await api.post('/pix', {
@@ -32,7 +32,7 @@ export default function Pix() {
         nome: "Francisco da Silva"
       },
       valor: {
-        original: String(cartTotalPrice),
+        original: String(totalPrice),
       },
       chave: "a471ed5a-0b30-4507-8e9e-c9ba73ec33cb",
       solicitacaoPagador: "Informe o número ou identificador do pedido."
@@ -45,29 +45,36 @@ export default function Pix() {
   const navigate = useNavigate()
 
   const onConfirmationPix = async () => {
-    const response = await api.get('/pix')
-   if (response.status === 200) {
-    toast.success('Pix recebido com sucesso', {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      });
-   }
+    const toastId = toast.loading("Aguardando pagamento...")
+    api.get('/webhook').then(() => {
+      
+      toast.update(toastId, {
+        render: "Pagamento realizado com sucesso!",
+        type: "success",
+        isLoading: false,
+        autoClose: 4000
+      })
+    
+    }).catch(() => {
+      toast.update(toastId, {
+        render: "Erro ao realizar pagamento!",
+        type: "error",
+        isLoading: false,
+      })
+    })
+    
+    
+      await new Promise(resolve => setTimeout(resolve, 3000)) 
+      navigate('/success')
+    
     
    
-
-    navigate('/success')
   }
 
   useEffect(() => {
     handleQRcodePix()
     onConfirmationPix()
-  }, [cartTotalPrice])
+  }, [])
 
 
   return (

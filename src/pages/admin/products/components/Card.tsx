@@ -1,5 +1,3 @@
-import image from "../../../../assets/Vector.svg"
-import * as Dialog from "@radix-ui/react-dialog";
 import { ToastContainer } from "react-toastify";
 import { CardContent } from "../../../../components/ui/card";
 import { Button } from "../../../../components/ui/button";
@@ -43,8 +41,8 @@ export const CardProducts = ({product}: CardProductsProps) => {
         <Button onClick={() => setOpenModalDelete(true)} className={"w-full rounded border-2 border-orange-500 text-lg text-orange-500 bg-white hover:bg-orange-50 flex gap-3"} >Excluir <Trash2 size={20} /> </Button>
         <div className="w-7/12">
           <DeleteModal
-            openModal={openModalDelete}
-            setOpenModal={setOpenModalDelete}
+            openModalDelete={openModalDelete}
+            setOpenModalDelete={setOpenModalDelete}
             notifyText="Produto excluido com sucesso"  
             url="/product"
             text="Tem certeza que deseja excluir esse Produto ?"

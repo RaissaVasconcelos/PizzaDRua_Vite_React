@@ -35,7 +35,7 @@ export const formatValue = (value: string) => {
 
   // Formata o valor em dólar
   if (value) {
-    value = parseFloat(value).toFixed(0);
+    value = parseFloat(value).toFixed(2);
   }
 
   return value;

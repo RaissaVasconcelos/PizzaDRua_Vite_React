@@ -56,7 +56,7 @@ export const Profile = () => {
             <div className="flex items-center justify-start gap-4  ">
               <XCircle className="text-orange-500 w-8" />
               <button onClick={() => signOut()} className="text-gray-700 font-semibold text-base0">
-                Sair da plataforma
+                Sair
               </button>
             </div>
           </DropdownMenu.Item>

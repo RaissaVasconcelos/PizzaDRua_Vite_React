@@ -1,10 +1,8 @@
 
-import { Controller, useForm } from 'react-hook-form'
+import {  useForm } from 'react-hook-form'
 import logo from '../../assets/logo.png'
 import { z } from 'zod'
-import InputMask from 'react-input-mask';
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AxiosError } from 'axios'
 import { NavLink, useNavigate } from 'react-router-dom';
 import { api } from '../../utils/axios';
 import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "firebase/auth"
@@ -37,7 +35,6 @@ export default function Page() {
   const {
     register,
     handleSubmit,
-    control,
     setError,
     formState: { errors },
   } = useForm<CreateCustomerFormData>({

@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from '../../../../components/ui/label';
@@ -11,52 +11,62 @@ import { AxiosError } from 'axios';
 import { formatValue } from '../../../../utils/formatter';
 import { notify } from '../../../../utils/toast';
 import { ToastContainer } from 'react-toastify';
-
+import ReactSelect from 'react-select';
 
 const neighborhoodSchemaBody = z.object({
-  id: z.string().optional(),
   name: z.string().nonempty('O campo nome é obrigatório'),
   tax: z.string().nonempty('O campo taxa é obrigatório'),
+  status: z.object({
+    label: z.string().optional(),
+    value: z.string().optional(),
+  }),
 })
-
-
 
 type ProductSchema = z.infer<typeof neighborhoodSchemaBody>
 
-interface NeighborhoodsProps {
-  neighborhood: ProductSchema
-  setOpenModal: (isOpen: boolean) => void
-  openModal: boolean
+interface NeighborhoodProps {
+  id: string
+  name: string
+  tax: string
+  status?: "ACTIVE" | "DISABLE"
 }
 
-export default function ModalEditNeighborhood({neighborhood, setOpenModal, openModal}: NeighborhoodsProps) {
+interface ModalEditNeighborhoodProps {
+  neighborhood: NeighborhoodProps
+  setIsOpenModalEdit: (isOpen: boolean) => void
+  openModalEdit: boolean
+}
+
+export default function ModalEditNeighborhood({ neighborhood, openModalEdit, setIsOpenModalEdit }: ModalEditNeighborhoodProps) {
 
   const {
     register,
     handleSubmit,
     setError,
+    control,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ProductSchema>({
     resolver: zodResolver(neighborhoodSchemaBody),
     defaultValues: {
       name: neighborhood.name,
       tax: formatValue(neighborhood.tax),
+      status: { label: "ATIVO", value: "ATIVO" },
     }
   });
 
-
-
   const handleSubmitForm = async (data: ProductSchema) => {
+ 
     try {
-      console.log(data);
       await api.put('/neighborhood', {
+        id: neighborhood.id,
         name: data.name,
         tax: formatValue(data.tax),
+        status: data.status.label === "ATIVO" ? 'ACTIVE' : 'DISABLE',
       })
       reset()
       notify('Bairro atualizado com sucesso!', 'top')
-      setOpenModal(false)
+      setIsOpenModalEdit(false)
     } catch (error) {
       const customError = error as AxiosError
       if (customError.response?.status === 404) {
@@ -68,15 +78,13 @@ export default function ModalEditNeighborhood({neighborhood, setOpenModal, openM
         console.error(customError)
       }
     }
-
   }
-
   return (
-    <Dialog.Root open={openModal}>
+    <Dialog.Root open={openModalEdit}>
       <Dialog.Portal >
         <Dialog.Overlay className=" fixed w-screen h-screen inset-0 bg-gray-900/[.6]" />
         <Dialog.Content className=" lg:w-6/12 w-11/12  rounded py-5 flex flex-col items-center bg-[#f3f3f3] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <Dialog.Close onClick={() => setOpenModal(false)} className="absolute bg-transparent border-spacing-0 top-5 right-5 text-gray-300 line-through ">
+          <Dialog.Close onClick={() => setIsOpenModalEdit(false)} className="absolute bg-transparent border-spacing-0 top-5 right-5 text-gray-300 line-through ">
             <X size={24} className='text-gray-500' onClick={() => { reset() }} />
           </Dialog.Close>
           <Dialog.Title className="text-gray-600 font-semibold text-xl">
@@ -92,12 +100,34 @@ export default function ModalEditNeighborhood({neighborhood, setOpenModal, openM
               )}
             </div>
 
-            <div className='w-full'>
-              <Label className='text-gray-500'>Taxa</Label>
-              <Input type='number' {...register('tax')} className='py-6' placeholder='Ex. 00.00' />
-              {errors.tax && (
-                <span className="text-red-500 mb-3">{errors.tax?.message}</span>
-              )}
+            <div className='flex w-full items-center justify-between gap-5'>
+
+              <div className='w-full'>
+                <Label className='text-gray-500'>Tamanho</Label>
+                <Input type='text' {...register('tax')} />
+                {errors.tax && (
+                  <span className="text-red-500 mb-3">{errors.tax?.message}</span>
+                )}
+              </div>
+              <div className='w-full'>
+                <Label className='text-gray-500'>Status da pizza</Label>
+                <Controller
+                  control={control}
+                  name="status"
+                  render={({ field }) => (
+                    <ReactSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      className='w-full'
+                      options={[
+                        { value: 'ATIVO', label: 'ATIVO' },
+                        { value: 'DESABILITADO', label: 'DESABILITADO' },
+                      ]}
+                    />
+
+                  )}
+                />
+              </div>
             </div>
 
 

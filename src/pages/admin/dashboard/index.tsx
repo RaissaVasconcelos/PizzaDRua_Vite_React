@@ -1,6 +1,6 @@
 import { ClipboardCheck, ChefHat, CheckCheck, Truck } from "lucide-react";
 import { Card } from "./components/Card";
-import { api, jsonServer } from "../../../utils/axios";
+import { api } from "../../../utils/axios";
 import { useEffect, useState } from "react";
 import { Orders } from "../../../@types/interface";
 import { parseCookies } from "nookies";
