@@ -4,14 +4,14 @@ import { HeaderOrder } from "../../components/HeaderOrder";
 import { destroyCookie, parseCookies } from "nookies";
 import { CardAddress } from "../../components/CardAddress";
 import pickupOrange from '../../assets/pickup-orange.png'
-import pizza from '../../assets/Vector.svg'
 import pixOrange from '../../assets/pix-orange.svg'
-import { CreditCard, Banknote, Edit } from "lucide-react";
+import { CreditCard, Banknote, Edit, ShoppingCart } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Summary } from "../cart/components/summary";
 import { Button } from "../../components/ui/button";
 import { api } from "../../utils/axios";
 import { CalculatePrice } from "../../utils/calculate-price";
+import { ToastContainer, toast } from "react-toastify";
 
 
 interface PaymentProps {
@@ -46,11 +46,13 @@ export default function Checkout() {
     const storaged = parseCookies().delivery
     return storaged ? JSON.parse(storaged) : []
   });
+  const [isAddressExists, setIsAddressExists] = useState(false)
 
-  const { productToCart, currentAddress } = ContextApp()
- 
+
+  const { productToCart, currentAddress, addresses } = ContextApp()
+
   const totalPrice = CalculatePrice();
-  
+
   const navigate = useNavigate();
 
   const handleFinishOrder = async () => {
@@ -103,10 +105,21 @@ export default function Checkout() {
     })
   }
 
+
+  const handleCreateAddress = async () => {
+    if (methodDelivery.deliveryMethod === 'DELIVERY' && addresses.length === 0) {
+      toast.error('Selecione ou cadastre um endereço', {
+        autoClose: 5500,
+        position: 'top-right'
+      })
+      setIsAddressExists(true)
+    }
+  }
+
   useEffect(() => {
+    handleCreateAddress()
     getDataCookies()
   }, [])
-
 
   return (
     <>
@@ -144,7 +157,7 @@ export default function Checkout() {
         <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500 my-6">Revisão do Pedido</h2>
         <div className="w-10/12 flex items-center justify-between mb-5">
           <div className="flex items-center justify-start text-xl gap-5 text-gray-500 font-semibold">
-            <img src={pizza} className="w-16" alt="" />
+            <ShoppingCart size={30} />
             <span>Meu Carrinho</span>
           </div>
           <NavLink to={"/cart"}>
@@ -158,9 +171,9 @@ export default function Checkout() {
 
 
       <div className="w-full flex items-center justify-center my-10"  >
-        <Button onClick={handleFinishOrder} className="bg-orange-500 hover:bg-orange-600 text-lg flex w-11/12 items-center justify-center">Finalizar Compra</Button>
+        <Button disabled={isAddressExists} onClick={handleFinishOrder} className="bg-orange-500 hover:bg-orange-600 text-lg flex w-11/12 items-center justify-center">Finalizar Compra</Button>
       </div>
-
+      <ToastContainer />
     </>
   )
 }

@@ -30,7 +30,7 @@ export default function Payment() {
     }
   });
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const handleSubmitForm = (data: PaymentSchema) => {
     const paymentData = JSON.stringify(data)
     setCookie(undefined, 'payment', paymentData, {

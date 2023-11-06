@@ -4,7 +4,7 @@ import './styles.css'
 import { Orders } from "../../../../@types/interface";
 import { priceFormatter } from "../../../../utils/formatter";
 import { api } from "../../../../utils/axios";
-import { parseCookies } from "nookies";
+import socket from "../../../../utils/socketIO";
 
 interface ModalOrderProps {
   order: Orders
@@ -47,12 +47,11 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
           price: order.itensOrder[0].price
         }
       ]
-    },
-    { headers: {
-      Authorization: `Bearer ${parseCookies().accessToken}`
-    }}
+    }
     )
     onChangeOrderStatus(order.id, newStatus)
+     // Substitua pela URL do seu servidor Socket.IO
+    socket.emit('statusUpdate', { orderId: order.id, status: newStatus });
   }
 
   const handleCancelOrder = async  () => {
@@ -72,14 +71,10 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
           price: order.itensOrder[0].price
         }
       ]
-    },
-      {
-        headers: {
-          Authorization: `Bearer ${parseCookies().accessToken}`
-        }
-      }
+    }
     )
     onCancelOrder(order.id)  
+    socket.emit('statusUpdate', { orderId: order.id, status: 'CANCELED' });
   }
 
 
@@ -133,7 +128,9 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
 
               <span>Metado de Entrega: {order.methodDelivery}</span>
               <span>Metado de Pagamento: {order.payment}</span>
-              <span>Taxa de Entrega: {priceFormatter.format(Number(order.customer.Address[0].neighborhood.tax))}</span>
+              {order.methodDelivery === 'DELIVERY' && (
+                <span>Taxa de Entrega: {priceFormatter.format(Number(order.customer.Address[0].neighborhood.tax))}</span>
+              )}
             </div>
             <div className="w-full flex items-center justify-between mt-7">
               <span>Total</span>

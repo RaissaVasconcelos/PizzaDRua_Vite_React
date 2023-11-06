@@ -1,5 +1,5 @@
 import { Button } from '../../components/ui/button'
-import pizza from '../../assets/Vector.svg'
+import pizza from '../../assets/caixa.png'
 import './statusColor.css'
 import delivey from '../../assets/delivery.png'
 import deliveyOrange from '../../assets/delivery-orange.png'
@@ -21,16 +21,23 @@ export default function Tracking() {
   const [status, setStatus] = useState('WAITING')
   const [order, setOrder] = useState<Orders>()
   const [openModalCancelOrder, setOpenModalCancelOrder] = useState(false)
+  const { id } = useParams();
 
+  useEffect(() => {
+    socket.on('statusUpdate', (data) => {
 
-  socket.on('statusUpdate', (data: any) => {
-    console.log(data);
+      if (data) {
+        setStatus(data.status)
+      }
+    })
+  }, [])
 
-    setStatus(data.status)
-
+  socket.emit('newOrder', {
+    orderRoom: id
   })
 
-  const { id } = useParams();
+
+
   const getOrder = async () => {
     const response = await api.get(`/order/${id}`)
 
@@ -65,24 +72,22 @@ export default function Tracking() {
     )
     notify(`Entrega efetuada com sucesso`, 'bottom')
 
-
   }
 
 
   useEffect(() => {
     getOrder()
   }, [])
-  console.log(order?.methodDelivery);
 
   return (
-    <div className="mb-10 w-full flex items-center justify-center">
+    <div className="my-10 w-full flex items-center justify-center">
       <div className='w-11/12 flex flex-col items-center justify-center'>
         <header className='w-full flex items-center  justify-center mt-6 font-semibold text-2xl text-gray-500'>
           <h2>Status do pedido</h2>
         </header>
         <div className='w-full'>
-          <div className='w-full mt-10 flex items-center justify-start gap-5 p-2 bg-white'>
-            <img src={pizza} alt="" />
+          <div className='w-full mt-10 flex items-center justify-start gap-7 p-2 bg-white'>
+            <img src={pizza} alt="" className='w-20' />
             <div className='flex flex-col items-start gap-2 text-gray-500 font-semibold text-lg'>
               <span >Seus pedidos</span>
               <span className='font-bold'>{priceFormatter.format(Number(order?.totalPrice))}</span>

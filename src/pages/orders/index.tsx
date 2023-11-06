@@ -24,9 +24,6 @@ export default function OrdersCustomer() {
     getOrders()
   }, [])
 
-  console.log(orders);
-
-
   return (
     <>
       <div className="w-full flex flex-col items-start justify-center ">
@@ -35,7 +32,7 @@ export default function OrdersCustomer() {
       <div className="w-full flex flex-col items-center justify-center mb-10">
         {orders.length > 0 ? (
           orders.map((order) => (
-            <div className="bg-white w-11/12 mt-5 rounded">
+            <NavLink to={`/tracking/${order.id}`} className="bg-white w-11/12 mt-5 rounded">
               {order.status === 'FINISHED' && (
 
                 <div className=" flex items-center justify-start gap-2 p-4 w-11/12">
@@ -88,17 +85,17 @@ export default function OrdersCustomer() {
                 <span>Pedidos</span>
               </div>
 
-              <NavLink to={`/tracking/${order.id}`} className="flex items-center justify-between gap-2 p-6  border-t-[1px]  border-gray-300">
+              <div className="flex items-center justify-between gap-2 p-6  border-t-[1px]  border-gray-300">
                 <span>{dateFormatter(order.createdAt)}</span>
                 <ExternalLink size={25} className="text-orange-500" />
-              </NavLink>
-            </div>
+              </div>
+            </NavLink>
           ))
 
         ) : (
           <div className="mt-36 w-full flex flex-col items-center justify-center gap-5">
             <StickyNote size={85} className="text-gray-300" />
-            <p className="text-center text-gray-500 text-xl font-semibold">Sua lista de pedidos esta vazio!</p>
+            <p className="text-center text-gray-500 text-xl font-semibold">Sua lista de pedidos esta vazia!</p>
           </div>
         )}
       </div>

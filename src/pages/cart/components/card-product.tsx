@@ -4,7 +4,7 @@ import { CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
 import { priceFormatter } from "../../../utils/formatter"
 import { CartProps } from "../../../@types/interface"
-import image from "../../../assets/Vector.svg"
+import image from "../../../assets/Vector.png"
 
 
 export const CardProduct = ({ product, price, quantityProduct, id, image_url }: CartProps) => {

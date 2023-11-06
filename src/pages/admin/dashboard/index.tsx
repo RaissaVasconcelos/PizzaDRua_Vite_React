@@ -3,7 +3,6 @@ import { Card } from "./components/Card";
 import { api } from "../../../utils/axios";
 import { useEffect, useState } from "react";
 import { Orders } from "../../../@types/interface";
-import { parseCookies } from "nookies";
 import socket from "../../../utils/socketIO";
 
 export default function Dashboard() {
@@ -13,13 +12,9 @@ export default function Dashboard() {
   useEffect(() => {
     // Adicione o ouvinte do evento 'newOrder' ao montar o componente
     socket.on('newOrder', (data: any) => {
-      if (data) {
-        const existsOrder = orders.some((order) => order.id === data.id);
-        if (!existsOrder) {
-          // Atualize o estado diretamente adicionando a nova ordem
-          setOrders((prevState) => [...prevState, data]);
-        }
-      }
+      console.log("Novo pedido recebido:", data);
+     
+      socket.emit('statusUpdate', { orderId: data.id, status: data.status });
     });
 
     // Remova o ouvinte quando o componente for desmontado para evitar vazamento de memória
@@ -27,15 +22,6 @@ export default function Dashboard() {
       socket.off('newOrder');
     };
   }, []);
-
-  socket.on('statusUpdate', (data: any) => {
-    if (data.length > 0) {
-      setOrders((prevState) => prevState.map((order) => (
-          {...order, status: data[0].status}
-      )));
-    }
-  })
-
 
   const onChangeOrderStatus = (orderId: string, status: string) => {
     setOrders((prevState) => prevState.map((order) => (
@@ -48,18 +34,15 @@ const onCancelOrder = (orderId:string) => {
 }
 
   const getOrders = async () => {
-    const token = parseCookies().accessToken 
-    const response = await api.get('/order', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }  
-  }) 
+    
+    const response = await api.get('/order') 
     setOrders(response.data) 
 
   }
   useEffect(() => {
     getOrders()
   }, [])
+
 
   return (
     <div className="w-11/12 mx-3 flex mt-10 items-start justify-center gap-5">

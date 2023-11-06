@@ -91,6 +91,7 @@ export default function CreateAddress() {
     }
     setAddresses( [...addresses, address])
     navigate('/address')
+    window.location.reload()
   }
 
   return (
@@ -107,11 +108,12 @@ export default function CreateAddress() {
           rules={{ required: true }}
           render={({ field }) => (
             <ReactSelect
+             
               onChange={field.onChange}
               className='w-full'
               options={neighborhoods}
               value={field.value}
-
+              
             />
           )}
         />
@@ -142,6 +144,7 @@ export default function CreateAddress() {
                   value={field.value}
                   onChange={field.onChange}
                   className='w-full'
+                  isSearchable={false}
                   options={[
                     { value: 'HOME', label: 'Casa' },
                     { value: 'WORK', label: 'Trabalho' },
@@ -181,6 +184,7 @@ export default function CreateAddress() {
               className='w-full p-2 rounded text-gray-600'
               mask="(99) 99999-9999"
               maskPlaceholder=""
+              type='tel'
               onChange={field.onChange}
               placeholder="(00) 00000-0000"
               value={field.value}

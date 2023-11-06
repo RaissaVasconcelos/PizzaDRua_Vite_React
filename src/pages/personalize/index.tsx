@@ -1,4 +1,4 @@
-import pizza from '../../assets/pizza.svg'
+import pizza from '../../assets/Vector.png'
 import pizzaImg from '../../assets/pizza.png'
 import pizzaWhite from '../../assets/pizza-white.png'
 import half from '../../assets/half.png'
@@ -89,7 +89,7 @@ interface ProductProps {
   product: { name: string }[]
   description: string
   size: 'ENTIRE' | 'HALF'
-  mode?: string  
+  mode?: string
   price: string
   quantityProduct: number
   status: string
@@ -137,9 +137,9 @@ export default function Personalize() {
     }
   });
 
-  
+
   const handleSubmitForm = (data: CustomizeSchema) => {
-   
+
     const product: ProductProps = {
       id: uuid(),
       category: {
@@ -147,23 +147,24 @@ export default function Personalize() {
       },
       description: data.flavor[0].label,
       image_url: data.flavor[0].image,
-      price, 
+      price,
       size: data.size,
       product: data.flavor.map((name: any) => {
         return {
           name: name.label
-        }}),
+        }
+      }),
       type: isSelectSpecial ? 'SPECIAL' : 'TRADITIONAL',
       mode: 'MIXED',
       quantityProduct: 1,
-      status: 'WAITING'   
+      status: 'WAITING'
 
     }
 
     addProductToCart(product);
     setValue('flavor', []);
     notify('Produto adicionado ao carrinho', 'bottom');
-    
+
   }
 
   const handleFlavorChange = (selectedOptions: FlavorSchema[]) => {
@@ -220,15 +221,15 @@ export default function Personalize() {
   const handleSelectSize = (size: string) => {
     if (size === 'HALF') {
       products.forEach((product) => {
-        if (product.type === 'TRADITIONAL') {
+        if (product.category.name === 'pizza' && product.type === 'TRADITIONAL') {
           const productPrice = (parseFloat(product.price) / 2).toFixed(2);
           setPrice(productPrice);
         }
       })
     } else {
-      products.forEach((products) => {
-        if (products.type === 'TRADITIONAL') {
-          const priceString = (products.price).replace(',', '.');
+      products.forEach((product) => {
+        if (product.category.name === 'pizza' && product.type === 'TRADITIONAL') {
+          const priceString = (product.price).replace(',', '.');
           const productsPrice = (parseFloat(priceString)).toFixed(2);
           setPrice(productsPrice);
 
@@ -239,7 +240,7 @@ export default function Personalize() {
 
   return (
     <>
-      <img src={pizza} className='w-full' width={450} height={350} alt='' />
+      <img src={pizza} className='w-full mt-20 object-contain' width={450} height={350} alt='' />
       <div className='flex flex-col items-center mt-4 '>
         <h2 className=' text-gray-700 font-semibold text-xl'>Personalize sua Pizza</h2>
       </div>

@@ -22,7 +22,7 @@ const productSchemaBody = z.object({
   name: z.string().nonempty('O campo nome é obrigatório'),
   description: z.string().nonempty('O campo descrição é obrigatório')
     .max(100, 'O campo descrição deve conter no máximo 100 caracteres'),
-  size: z.string().nonempty('O campo tamanho é obrigatório'),
+ 
   status: z.object({
     label: z.string().optional(),
     value: z.string().optional(),
@@ -46,7 +46,7 @@ type ProductSchema = z.infer<typeof productSchemaBody>
 export default function ModalRegisterProduct() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [errorFieldImage, setErrorFieldImage] = useState<string | null>(null);
-  
+  const [selectCategory, setSelectCategory] = useState<string | undefined>('Pizza');
 
   // const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -84,13 +84,14 @@ export default function ModalRegisterProduct() {
     }
     
     const imageUrl = await api.post('/upload', data.file)
-
+    console.log(data);
+    
     await api.post('/product', {
       name: data.name,
-      size: data.size,
+      size: data.category.value === "Pizza" ? 'ENTIRE' : '',
       description: data.description,
       status: data.status.value === "ATIVO" ? 'ACTIVE' : 'DISABLE',
-      type: data.type.value === "Especial" ? 'SPECIAL' : 'TRADITIONAL',
+      type: data.category.value === "Pizza" ? data.type.value === "Especial" ? 'SPECIAL' : 'TRADITIONAL' : '',
       price: formatValue(data.price),
       category: data.category.value === "Pizza" ? 'pizza' : 'drink',
       imageUrl: imageUrl.data
@@ -101,6 +102,7 @@ export default function ModalRegisterProduct() {
     setErrorFieldImage(null)
   }
 
+  
   return (
     <>
       <Dialog.Portal>
@@ -166,33 +168,15 @@ export default function ModalRegisterProduct() {
                 )}  
               </div>
 
-              <div className='w-1/4'>
+          
+            </div>
+            <div className='flex w-full items-center justify-between gap-5'>
+              <div className='w-full'>
                 <Label className='text-gray-500'>Preco</Label>
                 <Input type='text' {...register('price')} placeholder='Ex. 00.00' />
                 {errors.price && (
                   <span className="text-red-500 mb-3">{errors.price?.message}</span>
                 )}
-              </div>
-            </div>
-            <div className='flex w-full items-center justify-between gap-5'>
-              <div className='w-full'>
-                <Label className='text-gray-500'>Tipo de pizza</Label>
-                <Controller
-                  control={control}
-                  name="type"
-                  render={({ field }) => (
-                    <ReactSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                      className='w-full'
-                      options={[
-                        { value: 'Especial', label: 'Especial' },
-                        { value: 'Tradicional', label: 'tradicional' },
-                      ]}
-                    />
-
-                  )}
-                />
               </div>
               <div className='w-full'>
                 <Label className='text-gray-500'>Categoria</Label>
@@ -202,7 +186,10 @@ export default function ModalRegisterProduct() {
                   render={({ field }) => (
                     <ReactSelect
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={(e) => {
+                        setSelectCategory(e?.label)
+                        field.onChange(e)
+                      }}
                       className='w-full'
                       options={[
                         { value: 'Pizza', label: 'Pizza' },
@@ -218,11 +205,24 @@ export default function ModalRegisterProduct() {
             <div className='flex w-full items-center justify-between gap-5'>
 
               <div className='w-full'>
-                <Label className='text-gray-500'>Tamanho</Label>
-                <Input type='text' {...register('size')} />
-                {errors.size && (
-                  <span className="text-red-500 mb-3">{errors.size?.message}</span>
-                )}
+                <Label className='text-gray-500'>Tipo de pizza</Label>
+                <Controller
+                  control={control}
+                  name="type"
+                  render={({ field }) => (
+                    <ReactSelect
+                      isDisabled={selectCategory === 'Bebida' ? true : false}
+                      value={field.value}
+                      onChange={field.onChange}
+                      className='w-full'
+                      options={[
+                        { value: 'Especial', label: 'Especial' },
+                        { value: 'Tradicional', label: 'tradicional' },
+                      ]}
+                    />
+
+                  )}
+                />
               </div>
               <div className='w-full'>
                 <Label className='text-gray-500'>Status da pizza</Label>

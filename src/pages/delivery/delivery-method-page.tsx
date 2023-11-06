@@ -50,7 +50,7 @@ export default function MethodDelivery() {
       <HeaderOrder title="Metodo de entrega" link="/cart" />
       <div className="w-full flex flex-col items-center justify-center my-10">
         <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500">Selecione um metodo de entrega</h2>
-        <form onSubmit={handleSubmit(handleSubmitForm)} className='w-full ' action="">
+        <form onSubmit={handleSubmit(handleSubmitForm)} className='w-full '>
           <div className='w-11/12 flex flex-col items-center justify-center m-5'>
             <Controller
               control={control}
@@ -84,11 +84,11 @@ export default function MethodDelivery() {
               }}
             />
            
-          </div>
-          <div className="w-full flex bg-white rounded-t-xl  absolute bottom-0 items-center justify-center">
-            <Button className="w-10/12 relative bg-orange-500 hover:bg-orange-600 text-lg my-10 " type="submit">
+          <div className="w-full flex items-center justify-center rounded-t-xl bottom-0  absolute ">
+            <Button className="w-10/12 flex items-center justify-center  relative bg-orange-500 hover:bg-orange-600 text-lg my-10 " type="submit">
               Prossiga para o pagamento
             </Button>
+          </div>
           </div>
         </form>
       </div>

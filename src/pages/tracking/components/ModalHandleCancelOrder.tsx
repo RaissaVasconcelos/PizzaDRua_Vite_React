@@ -4,6 +4,7 @@ import { parseCookies } from "nookies";
 import { notify } from "../../../utils/toast";
 import { api } from "../../../utils/axios";
 import { Orders } from "../../../@types/interface";
+import socket from "../../../utils/socketIO";
 
 
 interface CancelModalOrderProps {
@@ -42,7 +43,7 @@ export const ModalHandleCancelOrder = ({ openModalCancelOrder, setOpenModalCance
     notify(`Pedido cancelado com sucesso`, 'bottom')
   
     setOpenModalCancelOrder(false)
-    
+    socket.emit('orderCanceled', { orderId: order.id, status: 'CANCELED' });
   }
 
   return (
