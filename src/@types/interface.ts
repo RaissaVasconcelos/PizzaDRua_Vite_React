@@ -2,10 +2,10 @@ export interface CartProps {
     id: string
     product: { name: string }[]
     price: string
-    image_url?: string    
-    description: string    
+    image_url?: string
+    description: string
     quantityProduct: number
-    size: string    
+    size: string
 
 }
 
@@ -17,7 +17,7 @@ export interface Orders {
     createdAt: Date
     totalPrice: string
     customer: {
-        id: string    
+        id: string
         name: string
         email: string
         phone: string
@@ -33,9 +33,33 @@ export interface Orders {
     }
     itensOrder: {
         mode: "MIXED" | "SIMPLE",
+        image_url: string
         product: string[]
         quantity: number,
         price: string
         size: "ENTIRE" | "HALF"
     }[]
+}
+
+export interface OrderData {
+    orderId: string;
+    customerId: string;
+    status: string;
+    methodDelivery: string;
+    payment: string;
+    totalPrice: string;
+    itensOrder: any; // Defina o tipo apropriado para "itensOrder"
+    orderCreatedAt: Date;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    addressId: string;
+    addressNumber: string;
+    addressPhone: string;
+    addressStreet: string;
+    addressType: string;
+    addressZipCode: string;
+    neighborhoodName: string;
+    neighborhoodTax: string;
+
 }

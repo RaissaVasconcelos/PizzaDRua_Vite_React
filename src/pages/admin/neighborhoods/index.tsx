@@ -8,6 +8,7 @@ interface NeighborhoodsProps {
   id: string;
   name: string;
   tax: string;
+  status: "ACTIVE" | "DISABLE";  
 }
 
 export default function Neighborhoods() {
@@ -25,7 +26,7 @@ useEffect(() => {
   getNeighborhoods()
 },[])
 
- console.log(neighborhoods, 'neighborhoods');
+
   
   return (
    
@@ -56,7 +57,7 @@ useEffect(() => {
                 Editar
               </th>
               <th className="bg-gray-700 p-4 text-left text-gray-200 text-xl ease-linear rounded-tr">
-                Excluir
+                Status
               </th>
             </tr>
           </thead>
@@ -64,9 +65,9 @@ useEffect(() => {
           {neighborhoods && 
             neighborhoods.map((item) => (
               <TrTable
-                id={item.id}
-                name={item.name}
-                tax={item.tax} />
+                neighborhood={item} 
+                key={item.id}
+               />
             ))
           }
           </tbody>

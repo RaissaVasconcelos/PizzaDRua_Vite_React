@@ -49,7 +49,7 @@ export const CardCatalogDrink = (catalog: ProductProps) => {
             <InputQuantityProductInCart
               onDecrease={handleDecrementProduct}
               onIncrease={handleIncrementProduct}
-              quantityCoffee={quantityProduct}
+              quantityProduct={quantityProduct}
             />
           </div>
         </div>

@@ -17,7 +17,10 @@ const productSchemaBody = z.object({
 
   name: z.string().nonempty('O campo nome é obrigatório'),
   tax: z.string().nonempty('O campo taxa é obrigatório'),
-
+  status: z.object({
+    label: z.enum(['ACTIVE', 'DISABLE']).optional(),
+    value: z.enum(['ATIVO', 'DESABILITADO']).optional(),
+  }),
 })
 
 type ProductSchema = z.infer<typeof productSchemaBody>
@@ -30,7 +33,7 @@ export default function ModalRegisterNeighborhood() {
     handleSubmit,
     setError,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ProductSchema>({
     resolver: zodResolver(productSchemaBody),
    

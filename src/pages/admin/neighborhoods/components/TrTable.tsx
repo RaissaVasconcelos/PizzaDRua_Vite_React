@@ -1,17 +1,22 @@
 import { useState } from "react"
-import { DeleteModal } from "../../../../components/ModalDelete"
 import { priceFormatter } from "../../../../utils/formatter";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit } from "lucide-react";
 import ModalEditNeighborhood from "./ModalEditNeighborhood";
 
 interface TableProps {
   id: string;
   name: string;
   tax: string;
+  status?: 'ACTIVE' | 'DISABLE';
 }
 
-export const TrTable = (neighborhood: TableProps) => {
-  const [isOpenModalDelete, setIsOpenModalDelete] = useState(false)
+interface NeighborhoodsProps {
+  neighborhood: TableProps
+
+}
+
+export const TrTable = ({ neighborhood }: NeighborhoodsProps) => {
+
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false)
   return (
     <tr >
@@ -28,19 +33,16 @@ export const TrTable = (neighborhood: TableProps) => {
       </td>
 
       <td className="w-1/12 bg-gray-800 p-4 text-xl border-t-4 border-gray-900">
-        <Trash2 onClick={() => setIsOpenModalDelete(true)} size={20} className="text-orange-500 cursor-pointer" />
+        <span className={`${neighborhood.status === 'ACTIVE' ? 'text-emerald-500 border-emerald-500' : 'text-red-500 border-red-500'} text-sm font-light border-[1px] rounded p-1`}>
+          {neighborhood.status}
+        </span>
       </td>
       <ModalEditNeighborhood
         neighborhood={neighborhood}
-        openModal={isOpenModalEdit}
-        setOpenModal={setIsOpenModalEdit}
+        openModalEdit={isOpenModalEdit}
+        setIsOpenModalEdit={setIsOpenModalEdit}
       />
-      <DeleteModal
-        id={neighborhood.id}
-        url={'neighborhood'}
-        text={'Tem certeza que deseja excluir esse Bairro?'}
-        openModal={isOpenModalDelete}
-        setOpenModal={setIsOpenModalDelete} />
+
     </tr>
   )
 }

@@ -9,7 +9,7 @@ interface ButtonProps {
   icon: LucideIcon
 }
 
-export default function ButtonCategorie({ title, onChangeCatalog, active, setOnChangeCatalog, icon: Icon }: ButtonProps) {
+export default function ButtonCategorie({ title, active, icon: Icon }: ButtonProps) {
   return (
     <button
       data-active={active}

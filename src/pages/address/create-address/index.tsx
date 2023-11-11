@@ -2,7 +2,7 @@ import { Controller, useForm } from 'react-hook-form'
 import ReactSelect from 'react-select'
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
-import  { useNavigate }  from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import InputMask from 'react-input-mask';
 import { api } from '../../../utils/axios';
 import { Label } from '@radix-ui/react-label';
@@ -10,9 +10,6 @@ import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
 import { AddressProps, ContextApp } from '../../../context/context-app';
 import { parseCookies } from 'nookies';
-
-
-
 
 const addressSchemaBody = z.object({
   neighborhood: z.object({
@@ -23,8 +20,8 @@ const addressSchemaBody = z.object({
   number: z.string().nonempty('Digite um número'),
   street: z.string().nonempty('O campo rua é obrigatório'),
   type: z.object({
-    label: z.string().optional(),
-    value: z.string().optional(),
+    label: z.enum(['Casa', 'Trabalho', 'Outro']),
+    value: z.enum(['HOME', 'WORK', 'OTHER']),
   }),
   phone: z.string()
     .nonempty('O campo telefone é obrigatório')
@@ -54,13 +51,12 @@ export default function CreateAddress() {
     resolver: zodResolver(addressSchemaBody),
 
   });
-  const {neighborhoods, setAddresses, addresses} = ContextApp()
+  const { neighborhoods, setAddresses, addresses } = ContextApp()
   const navigate = useNavigate()
 
-  
   const handleSubmitForm = async (data: AddressSchema) => {
-    
-   const response = await api.post('/address', {
+
+    await api.post('/address', {
       neighborhood: data.neighborhood.value,
       number: data.number,
       street: data.street,
@@ -68,14 +64,31 @@ export default function CreateAddress() {
       zipCode: data.zipCode,
       phone: data.phone
 
-    }, 
-    {
-      headers: {
-        Authorization: `Bearer ${parseCookies().accessToken}`
-      }
-    })
-    
+    },
+      {
+        headers: {
+          Authorization: `Bearer ${parseCookies().accessToken}`
+        }
+      })
+
+    const address: AddressProps = {
+      neighborhood: {
+        name: data.neighborhood.label,
+        tax: data.neighborhood.rate!,
+        id: ''
+      },
+      number: data.number,
+      street: data.street,
+      type: data.type.value,
+      zipCode: data.zipCode,
+      phone: data.phone,
+      standard: addresses ? false : true,
+      customerId: '',
+      id: '',
+    }
+    setAddresses([...addresses, address])
     navigate('/address')
+
   }
 
   return (
@@ -84,7 +97,7 @@ export default function CreateAddress() {
         Criar um novo endereço
       </h1>
       <form onSubmit={handleSubmit(handleSubmitForm)} className="w-11/12 flex flex-col items-start gap-3 justify-start mt-10 mx-5">
-        <h2>Endereço de entrega</h2>
+
         <Label className='mt-5 text-gray-500'>Bairro</Label>
         <Controller
           control={control}
@@ -92,6 +105,7 @@ export default function CreateAddress() {
           rules={{ required: true }}
           render={({ field }) => (
             <ReactSelect
+
               onChange={field.onChange}
               className='w-full'
               options={neighborhoods}
@@ -127,6 +141,7 @@ export default function CreateAddress() {
                   value={field.value}
                   onChange={field.onChange}
                   className='w-full'
+                  isSearchable={false}
                   options={[
                     { value: 'HOME', label: 'Casa' },
                     { value: 'WORK', label: 'Trabalho' },
@@ -166,6 +181,7 @@ export default function CreateAddress() {
               className='w-full p-2 rounded text-gray-600'
               mask="(99) 99999-9999"
               maskPlaceholder=""
+              type='tel'
               onChange={field.onChange}
               placeholder="(00) 00000-0000"
               value={field.value}

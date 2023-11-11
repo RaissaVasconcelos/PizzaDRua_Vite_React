@@ -5,10 +5,10 @@ import { Card } from "../../components/ui/card";
 import { CardProduct } from "./components/card-product";
 import { CardDrink } from "./components/card-drink";
 import { Button } from "../../components/ui/button";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { CardAddress } from "../../components/CardAddress";
 import { ShoppingCart } from "lucide-react";
-import { parseCookies } from "nookies";
+
 
 export default function Cart() {
 
@@ -65,14 +65,14 @@ export default function Cart() {
       }
 
       <div className="w-full flex items-center justify-center my-10">
-        <CardAddress />
+        <CardAddress textLink="/address"/>
       </div>
 
-      {currentAddress &&
+      {productToCart.length > 0 &&
         <div className={'w-full flex items-center justify-center'} >
-          <Button disabled={productToCart.length === 0} className="rounded-[8px]  text-gray-100 text-lg mt-5 w-11/12 bg-orange-500 hover:bg-orange-600 ">
+          <Button  className="rounded-[8px]  text-gray-100 text-lg mt-5 w-11/12 bg-orange-500 hover:bg-orange-600 ">
             <NavLink to={"/delivery"}>
-              Finalizar Compra
+              Continuar
             </NavLink>
           </Button>
         </div>

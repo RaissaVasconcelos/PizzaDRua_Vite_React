@@ -3,8 +3,6 @@ import logo from '../../../assets/logo.png'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AxiosError } from 'axios'
-import { NavLink } from 'react-router-dom'
-import { setCookie } from 'nookies'
 import { useNavigate } from 'react-router-dom'
 
 const createCustomerFormSchema = z.object({
@@ -35,7 +33,8 @@ export default function SignInDashboard() {
 
   const handleSignIn = async (data: CreateCustomerFormData) => {
     try {
-
+       console.log(data);
+        
       // const response = await api.post('/sessions', data)
       // const { access_token } = response.data
       // setCookie(undefined, 'accessToken', access_token, {

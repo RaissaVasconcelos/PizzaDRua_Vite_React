@@ -1,13 +1,15 @@
 
 import { api } from "../../utils/axios";
-import { ContextApp } from "../../context/context-app";
 import { useEffect, useState } from "react";
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Countdown } from "./components/Countdown";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 import { Copy } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import { notify } from "../../utils/toast";
+import { CalculatePrice } from "../../utils/calculate-price";
 
 interface qrCodeProps {
   qrcode: string
@@ -17,8 +19,8 @@ interface qrCodeProps {
 
 export default function Pix() {
   const [qrCodeData, setQrCodeData] = useState<qrCodeProps>()
-  const { cartTotalPrice } = ContextApp()
-  console.log(String(cartTotalPrice), 'total price');
+  const totalPrice = CalculatePrice()
+ 
 
   const handleQRcodePix = async () => {
     const response = await api.post('/pix', {
@@ -30,7 +32,7 @@ export default function Pix() {
         nome: "Francisco da Silva"
       },
       valor: {
-        original: String(cartTotalPrice),
+        original: String(totalPrice),
       },
       chave: "a471ed5a-0b30-4507-8e9e-c9ba73ec33cb",
       solicitacaoPagador: "Informe o número ou identificador do pedido."
@@ -39,9 +41,40 @@ export default function Pix() {
     setQrCodeData(response.data)
 
   }
+
+  const navigate = useNavigate()
+
+  const onConfirmationPix = async () => {
+    const toastId = toast.loading("Aguardando pagamento...")
+    api.get('/webhook').then(() => {
+      
+      toast.update(toastId, {
+        render: "Pagamento realizado com sucesso!",
+        type: "success",
+        isLoading: false,
+        autoClose: 4000
+      })
+    
+    }).catch(() => {
+      toast.update(toastId, {
+        render: "Erro ao realizar pagamento!",
+        type: "error",
+        isLoading: false,
+      })
+    })
+    
+    
+      await new Promise(resolve => setTimeout(resolve, 3000)) 
+      navigate('/success')
+    
+    
+   
+  }
+
   useEffect(() => {
     handleQRcodePix()
-  }, [cartTotalPrice])
+    onConfirmationPix()
+  }, [])
 
 
   return (
@@ -59,7 +92,7 @@ export default function Pix() {
             </div>
             <div className="mt-10">
                 <CopyToClipboard text={qrCodeData?.qrcode ? qrCodeData.qrcode : ''}>
-                  <button onClick={() => notify('Codigo copiado com sucesso')} className="bg-orange-500 p-4 rounded text-gray-100 flex items-center gap-2 hover:bg-orange-600 ">Capia codigo <Copy/> </button>
+                  <button onClick={() => notify('Codigo copiado com sucesso', 'bottom')} className="bg-orange-500 p-4 rounded text-gray-100 flex items-center gap-2 hover:bg-orange-600 ">Capia codigo <Copy/> </button>
                 </CopyToClipboard>
             </div>
         </div>

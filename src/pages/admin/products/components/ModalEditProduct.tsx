@@ -2,7 +2,6 @@ import { Controller, useForm } from 'react-hook-form'
 import ReactSelect from 'react-select'
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from 'react-router-dom'
 import { Label } from '../../../../components/ui/label';
 import { Input } from '../../../../components/ui/input';
 import { Button } from '../../../../components/ui/button';
@@ -10,15 +9,14 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Image, Trash, X } from 'lucide-react';
 import { Textarea } from '../../../../components/ui/textarea';
 import { api } from '../../../../utils/axios';
-import { useState, CSSProperties, useRef } from 'react';
-import HashLoader from 'react-spinners/MoonLoader';
+import { useState } from 'react';
 import { ProductProps } from '../../../../context/context-app';
 import { ToastContainer } from 'react-toastify';
 import { notify } from '../../../../utils/toast';
 
 
-const maxFileSize = 5 * 1024 * 1024; // 5MB
-const allowedFileTypes = ["image/jpeg", "image/jpg"];
+// const maxFileSize = 5 * 1024 * 1024; // 5MB
+// const allowedFileTypes = ["image/jpeg", "image/jpg"];
 
 
 const productSchemaBody = z.object({
@@ -26,7 +24,7 @@ const productSchemaBody = z.object({
   name: z.string().nonempty('O campo nome é obrigatório'),
   description: z.string().nonempty('O campo descrição é obrigatório')
     .max(100, 'O campo descrição deve conter no máximo 100 caracteres'),
-  size: z.string().nonempty('O campo tamanho é obrigatório'),
+
   status: z.object({
     label: z.string().optional(),
     value: z.string().optional(),
@@ -52,28 +50,26 @@ interface ModalProductsProps {
 }
 
 export default function ModalEditProduct({ product, setOpenModal, openModal }: ModalProductsProps) {
-  const [previewImage, setPreviewImage] = useState<string | null>(product.image_url);
+  const [previewImage, setPreviewImage] = useState<string | undefined>(product.image_url);
   const [errorFieldImage, setErrorFieldImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectCategory, setSelectCategory] = useState<string | undefined>('Pizza');
 
   const {
     control,
     register,
     handleSubmit,
-    setError,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ProductSchema>({
     resolver: zodResolver(productSchemaBody),
     defaultValues: {
       name: product.product[0].name,
       description: product.description,
-      size: product.size,
       price: product.price,
       file: product.image_url,
-      category: { label: "Pizza", value: "Pizza" },
-      status: { label: "ATIVO", value: "ATIVO" },
-      type: { label: "Tradicional", value: "Tradicional" },
+      category: product.category.name === "pizza" ? { label: "Pizza" } : { label: "Bebida" },
+      status: product.status === "ACTIVE" ? { label: "ATIVO", value: "ATIVO" } : { label: "DESABILITADO", value: "DESABILITADO" },
+      type: product.type === "TRADITIONAL" ? { label: "Tradicional" } : { label: "Especial" },
     }
   });
 
@@ -83,13 +79,13 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
       setPreviewImage(file ? URL.createObjectURL(file) : product.image_url);
     }
   };
-  const showFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  // const showFileInput = () => {
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.click();
+  //   }
+  // };
 
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   const formatValue = (value: string) => {
     // Remove tudo que não for dígito ou ponto decimal
@@ -112,32 +108,32 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
 
 
   const handleSubmitForm = async (data: ProductSchema) => {
-    
+  
     if (typeof data.file !== 'string') {
       const imageUrl = await api.post('/upload', data.file)
-      console.log(imageUrl.data);
       await api.put('/product', {
         id: product.id,
         name: data.name,
-        size: data.size,
+        size: data.category.label === "Pizza" ? 'ENTIRE' : '',
         description: data.description,
         status: data.status.value === "ATIVO" ? 'ACTIVE' : 'DISABLE',
-        type: data.type.value === "Especial" ? 'SPECIAL' : 'TRADITIONAL',
+        type: data.category.label === "Pizza" ? data.type.label === "Especial" ? 'SPECIAL' : 'TRADITIONAL' : '',
         price: formatValue(data.price),
-        category: data.category.value,
+        category: data.category.label === "Pizza" ? 'pizza' : 'drink',
         imageUrl: imageUrl.data
       })
 
     } else {
+
       await api.put('/product', {
         id: product.id,
         name: data.name,
-        size: data.size,
+        size: data.category.label === "Pizza" ? 'ENTIRE' : '',
         description: data.description,
         status: data.status.value === "ATIVO" ? 'ACTIVE' : 'DISABLE',
-        type: data.type.value === "Especial" ? 'SPECIAL' : 'TRADITIONAL',
+        type: data.category.label === "Pizza" ? data.type.label === "Especial" ? 'SPECIAL' : 'TRADITIONAL' : '',
         price: formatValue(data.price),
-        category: data.category.value,
+        category: data.category.label === "Pizza" ? 'pizza' : 'drink',
         imageUrl: data.file
       })
 
@@ -167,7 +163,7 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
                   <img
                     src={previewImage}
                     alt="Prévia da imagem"
-                    className="mt-3 flex items-center justify-center w-1/2 rounded"
+                    className="mt-3 h-52 object-contain flex items-center justify-center w-1/2 rounded"
                   />
                   <Trash size={24} className='text-red-500 cursor-pointer' onClick={() => { setPreviewImage(''), reset() }} />
                 </div>
@@ -214,33 +210,15 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
                 )}
               </div>
 
-              <div className='w-1/4'>
+
+            </div>
+            <div className='flex w-full items-center justify-between gap-5'>
+              <div className='w-full'>
                 <Label className='text-gray-500'>Preco</Label>
                 <Input type='text' {...register('price')} placeholder='Ex. 00.00' />
                 {errors.price && (
                   <span className="text-red-500 mb-3">{errors.price?.message}</span>
                 )}
-              </div>
-            </div>
-            <div className='flex w-full items-center justify-between gap-5'>
-              <div className='w-full'>
-                <Label className='text-gray-500'>Tipo de pizza</Label>
-                <Controller
-                  control={control}
-                  name="type"
-                  render={({ field }) => (
-                    <ReactSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                      className='w-full'
-                      options={[
-                        { value: 'Especial', label: 'Especial' },
-                        { value: 'Tradicional', label: 'tradicional' },
-                      ]}
-                    />
-
-                  )}
-                />
               </div>
               <div className='w-full'>
                 <Label className='text-gray-500'>Categoria</Label>
@@ -250,7 +228,10 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
                   render={({ field }) => (
                     <ReactSelect
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={(e) => {
+                        setSelectCategory(e?.label)
+                        field.onChange(e)
+                      }}
                       className='w-full'
                       options={[
                         { value: 'Pizza', label: 'Pizza' },
@@ -266,14 +247,27 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
             <div className='flex w-full items-center justify-between gap-5'>
 
               <div className='w-full'>
-                <Label className='text-gray-500'>Tamanho</Label>
-                <Input type='text' {...register('size')} />
-                {errors.size && (
-                  <span className="text-red-500 mb-3">{errors.size?.message}</span>
-                )}
+                <Label className='text-gray-500'>Tipo de pizza</Label>
+                <Controller
+                  control={control}
+                  name="type"
+                  render={({ field }) => (
+                    <ReactSelect
+                      isDisabled={selectCategory === 'Bebida' ? true : false}
+                      value={field.value}
+                      onChange={field.onChange}
+                      className='w-full'
+                      options={[
+                        { value: 'Especial', label: 'Especial' },
+                        { value: 'Tradicional', label: 'tradicional' },
+                      ]}
+                    />
+
+                  )}
+                />
               </div>
               <div className='w-full'>
-                <Label className='text-gray-500'>Status da pizza</Label>
+                <Label className='text-gray-500'>Status</Label>
                 <Controller
                   control={control}
                   name="status"
@@ -297,11 +291,9 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
             {errors.description && (
               <span className="text-red-500 mb-3">{errors.description?.message}</span>
             )}
-            <Dialog.Trigger asChild>
-              <Button className='w-full mt-4 bg-red-500 hover:bg-red-400' type='submit'>
-                Salvar
-              </Button>
-            </Dialog.Trigger>
+            <Button className='w-full mt-4 bg-red-500 hover:bg-red-400' type='submit'>
+              Cadastrar
+            </Button>
           </form>
           <ToastContainer />
         </Dialog.Content>

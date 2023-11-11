@@ -1,4 +1,3 @@
-import { ClipboardCheck } from "lucide-react";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { ModalHandleChangeStatus } from "./ModalHandlechangeStatus";
 import { Orders } from "../../../../@types/interface";
@@ -6,10 +5,11 @@ import { Orders } from "../../../../@types/interface";
 interface CardProps {
   order: Orders
   onChangeOrderStatus: (orderId: string, status: string) => void
+  onCancelOrder: (orderId: string) => void
 }
 
 
-export const Card = ({order, onChangeOrderStatus}: CardProps) => {
+export const Card = ({order, onChangeOrderStatus, onCancelOrder}: CardProps) => {
 
   return (
       <AlertDialog.Root >
@@ -22,7 +22,8 @@ export const Card = ({order, onChangeOrderStatus}: CardProps) => {
           </button>
         </AlertDialog.Trigger>
         <ModalHandleChangeStatus 
-        onChangeOrderStatus={onChangeOrderStatus} 
+          onChangeOrderStatus={onChangeOrderStatus}
+          onCancelOrder={onCancelOrder}
           order={order} 
         />
       </AlertDialog.Root>
