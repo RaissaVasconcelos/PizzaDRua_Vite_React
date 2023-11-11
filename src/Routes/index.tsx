@@ -20,6 +20,7 @@ import SignInDashboard from '../pages/admin/sign-in'
 import Neighborhoods from '../pages/admin/neighborhoods'
 import Products from '../pages/admin/products'
 import OrdersCustomer from '../pages/orders'
+import OrdersHistory from '../pages/admin/orders-history'
 
 export const Router = () => {
 
@@ -48,7 +49,9 @@ export const Router = () => {
 
       //Rotas admin
       <Route path='/' element={<AdminLayout />}>
+      
         <Route path='/admin/sign-in' element={<SignInDashboard />} />
+        <Route path='/admin/orders-history' element={<OrdersHistory />} />
         <Route path='/admin/dashboard' element={<Dashboard />} />
         <Route path='/admin/neighborhoods' element={<Neighborhoods />} />
         <Route path='/admin/products' element={<Products />} />

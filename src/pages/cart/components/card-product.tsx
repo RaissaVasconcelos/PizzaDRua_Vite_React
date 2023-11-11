@@ -26,8 +26,7 @@ export const CardProduct = ({ product, price, quantityProduct, id, image_url }: 
             {product.map(item => (<span key={item.name} className="text-gray-600 font-semibold">{item.name}</span>))}
 
           </div>
-          <span>Tamanho M</span>
-          <span>Qtd {quantityProduct}x</span>
+          <span className="text-gray-600 font-semibold text-lg">Qtd {quantityProduct}x</span>
           <span className="font-semibold">{priceFormatter.format(Number(totalPrice))}</span>
         </div>
       </div>

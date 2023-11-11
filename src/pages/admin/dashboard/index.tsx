@@ -8,12 +8,22 @@ import socket from "../../../utils/socketIO";
 export default function Dashboard() {
   const [orders, setOrders] = useState<Orders[]>([])
   
-
   useEffect(() => {
     // Adicione o ouvinte do evento 'newOrder' ao montar o componente
     socket.on('newOrder', (data: any) => {
-      console.log("Novo pedido recebido:", data);
-     
+      setOrders((prevOrders) => {
+        const orderExists = prevOrders.some((order) => order.id === data.id);
+
+        if (!orderExists) {
+          return [...prevOrders, data];
+        } else {
+          // Se o pedido já existe, atualize apenas o status
+          return prevOrders.map((order) =>
+            order.id === data.id ? { ...order, status: data.status } : order
+          );
+        }
+      });
+      
       socket.emit('statusUpdate', { orderId: data.id, status: data.status });
     });
 

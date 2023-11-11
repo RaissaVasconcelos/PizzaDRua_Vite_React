@@ -16,8 +16,6 @@ export const CardProducts = ({product}: CardProductsProps) => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
 
- 
-
   return (
     <div className="bg-white flex flex-col items-center justify-center border-0 rounded w-full py-2">
       <CardContent className="w-full flex flex-col items-center justify-between gap-2">
@@ -25,7 +23,12 @@ export const CardProducts = ({product}: CardProductsProps) => {
         <img className="object-cover w-full h-72" src={product.image_url} alt='' />
 
         <div className="w-full">
-          <p className="font-bold text-lg text-gray-600">{product.product.map((product) => product.name)}</p>
+          <div className="flex items-center justify-between">
+            <p className="font-bold text-lg text-gray-600">{product.product.map((product) => product.name)}</p>
+            <span className={`${product.status === "ACTIVE" ? "text-emerald-500 border-emerald-500" : "text-red-500 border-red-500"} border-2 rounded px-2 font-semibold`}>
+              {product.status === "ACTIVE" ? "ATIVO" : "DESABILITADO"}
+            </span>
+          </div>
           <p className="text-gray-600">{product.description}</p>
 
           <p className="text-gray-500 font-bold text-lg">{priceFormatter.format(Number(product.price))}</p>

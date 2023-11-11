@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom"
 
 export const HeaderAdmin = () => {
 
@@ -10,9 +11,10 @@ export const HeaderAdmin = () => {
         </div>
     </header>
         <nav className='w-full my-5 text-gray-100 text-lg font-medium flex items-center justify-center gap-10'>
-          <a href="/admin/dashboard">Pedidos</a>        
-          <a href="/admin/products">Produtos</a>
-          <a href="/admin/neighborhoods">Bairros</a>
+          <NavLink to="/admin/dashboard">Pedidos</NavLink>        
+          <NavLink to="/admin/products">Produtos</NavLink>
+          <NavLink to="/admin/neighborhoods">Bairros</NavLink>
+          <NavLink to="/admin/orders-history">Histórico de Pedidos</NavLink>
         </nav>
     </div>
   )

@@ -1,10 +1,10 @@
+/* eslint-disable prefer-const */
 import { api } from '../utils/axios'
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
 import { produce } from "immer";
 import { setCookie, parseCookies } from "nookies";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from '../services/firebaseConfig';
-
 
 interface childrenProps {
   children: ReactNode
@@ -77,6 +77,7 @@ type PizzaDRuaContextType = {
   groupOptions: GroupOptions[]
   productToCart: OrdersCartProps[]
   neighborhoods: any[]
+  clearCart: () => void
   setAddresses: (Address: AddressProps[]) => void
   addProductToCart: (product: OrdersCartProps) => void
   setOnChangeCatalog: (catalog: string) => void
@@ -111,7 +112,10 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   const [neighborhoods, setNeighborhoods] = useState([])
   const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
   const [onChangeCatalog, setOnChangeCatalog] = useState('PIZZA')
-  const [customer, setCustomer] = useState<any>()
+  const [customer, setCustomer] = useState<any>(() => {
+    const cookieCustomer = parseCookies().customer
+    return cookieCustomer ? JSON.parse(cookieCustomer) : null
+  })
   const [statusOrder, setStatusOrder] = useState('')
 
   const [productToCart, setProductToCart] = useState<OrdersCartProps[]>(
@@ -121,7 +125,6 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     }
   )
   const [groupOptions, setGroupOptions] = useState<any[]>([])
-  // const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const getFlavors = async () => {
 
@@ -147,7 +150,12 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     return acc + price * item.quantityProduct;
   }, 0);
 
-  const totalItemsOnCart = (productToCart.length)
+  let totalItemsOnCart = (productToCart.length)
+
+  const clearCart = () => {
+    setProductToCart([])
+    totalItemsOnCart = 0
+  }
 
   const addProductToCart = (product: OrdersCartProps) => {
     const checkIfProductExists = productToCart.findIndex(
@@ -212,26 +220,25 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
         const user = result.user;
         user.getIdToken().then((token) => {
           setCookie(undefined, 'accessToken', JSON.stringify(token))
-        }) 
+        })
         setCookie(undefined, 'customer', JSON.stringify(user))
         setCustomer(user)
 
       }).catch((error) => {
         console.log(error);
-          
         // const errorCode = error.code;
         // const errorMessage = error.message;
         // const email = error.customData.email;
         // const credential = GoogleAuthProvider.credentialFromError(error);
       });
-  
+
   }
 
   const loadCookiesAuth = () => {
     const token = parseCookies().accessToken
     const customer = parseCookies().customer
     if (token && customer) {
-      setCustomer(JSON.parse(customer))  
+      setCustomer(JSON.parse(customer))
     }
   }
 
@@ -244,7 +251,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
     loadCookiesAuth()
   }, [])
 
-  
+
   return (
     <PizzaDRuaContext.Provider value={{
       addresses,
@@ -259,6 +266,7 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
       cartProductsTotalPrice,
       totalItemsOnCart,
       setAddresses,
+      clearCart,
       setOnChangeCatalog,
       handleSignInGoogle,
       addProductToCart,

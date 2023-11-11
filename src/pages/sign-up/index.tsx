@@ -1,5 +1,5 @@
 
-import {  useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import logo from '../../assets/logo.png'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,7 +9,8 @@ import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerifi
 import { parseCookies, setCookie } from 'nookies';
 import { notify } from '../../utils/toast';
 import { ToastContainer } from 'react-toastify';
-
+import { Oval } from 'react-loader-spinner'
+import { useState } from 'react';
 
 const createCustomerFormSchema = z.object({
   name: z
@@ -32,6 +33,8 @@ const createCustomerFormSchema = z.object({
 type CreateCustomerFormData = z.infer<typeof createCustomerFormSchema>
 
 export default function Page() {
+  const [isLoading, setIsLoading] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -43,7 +46,9 @@ export default function Page() {
   const navigate = useNavigate()
 
   const handleCreateCustomer = async (data: CreateCustomerFormData) => {
+    setIsLoading(true)
     if (data.password !== data.confirmationPassword) {
+      setIsLoading(false)
       setError('root', {
         type: 'manual',
         message: 'As senhas precisam ser iguais',
@@ -62,21 +67,13 @@ export default function Page() {
           displayName: data.name
         })
         setCookie(undefined, 'customer', JSON.stringify(user))
-      })
-    const customer = JSON.parse(parseCookies().customer)
-    await api.post('/customer', {
-      id: customer.uid,
-      name: data.name,
-      email: data.email,
-      password: data.password
-    })
-
-    await sendEmailVerification(auth.currentUser!)
-
-      .catch((error) => {
+      }).catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        console.log(errorCode, 'fdfdf');
+
         if (errorCode === "auth/email-already-in-use") {
+          setIsLoading(false)
           setError('root', {
             type: 'manual',
             message: 'Usuário já cadastrado',
@@ -84,12 +81,22 @@ export default function Page() {
         } else {
           console.error(errorMessage)
         }
-      });
+      })
+
+    await sendEmailVerification(auth.currentUser!)
+
+    const customer = JSON.parse(parseCookies().customer)
+    await api.post('/customer', {
+      id: customer.uid,
+      name: data.name,
+      email: data.email,
+      password: data.password
+    })
+    notify('Verifique seu email', 'top', 5000)
     navigate('/sign-in')
   }
 
 
-  notify('Verifique seu email', 'top', 5000)
   return (
     <div className='mt-32 w-11/12 flex items-center justify-center'>
       <form
@@ -149,10 +156,27 @@ export default function Page() {
         )}
 
         <button
-          className="bg-orange-500 w-10/12 mt-8  py-4 rounded text-gray-100 font-bold text-sm  uppercase hover:bg-orange-600"
+          disabled={isLoading}
+          className="bg-orange-500 flex items-center justify-center w-10/12 mt-8  py-4 rounded text-gray-100 font-bold text-sm  uppercase hover:bg-orange-600"
           type="submit"
         >
-          Cadastrar
+          {isLoading ? (
+            <Oval
+              height={25}
+              width={25}
+              color="#fff"
+              wrapperStyle={{}}
+              wrapperClass=""
+              visible={true}
+              ariaLabel='oval-loading'
+              secondaryColor="#fff"
+              strokeWidth={2}
+              strokeWidthSecondary={2}
+
+            />
+          ) : (
+            'Cadastrar'
+          )}
         </button>
         <NavLink
           to="/sign-in"

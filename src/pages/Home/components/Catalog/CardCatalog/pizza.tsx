@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import { notify } from "../../../../../utils/toast"
 import { ContextApp, ProductProps } from "../../../../../context/context-app"
 import { priceFormatter } from "../../../../../utils/formatter"
+import { NavLink } from "react-router-dom";
 
 
 export const CardCatalogPizza = (catalog: ProductProps) => {
@@ -55,9 +56,9 @@ export const CardCatalogPizza = (catalog: ProductProps) => {
       </CardContent>
       <div className="px-2 flex items-center justify-center flex-col w-full text-gray-100  gap-2 ">
         <Button disabled={!quantityProduct} onClick={handleAddProductToCart} className={"w-full rounded bg-orange-500 hover:bg-orange-600 text-lg"} >Adicionar ao carrinho</Button>
-        <a className="w-full" href="/personalize">
+        <NavLink className="w-full" to="/personalize">
           <Button className={"w-full rounded border-2 border-orange-500 text-lg text-orange-500 bg-white hover:bg-orange-50"} >Personalizar</Button>
-        </a>
+        </NavLink>
         <ToastContainer />
       </div>
     </Card>

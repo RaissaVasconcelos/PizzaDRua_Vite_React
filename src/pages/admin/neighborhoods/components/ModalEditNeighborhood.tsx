@@ -103,14 +103,14 @@ export default function ModalEditNeighborhood({ neighborhood, openModalEdit, set
             <div className='flex w-full items-center justify-between gap-5'>
 
               <div className='w-full'>
-                <Label className='text-gray-500'>Tamanho</Label>
+                <Label className='text-gray-500'>Taxa</Label>
                 <Input type='text' {...register('tax')} />
                 {errors.tax && (
                   <span className="text-red-500 mb-3">{errors.tax?.message}</span>
                 )}
               </div>
               <div className='w-full'>
-                <Label className='text-gray-500'>Status da pizza</Label>
+                <Label className='text-gray-500'>Status</Label>
                 <Controller
                   control={control}
                   name="status"

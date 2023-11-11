@@ -59,6 +59,7 @@ export default function SignIn() {
         setCookie(undefined, 'customer', JSON.stringify(user))
 
         navigate('/')
+        window.location.reload()
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -89,14 +90,12 @@ export default function SignIn() {
             id: customer.uid,
             name: customer.displayName,
             email: customer.email,
-
           })
       }
-
-
     }
     handleCreateCustomerSocialAccount()
     navigate('/')
+    
   }
   return (
     <div className='mt-40 bg-white w-10/12 flex flex-col items-center justify-center'>
