@@ -20,10 +20,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
   "paths": {
-    "@assets/*":
-      ["./src/assets/*"],
+    "@assets/*": ["./src/assets/*"],
     "@components/*": ["./src/components/*"],
     "@context/*": ["./src/context/*"],
     "@globais/*": ["./src/globais/*"],
@@ -35,5 +33,6 @@
     "@services/*": ["./src/services/*"],
     "@utils/*": ["./src/utils/*"],
   },
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
