@@ -10,7 +10,7 @@ export type IHttpRequest = {
 
 export type HttpResponse< T = any > = {
   statusCode: number
-  body: T
+  data: T
 }
 
 export interface IHttpClient<R = any> {

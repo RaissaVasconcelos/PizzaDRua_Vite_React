@@ -39,7 +39,7 @@ export default class Service {
   public async deleteAddress(data: DeleteAddressRequestDTO): Promise<HttpResponse<any>> {
     return await this.httpClient.request({
       method: 'delete',
-      url: '/address',
+      url: `/address/:${data.id}`,
       params: data,
     })
   }

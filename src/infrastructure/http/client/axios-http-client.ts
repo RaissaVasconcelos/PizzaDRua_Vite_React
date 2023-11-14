@@ -4,7 +4,6 @@ import {
   IHttpClient,
   HttpResponse,
   IHttpRequest } from '../../../model/http/http-client'
-import { LocalStorageKeys } from '../../../model/storage/keys'
 import { parseCookies } from 'nookies';
 
 const { VITE_BACKEND_URL } = import.meta.env 
@@ -25,7 +24,7 @@ export class AxiosHttpClient implements IHttpClient {
 
   private createHeaders({ token, headers }: CreateHeadersProps) {
     const tokenAuth = token
-      ? { Authorization: `Bearer ${token.replace('"', '').replace('"', '')}` }
+      ? { Authorization: `Bearer ${token}` }
       : null;
     return {
       'Content-Type': 'application/json',
@@ -35,8 +34,8 @@ export class AxiosHttpClient implements IHttpClient {
   }
   
   private async getToken(): Promise<string | null > {
-    const token = parseCookies().acessToken
-
+    const token = parseCookies().accessToken
+    console.log('token', token)
     if(token) {
       return token
     } else {
@@ -62,7 +61,7 @@ export class AxiosHttpClient implements IHttpClient {
 
       return {
         statusCode: response.status,
-        body: response.data,
+        data: response.data,
       };
     } catch (err) {
       // return {
@@ -74,7 +73,7 @@ export class AxiosHttpClient implements IHttpClient {
 
       return {
         statusCode: 505,
-        body: err,
+        data: err,
       };
 
     }

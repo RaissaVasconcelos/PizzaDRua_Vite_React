@@ -1,14 +1,27 @@
 import { Plus } from "lucide-react";
 import { CardAddress } from "./components/card";
 import { NavLink } from 'react-router-dom'
-import {  ContextApp } from "../../context/context-app";
 import { HeaderOrder } from "../../components/HeaderOrder";
 import { Button } from "../../components/ui/button";
+import Service from '../../infrastructure/services/address'
+import { useEffect, useState } from "react";
+import { IAddress } from '../../infrastructure/services/address/dtos/response/ShowAddressResponseDTO'
 
 
 export default function Address() {
+  const service = new Service()
+  const [addresses, setAddresses] = useState<IAddress[]>([])
 
-  const { addresses } = ContextApp()
+  const getAddress = async () => {
+    const { data, statusCode } = await service.showAddress()
+    console.log('address', data)
+    console.log(statusCode)
+    setAddresses(data)
+  }
+  
+  useEffect(() => {
+    getAddress()
+  }, [])
 
   return (
     <>
@@ -23,7 +36,7 @@ export default function Address() {
           </NavLink>
         </Button>
       <div className="w-full flex flex-col items-center justify-center gap-5">
-          {addresses.map((address) => (
+          {addresses.map((address: any) => (
             <CardAddress
               address={address}
               key={address.id}
