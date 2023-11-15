@@ -17,7 +17,7 @@ export const Header = () => {
               <ShoppingBag size={28} />
             </div>
 
-            {totalItemsOnCart && <span className="text-orange-100 bg-orange-500 px-2 -ml-5 mb-8 rounded-full">{totalItemsOnCart}</span>}
+            {totalItemsOnCart && <span className="text-white bg-orange-500 px-2 -ml-5 mb-8 rounded-full">{totalItemsOnCart}</span>}
           </div>
         </NavLink>
         <Profile />      

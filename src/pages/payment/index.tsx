@@ -7,9 +7,9 @@ import { useState } from "react";
 import pix from '../../assets/pix.svg'
 import pixOrange from '../../assets/pix-orange.svg'
 import { AlertCircle, Banknote, CreditCard } from "lucide-react";
-import { Button } from "../../components/ui/button";
 import { setCookie } from "nookies";
 import { useNavigate } from 'react-router-dom';
+import { ButtonCheckout } from "../../components/ButtonCheckout";
 
 const paymentSchemaBody = z.object({
   methodPayment: z.enum(['CARD', 'MONEY', 'PIX']),
@@ -19,7 +19,7 @@ type PaymentSchema = z.infer<typeof paymentSchemaBody>
 
 export default function Payment() {
   const [isCheckedPayment, setIsCheckedPayment] = useState('PIX');
- 
+
   const {
     control,
     handleSubmit,
@@ -41,9 +41,8 @@ export default function Payment() {
 
   return (
     <>
-      <HeaderOrder title="Pagamento" link="/cart" />
+      <HeaderOrder activeLink="PAYMENT" leftLink="/delivery" />
       <div className="w-full flex flex-col items-center justify-center my-10">
-        <h2 className="w-10/12 text-start text-xl font-semibold text-gray-500">Selecione um metodo de pagamento</h2>
         <form onSubmit={handleSubmit(handleSubmitForm)} className='w-full ' action="">
           <div className='w-11/12 flex flex-col items-center justify-center m-5'>
 
@@ -77,7 +76,7 @@ export default function Payment() {
                       <CreditCard size={38} strokeWidth={1} className="font-light" />
                       <h3>CARTAO DE CREDITO</h3>
                     </RadioGroup.Item>
-                    
+
                     <div className="w-10/12 h-[2px] bg-gray-400" />
                     <RadioGroup.Item
                       value="MONEY"
@@ -91,18 +90,16 @@ export default function Payment() {
                 )
               }}
             />
-                    {(isCheckedPayment === 'MONEY' || isCheckedPayment === 'CARD') && (
-                      <p className="border-2 border-yellow-500 bg-yellow-50 p-2 rounded-md text-yellow-500 font-semibold mt-10 flex items-center gap-2 ">
-                        <AlertCircle size={25} className='text-yellow-500' /> 
-                        O pagamento será processado no ato da entrega
-                      </p>
-                    )}
+            {(isCheckedPayment === 'MONEY' || isCheckedPayment === 'CARD') && (
+              <p className="border-2 border-yellow-500 bg-yellow-50 p-2 rounded-md text-yellow-500 font-semibold mt-10 flex items-center gap-2 ">
+                <AlertCircle size={25} className='text-yellow-500' />
+                O pagamento será processado no ato da entrega
+              </p>
+            )}
           </div>
-          <div className="w-full flex  items-center justify-center">
-            <Button className="w-10/12 bg-orange-500 hover:bg-orange-600 text-lg mt-10" type="submit">
-              Prossiga para o pagamento
-            </Button>
-          </div>
+          <ButtonCheckout type="submit">
+            Proximo
+          </ButtonCheckout>
         </form>
       </div>
     </>

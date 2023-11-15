@@ -8,25 +8,23 @@ interface CardProps {
   onCancelOrder: (orderId: string) => void
 }
 
-
-export const Card = ({order, onChangeOrderStatus, onCancelOrder}: CardProps) => {
-
+export const Card = ({ order, onChangeOrderStatus, onCancelOrder }: CardProps) => {
   return (
-      <AlertDialog.Root >
-        <AlertDialog.Trigger asChild>
-          <button className="w-11/12 cursor-pointer my-2 h-36 flex bg-white items-center justify-center ">
-              <div className=" flex flex-col items-center justify-center ">
-                  <span>{order.customer.name}</span>
-                  <span className="text-gray-500">Pedidos ({order.itensOrder.length})</span>
-              </div>
-          </button>
-        </AlertDialog.Trigger>
-        <ModalHandleChangeStatus 
-          onChangeOrderStatus={onChangeOrderStatus}
-          onCancelOrder={onCancelOrder}
-          order={order} 
-        />
-      </AlertDialog.Root>
-    
+    <AlertDialog.Root >
+      <AlertDialog.Trigger asChild>
+        <button className="w-11/12 cursor-pointer my-2 h-36 flex bg-white items-center justify-center ">
+          <div className=" flex flex-col items-center justify-center ">
+            <span>{order.customer.name}</span>
+            <span className="text-gray-500">Pedidos ({order.itensOrder.length})</span>
+          </div>
+        </button>
+      </AlertDialog.Trigger>
+      <ModalHandleChangeStatus
+        onChangeOrderStatus={onChangeOrderStatus}
+        onCancelOrder={onCancelOrder}
+        order={order}
+      />
+    </AlertDialog.Root>
+
   )
 }

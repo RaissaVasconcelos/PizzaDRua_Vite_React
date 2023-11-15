@@ -11,12 +11,12 @@ export const Profile = () => {
   const { customer } = ContextApp()
   return (
     <>
-      <div>
+      <div className='flex items-center justify-center'>
         {
           customer ? (
             <button onClick={() => setOpenModal(true)} >
               {customer.photoURL ? (
-                <img src={customer.photoURL} className='rounded-full w-14' alt="" />
+                <img src={customer.photoURL} className='rounded-full w-[58px]' alt="" />
               ) : (
 
                 <div className='p-4  bg-gray-600 rounded-full'>

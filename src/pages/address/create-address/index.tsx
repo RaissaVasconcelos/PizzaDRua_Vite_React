@@ -82,7 +82,7 @@ export default function CreateAddress() {
       type: data.type.value,
       zipCode: data.zipCode,
       phone: data.phone,
-      standard: addresses ? false : true,
+      standard: addresses.length > 0 ? false : true,
       customerId: '',
       id: '',
     }
@@ -163,6 +163,7 @@ export default function CreateAddress() {
               className='w-full p-2 rounded text-gray-600'
               mask="99999-999"
               maskPlaceholder=""
+              type='tel'
               onChange={(e) => {
                 const rawValue = e.target.value.replace(/-/g, ''); // Remove hifens
                 field.onChange(rawValue);

@@ -26,8 +26,8 @@ const addressSchemaBody = z.object({
   number: z.string().nonempty('Digite um número'),
   street: z.string().nonempty('O campo rua é obrigatório'),
   type: z.object({
-    label: z.string().optional(),
-    value: z.string().optional(),
+    label: z.enum(['Casa', 'Trabalho', 'Outro']).optional(),
+    value: z.enum(['HOME', 'WORK', 'OTHER']).optional(),
   }),
   phone: z.string()
     .nonempty('O campo telefone é obrigatório')
@@ -51,12 +51,12 @@ interface EditAddressModalProps {
   address: AddressProps
   setOpenModal: (value: boolean) => void
   openModal: boolean
-   
+
 }
 
-export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAddressModalProps) => {
+export const EditAddressModal = ({ address, setOpenModal, openModal, }: EditAddressModalProps) => {
   const [openModalDelete, setOpenModalDelete] = useState(false);
-  const {neighborhoods, setAddresses, addresses} = ContextApp();
+  const { neighborhoods, setAddresses, addresses } = ContextApp();
   const {
     control,
     register,
@@ -65,162 +65,211 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
   } = useForm<AddressSchema>({
     resolver: zodResolver(addressSchemaBody),
     defaultValues: {
-     number: address.number,
-     street: address.street,
-     neighborhood: {label: address.neighborhood.name},
-     phone: address.phone,
-     type: {label: address.type},
-     zipCode: address.zipCode,
-     standardAddress: address.standard
+      number: address.number,
+      street: address.street,
+      neighborhood: { label: address.neighborhood.name },
+      phone: address.phone,
+      type: { label: address.type === 'HOME' ? 'Casa' : address.type === 'WORK' ? 'Trabalho' : 'Outro' },
+      zipCode: address.zipCode,
+      standardAddress: address.standard
     }
   });
- 
+
   const handleEditAddressForm = async (data: AddressSchema) => {
+
     try {
-       await api.put(`/address`, {
-        neighborhood: data.neighborhood.label,
-        id: address.id,  
-        number: data.number,
-        customerId: address.customerId,
-        standard: data.standardAddress,
-        street: data.street,
-        type: data.type.label,
-        zipCode: data.zipCode,
-        phone: data.phone
-      })
-      notify(`Endereco atualizado com sucesso`, 'bottom')
-      
-      setOpenModal(false)
-      
+      // Se o novo endereço será definido como padrão, ajuste todos os outros endereços para não padrão
+      if (data.standardAddress) {
+        const updatedAddresses = addresses.map((item) => ({
+          ...item,
+          standard: false,
+        }));
+
+        // Agora, atualize o endereço desejado com padrão verdadeiro
+        updatedAddresses.find((item) => item.id === address.id)!.standard = true;
+
+        await api.put(`/address`, {
+          neighborhood: data.neighborhood.label,
+          id: address.id,
+          number: data.number,
+          customerId: address.customerId,
+          standard: data.standardAddress,
+          street: data.street,
+          type: data.type.label === 'Casa' ? 'HOME' : data.type.label === 'Trabalho' ? 'WORK' : 'OTHER',
+          zipCode: data.zipCode,
+          phone: data.phone,
+        });
+
+        notify(`Endereço atualizado com sucesso`, 'bottom');
+
+        setAddresses(updatedAddresses); // Atualize o estado com todos os endereços ajustados
+        setOpenModal(false);
+      } else {
+        // Se o novo endereço não é padrão, você pode atualizá-lo diretamente
+        await api.put(`/address`, {
+          neighborhood: data.neighborhood.label,
+          id: address.id,
+          number: data.number,
+          customerId: address.customerId,
+          standard: data.standardAddress,
+          street: data.street,
+          type: data.type.label === 'Casa' ? 'HOME' : data.type.label === 'Trabalho' ? 'WORK' : 'OTHER',
+          zipCode: data.zipCode,
+          phone: data.phone,
+        });
+
+        notify(`Endereço atualizado com sucesso`, 'bottom');
+
+        const newAddress: AddressProps = {
+          customerId: address.customerId,
+          id: address.id,
+          neighborhood: {
+            name: data.neighborhood.label!,
+            tax: data.neighborhood.tax!,
+            id: '',
+          },
+          number: data.number,
+          phone: data.phone,
+          standard: data.standardAddress!,
+          street: data.street,
+          type: data.type.value!,
+          zipCode: data.zipCode,
+        };
+
+        setAddresses(addresses.map((item) => (item.id === address.id ? newAddress : item)));
+        setOpenModal(false);
+      }
     } catch (error) {
       console.error(error);
     }
-
-  }
+  };
   const handleDeleteAddress = (id: string) => {
     const newAddresses = addresses.filter(item => item.id !== id);
     setAddresses(newAddresses);
   }
 
   return (
-<>
-    <Dialog.Root open={openModal}>
-      <Dialog.Portal>
-        <Dialog.Overlay className=" fixed w-screen h-screen inset-0 bg-gray-900/[.6]" />
-        <Dialog.Content className="w-11/12 rounded py-5 flex flex-col items-center bg-[#f3f3f3] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <Dialog.Close onClick={() => setOpenModal(false)}  className="absolute bg-transparent border-spacing-0 top-5 right-5 text-gray-300 line-through ">
-            <X size={24} />
-          </Dialog.Close>
-          <Dialog.Title className="text-gray-600 font-semibold text-xl">
-            Editar Endereço
-          </Dialog.Title>
-          <form onSubmit={handleSubmit(handleEditAddressForm)} className="w-10/12 flex flex-col items-start gap-3 justify-start  mx-5">
+    <>
+      <Dialog.Root open={openModal}>
+        <Dialog.Portal>
+          <Dialog.Overlay className=" fixed w-screen h-screen inset-0 bg-gray-900/[.6]" />
+          <Dialog.Content className="w-11/12  rounded py-5 flex flex-col items-center z-15 bg-[#f3f3f3] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <Dialog.Close onClick={() => setOpenModal(false)} className="absolute bg-transparent border-spacing-0 top-5 right-5 text-gray-300 line-through ">
+              <X size={24} />
+            </Dialog.Close>
+            <Dialog.Title className="text-gray-600 font-semibold text-xl">
+              Editar Endereço
+            </Dialog.Title>
+            <form onSubmit={handleSubmit(handleEditAddressForm)} className="w-10/12 flex flex-col items-start gap-3 justify-start  mx-5">
 
-            <Label className='mt-5 text-gray-500'>Bairro</Label>
-            <Controller
-              control={control}
-              name="neighborhood"
-              render={({ field }) => (
-                <ReactSelect
-                  value={field.value}
-                  onChange={field.onChange}
-                  className='w-full'
-                  options={neighborhoods}
+              <Label className='mt-5 text-gray-500'>Bairro</Label>
+              <Controller
+                control={control}
+                name="neighborhood"
+                render={({ field }) => (
+                  <ReactSelect
+                    value={field.value}
+                    onChange={field.onChange}
+                    className='w-full'
+                    options={neighborhoods}
 
-                />
-              )}
-            />
-            {errors.root && <p className='text-red-500'>{errors.root.message}</p>}
-            <Label className='text-gray-500'>Rua</Label>
-            <Input
-              className='w-full rounded text-gray-600 placeholder:text-gray-400'
-              placeholder='EX. Rua João Daniel Martinelli'
-              {...register('street')}
-            />
-            {errors.street && <p className='text-red-500'>{errors.street.message}</p>}
-            <div className='w-full flex items-center justify-center gap-4'>
-              <div className='w-full'>
-                <Label className='text-gray-500'>Numero</Label>
-                <Input
-                  type='number'
-                  className='flex-1 rounded text-gray-600 placeholder:text-gray-400'
-                  placeholder='numero'
-                  {...register('number')}
-                />
+                  />
+                )}
+              />
+              {errors.root && <p className='text-red-500'>{errors.root.message}</p>}
+              <Label className='text-gray-500'>Rua</Label>
+              <Input
+                className='w-full rounded text-gray-600 placeholder:text-gray-400'
+                placeholder='EX. Rua João Daniel Martinelli'
+                {...register('street')}
+              />
+              {errors.street && <p className='text-red-500'>{errors.street.message}</p>}
+              <div className='w-full flex items-center justify-center gap-4'>
+                <div className='w-full'>
+                  <Label className='text-gray-500'>Numero</Label>
+                  <Input
+                    type='number'
+                    className='flex-1 rounded text-gray-600 placeholder:text-gray-400'
+                    placeholder='numero'
+                    {...register('number')}
+                  />
+                </div>
+                <div className='w-full'>
+                  <Label className='text-gray-500'>Tipo de Endereco</Label>
+                  <Controller
+                    control={control}
+                    name="type"
+                    render={({ field }) => (
+                      <ReactSelect
+                        value={field.value}
+                        onChange={field.onChange}
+                        isSearchable={false}
+                        className='w-full'
+                        options={[
+                          { value: 'HOME', label: 'Casa' },
+                          { value: 'WORK', label: 'Trabalho' },
+                          { value: 'OTHER', label: 'Outro' },
+                        ]}
+                      />
+
+                    )}
+                  />
+                </div>
               </div>
-              <div className='w-full'>
-                <Label className='text-gray-500'>Tipo de Endereco</Label>
-                <Controller
-                  control={control}
-                  name="type"
-                  render={({ field }) => (
-                    <ReactSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                      className='w-full'
-                      options={[
-                        { value: 'Casa', label: 'Casa' },
-                        { value: 'Trabalho', label: 'Trabalho' },
-                        { value: 'Outro', label: 'Outro' },
-                      ]}
-                    />
+              <Label className='text-gray-500'>Cep</Label>
+              <Controller
+                name="zipCode"
+                control={control}
+                render={({ field }) => (
+                  <InputMask
+                    className='w-full p-2 rounded text-gray-600'
+                    mask="99999-999"
+                    type="tel"
+                    maskPlaceholder=""
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/-/g, ''); // Remove hifens
+                      field.onChange(rawValue);
+                    }}
+                    value={field.value}
+                    placeholder="00000-000"
+                  />
+                )}
+              />
+              {errors.zipCode && <p className='text-red-500'>{errors.zipCode.message}</p>}
+              <Label className='text-gray-500'>Telefone</Label>
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <InputMask
+                    className='w-full p-2 rounded text-gray-600'
+                    mask="(99) 99999-9999"
+                    maskPlaceholder=""
+                    type="tel"
+                    onChange={field.onChange}
+                    placeholder="(00) 00000-0000"
+                    value={field.value}
+                  />
+                )}
+              />
+              {errors.phone && <p className='text-red-500'>{errors.phone.message}</p>}
+              <Controller
+                name="standardAddress"
+                control={control}
+                render={({ field }) => (
+                  <div className="mt-5 w-full flex items-center justify-between gap-2">
+                    <span>Definir como endereço padrão</span>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="bg-orange-500" />
+                  </div>
 
-                  )}
-                />
-              </div>
-            </div>
-            <Label className='text-gray-500'>Cep</Label>
-            <Controller
-              name="zipCode"
-              control={control}
-              render={({ field }) => (
-                <InputMask
-                  className='w-full p-2 rounded text-gray-600'
-                  mask="99999-999"
-                  maskPlaceholder=""
-                  onChange={(e) => {
-                    const rawValue = e.target.value.replace(/-/g, ''); // Remove hifens
-                    field.onChange(rawValue);
-                  }}
-                  value={field.value}
-                  placeholder="00000-000"
-                />
-              )}
-            />
-            {errors.zipCode && <p className='text-red-500'>{errors.zipCode.message}</p>}
-            <Label className='text-gray-500'>Telefone</Label>
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field }) => (
-                <InputMask
-                  className='w-full p-2 rounded text-gray-600'
-                  mask="(99) 99999-9999"
-                  maskPlaceholder=""
-                  onChange={field.onChange}
-                  placeholder="(00) 00000-0000"
-                  value={field.value}
-                />
-              )}
-            />
-            {errors.phone && <p className='text-red-500'>{errors.phone.message}</p>}
-            <Controller
-              name="standardAddress"
-              control={control}
-              render={({ field }) => (
-              <div className="mt-5 w-full flex items-center justify-between gap-2">
-                <span>Definir como endereço padrão</span>
-                <Switch 
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  className="bg-orange-500"  />
-              </div>  
-              
-              )}
-            />
+                )}
+              />
 
-            <Button onClick={() => setOpenModal(true)} className='w-full bg-red-500 mt-5 hover:bg-red-400' type='submit'>Salvar</Button>
-          </form>
+              <Button onClick={() => setOpenModal(true)} className='w-full bg-red-500 mt-5 hover:bg-red-400' type='submit'>Salvar</Button>
+            </form>
             <button onClick={() => setOpenModalDelete(true)} className="w-10/12 mt-3 py-2 items-center justify-center font-medium rounded  bg-gray-200 hover:bg-gray-400 text-gray-800  flex gap-2"> Deletar</button>
             <DeleteModal
               setOpenModalDelete={setOpenModalDelete}
@@ -232,10 +281,10 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
               id={address.id}
               url={'/address'}
             />
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
-    <ToastContainer />
-  </>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+      <ToastContainer />
+    </>
   );
 };
