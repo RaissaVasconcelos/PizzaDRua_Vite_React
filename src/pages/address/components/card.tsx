@@ -33,7 +33,9 @@ export const CardAddress = ({ address }: AddressCardProps) => {
         <div className="flex items-center justify-between">
           <div className="flex items-start justify-start gap-2 text-orange-500">
             {address.type === "HOME" ? <Home size={20} /> : address.type === "WORK" ? <Building2 size={18} /> : <MapPin />}
-            <CardTitle className="text-md">{address.type}</CardTitle>
+            <CardTitle className="text-md">
+              {address.type === "HOME" ? "Casa" : address.type === "WORK" ? "Trabalho" : "Outros"}
+            </CardTitle>
           </div>
 
           <Button onClick={() => setOpenModal(true)} className="bg-transparent hover:bg-transparent text-orange-500 flex gap-2 p-1"><Edit size={18} />  Editar</Button>
@@ -58,7 +60,7 @@ export const CardAddress = ({ address }: AddressCardProps) => {
         </CardDescription>
         {address.standard &&
           <div className="mt-2 rounded text-orange-500 flex items-center justify-center border-2 border-orange-500 w-16">
-            Padrao
+            Padrão
           </div>
         }
       </CardContent>

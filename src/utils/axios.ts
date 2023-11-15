@@ -9,6 +9,6 @@ export const socket = axios.create({
     baseURL: 'https://hammerhead-app-mvicn.ondigitalocean.app'
 })
 
-export const jsonServer = axios.create({
-    baseURL: 'http://localhost:3333'
+export const localServer = axios.create({
+    baseURL: 'http://localhost:3001'
 })

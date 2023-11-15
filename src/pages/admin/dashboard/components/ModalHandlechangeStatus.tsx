@@ -6,32 +6,35 @@ import { Orders } from "../../../../@types/interface";
 import { priceFormatter } from "../../../../utils/formatter";
 import { api } from "../../../../utils/axios";
 import socket from "../../../../utils/socketIO";
+import { ModalHandleCancelOrder } from "../../../../components/ModalHandleCancelOrder";
+import { useState } from "react";
 
 interface ModalOrderProps {
   order: Orders
   onChangeOrderStatus: (orderId: string, status: string) => void
-  onCancelOrder: (orderId: string) => void  
+  onCancelOrder: (orderId: string) => void
 }
 
 export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOrder }: ModalOrderProps) => {
-    // const [newStatus, setNewStatus] = useState('WAITING')
+  const [openModalCancelOrder, setOpenModalCancelOrder] = useState(false)
   const imprimirPedido = () => {
     window.print()
   }
 
+
   const handleChangeOrderStatus = async () => {
- 
+
     const newStatus = order.status === 'WAITING'
       ? 'ACCEPTED'
       : order.status === 'ACCEPTED'
-      ? 'PREPARING'
-      : order.status === 'PREPARING' && order.methodDelivery === 'PICKUP' 
-      ? 'FINISHED' 
-      : order.status === 'PREPARING' && order.methodDelivery === 'DELIVERY'
-      ? 'DELIVERY'
-      : 'FINISHED' 
+        ? 'PREPARING'
+        : order.status === 'PREPARING' && order.methodDelivery === 'PICKUP'
+          ? 'FINISHED'
+          : order.status === 'PREPARING' && order.methodDelivery === 'DELIVERY'
+            ? 'DELIVERY'
+            : 'FINISHED'
 
-    
+
     await api.put('/order', {
       id: order.id,
       totalPrice: order.totalPrice,
@@ -43,7 +46,7 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
         {
           product: order.itensOrder[0].product,
           quantity: order.itensOrder[0].quantity,
-          size: order.itensOrder[0].size,
+          size: order.itensOrder[0].size ? order.itensOrder[0].size : '',
           mode: order.itensOrder[0].mode,
           price: order.itensOrder[0].price
         }
@@ -51,34 +54,9 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
     }
     )
     onChangeOrderStatus(order.id, newStatus)
-     // Substitua pela URL do seu servidor Socket.IO
+    // Substitua pela URL do seu servidor Socket.IO
     socket.emit('statusUpdate', { orderId: order.id, status: newStatus });
   }
-
-  const handleCancelOrder = async  () => {
-    await api.put('/order', {
-      id: order.id,
-      totalPrice: order.totalPrice,
-      customerId: order.customer.id,
-      payment: order.payment,
-      methodDelivery: order.methodDelivery,
-      status: 'CANCELED',
-      itensOrder: [
-        {
-          product: order.itensOrder[0].product,
-          quantity: order.itensOrder[0].quantity,
-          size: order.itensOrder[0].size,
-          mode: order.itensOrder[0].mode,
-          price: order.itensOrder[0].price
-        }
-      ]
-    }
-    )
-    onCancelOrder(order.id)  
-    socket.emit('statusUpdate', { orderId: order.id, status: 'CANCELED' });
-  }
-
-
 
   return (
     <AlertDialog.Portal>
@@ -88,7 +66,7 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
           <header className="flex items-center justify-start">
             <div className="flex w-full flex-col items-start justify-center gap-4">
               <div className=" w-full flex items-center justify-between">
-                <h2>{order.customer.name}</h2>
+                <h2>{order.methodDelivery === 'PICKUP' ? order.customer.withdrawalName : order.customer.name}</h2>
                 <AlertDialog.Cancel>
                   <X className="text-gary-600" />
                 </AlertDialog.Cancel>
@@ -99,14 +77,14 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
           </header>
           <main className="mt-10 flex flex-col items-start justify-center gap-3">
             {order.itensOrder.map((item) => (
-              <div  className="flex items-start justify-center gap-2">
+              <div className="flex items-start justify-center gap-2">
                 <img src={item.image_url ? item.image_url : image} className="w-12 object-contain rounded" alt="" />
                 <div className="flex items-start justify-center gap-3">
                   <p className="text-lg">{item.quantity}x</p>
                   <div className="text-base flex flex-col items-start justify-center">
                     <div className="flex items-center justify-start gap-2">
                       {item.product.map(item => (
-                         <span key={item}> - {item}</span>
+                        <span key={item}> - {item}</span>
                       ))}
                     </div>
                     <p>{priceFormatter.format(Number(item.price))}</p>
@@ -115,20 +93,31 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
               </div>
             ))}
             <div className="w-full flex flex-col items-start justify-center mt-7">
-              <div className="w-full flex items-center justify-start gap-2">
-                Endereco: <span>{order.customer.Address[0].street}</span> -
-                <span>{order.customer.Address[0].number}</span> -
-                <span>{order.customer.Address[0].neighborhood.name}</span>
-              </div>
-              <span>
-                Telefone: {order.customer.Address[0].phone}
-              </span>
-              <span>
-                Cep: {order.customer.Address[0].zipCode}
-              </span>
+              {order.methodDelivery === 'DELIVERY' && (
+                <div className="w-full flex items-center justify-start gap-2">
+                  Endereco: <span>{order.customer.Address[0].street}</span> -
+                  <span>{order.customer.Address[0].number}</span> -
+                  <span>{order.customer.Address[0].neighborhood.name}</span>
+                </div>
+              )}
+              {order.methodDelivery === 'PICKUP' ? (
+                <span>
+                  Telefone: {order.customer.phone && order.customer.phone}
+                </span>
+              ) : (
+                <span>
+                  Telefone: {order.customer.Address && order.customer.Address[0].phone}
+                </span>
+              )}
 
-              <span>Metado de Entrega: {order.methodDelivery}</span>
-              <span>Metado de Pagamento: {order.payment}</span>
+              {order.methodDelivery === 'DELIVERY' && (
+                <span>
+                  Cep: {order.methodDelivery === "DELIVERY" && order.customer.Address[0].zipCode}
+                </span>
+
+              )}
+              <span>Metado de Entrega: {order.methodDelivery === "DELIVERY" ? 'ENTREGA' : 'RETIRADA'}</span>
+              <span>Metado de Pagamento: {order.payment === "CARD" ? 'CREDITO' : order.payment === "PIX" ? 'PIX' : 'DINHEIRO'}</span>
               {order.methodDelivery === 'DELIVERY' && (
                 <span>Taxa de Entrega: {priceFormatter.format(Number(order.customer.Address[0].neighborhood.tax))}</span>
               )}
@@ -163,17 +152,22 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
                   </>
                 ) : (
                   <>
-                    <CheckSquare className="text-emerald-500"/>
+                    <CheckSquare className="text-emerald-500" />
                     <span>Entregue</span>
                   </>
                 )}
             </button>
           </AlertDialog.Trigger>
-          <AlertDialog.Cancel className="w-full" asChild>
-            <button onClick={handleCancelOrder} className=" text-red-500 p-2 rounded ">
+          <div className="w-full flex items-center justify-center" >
+            <button onClick={() => setOpenModalCancelOrder(true)} className=" text-red-500 p-2 rounded ">
               Cancelar Pedido
             </button>
-          </AlertDialog.Cancel>
+          </div>
+          <ModalHandleCancelOrder
+            openModalCancelOrder={openModalCancelOrder}
+            setOpenModalCancelOrder={setOpenModalCancelOrder}
+            onCancelOrder={onCancelOrder}
+            order={order} />
         </div>
       </AlertDialog.Content>
     </AlertDialog.Portal>

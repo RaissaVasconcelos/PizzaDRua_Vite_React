@@ -19,6 +19,7 @@ export interface Orders {
     customer: {
         id: string
         name: string
+        withdrawalName: string   
         email: string
         phone: string
         Address: {

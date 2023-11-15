@@ -40,7 +40,6 @@ export class AxiosHttpClient implements IHttpClient {
     } else {
       return null
     }
-
   }
 
   async request(data: IHttpRequest): Promise<HttpResponse> {

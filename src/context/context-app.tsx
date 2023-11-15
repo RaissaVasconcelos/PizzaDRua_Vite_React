@@ -47,22 +47,13 @@ export interface OrdersCartProps extends ProductProps {
   quantityProduct: number;
 }
 
-// interface JwtToken {
-//   exp: number;
-//   // Outros campos do token, se houver
-// }
 
 interface GroupOptions {
   label: string
   options: ProductProps[]
 }
 
-// interface CustomerProps {
-//   uid: string
-//   displayName: string
-//   email: string
-//   photoURL: string
-// }
+
 
 const provider = new GoogleAuthProvider();
 const auth = getAuth(app);

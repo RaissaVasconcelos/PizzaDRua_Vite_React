@@ -79,13 +79,6 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
       setPreviewImage(file ? URL.createObjectURL(file) : product.image_url);
     }
   };
-  // const showFileInput = () => {
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.click();
-  //   }
-  // };
-
-  // const navigate = useNavigate()
 
   const formatValue = (value: string) => {
     // Remove tudo que não for dígito ou ponto decimal
@@ -108,7 +101,7 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
 
 
   const handleSubmitForm = async (data: ProductSchema) => {
-  
+
     if (typeof data.file !== 'string') {
       const imageUrl = await api.post('/upload', data.file)
       await api.put('/product', {

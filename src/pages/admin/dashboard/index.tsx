@@ -7,7 +7,7 @@ import socket from "../../../utils/socketIO";
 
 export default function Dashboard() {
   const [orders, setOrders] = useState<Orders[]>([])
-  
+
   useEffect(() => {
     // Adicione o ouvinte do evento 'newOrder' ao montar o componente
     socket.on('newOrder', (data: any) => {
@@ -23,7 +23,7 @@ export default function Dashboard() {
           );
         }
       });
-      
+
       socket.emit('statusUpdate', { orderId: data.id, status: data.status });
     });
 
@@ -39,19 +39,21 @@ export default function Dashboard() {
     )))
 
   }
-const onCancelOrder = (orderId:string) => {
-  setOrders((prevState) => prevState.filter((order) => order.id !== orderId))
-}
+  const onCancelOrder = (orderId: string) => {
+    setOrders((prevState) => prevState.filter((order) => order.id !== orderId))
+  }
 
   const getOrders = async () => {
-    
-    const response = await api.get('/order') 
-    setOrders(response.data) 
+
+    const response = await api.get('/order')
+    setOrders(response.data)
 
   }
   useEffect(() => {
     getOrders()
   }, [])
+
+
 
 
   return (

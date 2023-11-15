@@ -1,24 +1,42 @@
-import { ContextApp } from "../../context/context-app";
+import { AddressProps, ContextApp } from "../../context/context-app";
 import { Summary } from "./components/summary";
 import { HeaderOrder } from "../../components/HeaderOrder";
 import { Card } from "../../components/ui/card";
 import { CardProduct } from "./components/card-product";
 import { CardDrink } from "./components/card-drink";
-import { Button } from "../../components/ui/button";
-import { NavLink } from "react-router-dom";
-import { CardAddress } from "../../components/CardAddress";
 import { ShoppingCart } from "lucide-react";
+import { ButtonCheckout } from "../../components/ButtonCheckout";
+import { NavLink } from "react-router-dom";
+import { api } from "../../utils/axios";
+import { parseCookies } from "nookies";
+import { useEffect, useState } from "react";
+
+
 
 
 export default function Cart() {
+  const [address, setAddress] = useState<AddressProps | null>(null)
 
-  const { currentAddress, productToCart } = ContextApp()
+  const { productToCart, isAuthenticated } = ContextApp()
+
+  const getAddresses = async () => {
+    const response = await api.get('/address', {
+      headers: {
+        Authorization: `Bearer ${parseCookies().accessToken}`
+      }
+    })
+    setAddress(response.data.find((element: AddressProps) => element.standard === true))
+  }
+
+  useEffect(() => {
+    getAddresses()
+  }, [])
 
   return (
 
     <div className="w-full flex flex-col items-center justify-center mb-10">
       <div className="w-full flex flex-col items-start justify-center ">
-        <HeaderOrder title="Meu Carrinho" link="/" />
+        <HeaderOrder leftLink="/" activeLink='CART' />
       </div>
       {productToCart.length > 0
         ? (
@@ -52,7 +70,7 @@ export default function Cart() {
                 />
               ))}
             </Card>
-            <Summary tax={currentAddress ? currentAddress.neighborhood.tax : '0.00'} />
+            <Summary className="my-10" tax={address ? address.neighborhood.tax : '0.00'} />
           </>
         )
         : (
@@ -63,20 +81,13 @@ export default function Cart() {
         )
 
       }
+      {productToCart.length > 0 && (
+        <ButtonCheckout >
+          <NavLink to={isAuthenticated ? '/delivery' : '/sign-in'} >Proximo</NavLink>
+        </ButtonCheckout>
 
-      <div className="w-full flex items-center justify-center my-10">
-        <CardAddress textLink="/address"/>
-      </div>
+      )}
 
-      {productToCart.length > 0 &&
-        <div className={'w-full flex items-center justify-center'} >
-          <Button  className="rounded-[8px]  text-gray-100 text-lg mt-5 w-11/12 bg-orange-500 hover:bg-orange-600 ">
-            <NavLink to={"/delivery"}>
-              Continuar
-            </NavLink>
-          </Button>
-        </div>
-      }
     </div>
 
   )
