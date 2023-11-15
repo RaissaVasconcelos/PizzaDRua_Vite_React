@@ -8,7 +8,7 @@ import {
 
 import {
   ShowListAddressResponse,
-  CreateAddressResponseDTO } from '../address/dtos/response' 
+} from '../address/dtos/response' 
 
 export default class Service {
   httpClient = ApiFactory()
@@ -20,7 +20,7 @@ export default class Service {
     })
   }
 
-  public async createAddress(data: CreateAddressRequestDTO): Promise<HttpResponse<CreateAddressResponseDTO>> {
+  public async createAddress(data: CreateAddressRequestDTO): Promise<HttpResponse<any>> {
     return await this.httpClient.request({
       method: 'post',
       url: '/address',
@@ -39,8 +39,7 @@ export default class Service {
   public async deleteAddress(data: DeleteAddressRequestDTO): Promise<HttpResponse<any>> {
     return await this.httpClient.request({
       method: 'delete',
-      url: '/address',
-      params: data,
+      url: `/address/${data.id}`,
     })
   }
 }

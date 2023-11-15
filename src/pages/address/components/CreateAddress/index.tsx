@@ -4,12 +4,13 @@ import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from 'react-router-dom'
 import InputMask from 'react-input-mask';
-import { api } from '../../../utils/axios';
 import { Label } from '@radix-ui/react-label';
-import { Input } from '../../../components/ui/input';
-import { Button } from '../../../components/ui/button';
-import { AddressProps, ContextApp } from '../../../context/context-app';
-import { parseCookies } from 'nookies';
+import { Input } from '../../../../components/ui/input';
+import { Button } from '../../../../components/ui/button';
+import { AddressProps, ContextApp } from '../../../../context/context-app';
+import ServiceAddress from '../../../../infrastructure/services/address'
+import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
+import { useEffect, useState } from 'react';
 
 const addressSchemaBody = z.object({
   neighborhood: z.object({
@@ -39,9 +40,12 @@ const addressSchemaBody = z.object({
 
 type AddressSchema = z.infer<typeof addressSchemaBody>
 
-
 export default function CreateAddress() {
-
+  const { setAddresses, addresses } = ContextApp()
+  const serviceAddress = new ServiceAddress()
+  const serviceNeighborhoods = new ServiceNeighborhoods() 
+  const [neighborhoods, setNeighborhoods] = useState()
+  const navigate = useNavigate()
   const {
     control,
     register,
@@ -49,27 +53,18 @@ export default function CreateAddress() {
     formState: { errors },
   } = useForm<AddressSchema>({
     resolver: zodResolver(addressSchemaBody),
-
   });
-  const { neighborhoods, setAddresses, addresses } = ContextApp()
-  const navigate = useNavigate()
+
 
   const handleSubmitForm = async (data: AddressSchema) => {
-
-    await api.post('/address', {
+    await serviceAddress.createAddress({
       neighborhood: data.neighborhood.value,
       number: data.number,
       street: data.street,
       type: data.type.value,
       zipCode: data.zipCode,
       phone: data.phone
-
-    },
-      {
-        headers: {
-          Authorization: `Bearer ${parseCookies().accessToken}`
-        }
-      })
+    })
 
     const address: AddressProps = {
       neighborhood: {
@@ -88,8 +83,25 @@ export default function CreateAddress() {
     }
     setAddresses([...addresses, address])
     navigate('/address')
-
   }
+
+  const getNeighborhoods = async () => {
+    const response = await serviceNeighborhoods.showNeighborhood()
+    
+    const neighborhoods = response.body as any
+    
+    setNeighborhoods(neighborhoods.map((element: any) => {
+      return {
+        label: element.name,
+        value: element.name,
+        id: element.id
+      }
+    }))
+  }
+
+  useEffect(() => {
+    getNeighborhoods()
+  }, [])
 
   return (
     <>
@@ -189,7 +201,18 @@ export default function CreateAddress() {
           )}
         />
         {errors.phone && <p className='text-red-500'>{errors.phone.message}</p>}
-        <Button className='w-full mt-4 bg-red-500 hover:bg-red-400' type='submit'>Cadastrar</Button>
+        <Button
+          className='w-full mt-4 bg-red-500 hover:bg-red-400'
+          type='submit'
+        >
+          Cadastrar
+        </Button>
+        <Button
+          className='w-full mt-1 bg-gray-200 hover:bg-gray-400 text-gray-800'
+          onClick={() => navigate('/address')}  
+        >
+          Cancelar
+        </Button>    
       </form>
     </>
   )
