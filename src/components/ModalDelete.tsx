@@ -1,8 +1,9 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { ToastContainer } from "react-toastify";
 import { notify } from "../utils/toast";
-import { api } from "../utils/axios";
-import { parseCookies } from "nookies";
+// import { api } from "../utils/axios";
+// import { parseCookies } from "nookies";  
+import Service from '../infrastructure/services/address'
 
 
 interface DeleteModalProps {
@@ -13,15 +14,20 @@ interface DeleteModalProps {
   notifyText: string;
   text: string;
   id: string
-  url: string
 }
 
-export const DeleteModal = ({onDelete, openModalDelete,setOpenModal, setOpenModalDelete,notifyText, text, id, url }: DeleteModalProps) => {
+export const DeleteModal = ({
+  onDelete,
+  openModalDelete,
+  setOpenModal,
+  setOpenModalDelete,
+  notifyText,
+  text,
+  id }: DeleteModalProps) => {
+  const service = new Service()
 
   const handleDelete = async () => {
-    await api.delete(`${url}/${id}`, {headers: {
-      Authorization: `Bearer ${parseCookies().accessToken}`
-    }})
+    await service.deleteAddress({ id })
     notify(`${notifyText}`, 'bottom')
     onDelete && onDelete(id)
     setOpenModalDelete(false)
@@ -33,13 +39,15 @@ export const DeleteModal = ({onDelete, openModalDelete,setOpenModal, setOpenModa
     <AlertDialog.Root open={openModalDelete} >
         <AlertDialog.Portal>
           <AlertDialog.Overlay className=" fixed w-screen h-screen inset-0 bg-gray-900/[.6]" />
-          <AlertDialog.Content className="sm:w-7/12 w-11/12 rounded py-10 bg-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <AlertDialog.Content className="sm:w-7/12 w-11/12 rounded py-10 bg-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
             <AlertDialog.Title className="text-gray-500 text-center font-semibold text-xl">
               {text}
             </AlertDialog.Title>
             <div className="flex items-center justify-center gap-4 mt-8 font-semibold">
               <AlertDialog.Cancel asChild>
-              <button onClick={() => setOpenModalDelete(false)} className=" p-2 text-gray-100 rounded bg-gray-500">
+              <button
+                onClick={() => setOpenModalDelete(false)}
+                className="p-2 text-gray-100 rounded bg-gray-500">
                   Cancelar
                 </button>
               </AlertDialog.Cancel>

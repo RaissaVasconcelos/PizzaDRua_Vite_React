@@ -5,8 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { EditAddressModal } from "./EditAddressModal";
 import { useState } from "react";
 
-
-
 type AddressProps = {
   type: "HOME" | "WORK" | "OTHER"
   customerId: string
@@ -46,7 +44,6 @@ export const CardAddress = ({ address }: AddressCardProps) => {
           address={address}
           setOpenModal={setOpenModal}
           openModal={openModal}
-
         />
       </CardHeader>
       <CardContent className="px-3" >

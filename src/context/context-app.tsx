@@ -5,6 +5,7 @@ import { produce } from "immer";
 import { setCookie, parseCookies } from "nookies";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from '../services/firebaseConfig';
+import ServiceAddress from '../infrastructure/services/address'
 
 interface childrenProps {
   children: ReactNode
@@ -46,22 +47,13 @@ export interface OrdersCartProps extends ProductProps {
   quantityProduct: number;
 }
 
-// interface JwtToken {
-//   exp: number;
-//   // Outros campos do token, se houver
-// }
 
 interface GroupOptions {
   label: string
   options: ProductProps[]
 }
 
-// interface CustomerProps {
-//   uid: string
-//   displayName: string
-//   email: string
-//   photoURL: string
-// }
+
 
 const provider = new GoogleAuthProvider();
 const auth = getAuth(app);
@@ -107,6 +99,7 @@ const filterType = (type: string, arr: ProductProps[]) => {
 }
 
 export const PizzaDRuaProvider = ({ children }: childrenProps) => {
+  const serviceAddress = new ServiceAddress()
   const [products, setProducts] = useState<ProductProps[]>([])
   const [addresses, setAddresses] = useState<AddressProps[]>([])
   const [neighborhoods, setNeighborhoods] = useState([])
@@ -188,17 +181,11 @@ export const PizzaDRuaProvider = ({ children }: childrenProps) => {
   };
 
   const getAddresses = async () => {
-    const token = parseCookies().accessToken
-
-    const response = await api.get('/address', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    const standardAddress = response.data.find((element: AddressProps) => element.standard === true)
+    const response = await serviceAddress.showAddress()
+    const addresses = response.body as any 
+    const standardAddress = addresses?.find((element: AddressProps) => element.standard === true)
     setCurrentAddress(standardAddress)
-    setAddresses(response.data)
-
+    setAddresses(addresses)
   }
 
   const getNeighborhoods = async () => {

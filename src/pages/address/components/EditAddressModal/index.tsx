@@ -10,11 +10,12 @@ import { Input } from "../../../../components/ui/input";
 import { Switch } from "../../../../components/ui/switch";
 import { Button } from "../../../../components/ui/button";
 import { AddressProps, ContextApp } from "../../../../context/context-app";
-import { api } from "../../../../utils/axios";
 import { DeleteModal } from "../../../../components/ModalDelete";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { notify } from "../../../../utils/toast";
 import { ToastContainer } from "react-toastify";
+import Service from '../../../../infrastructure/services/address'
+import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
 
 
 const addressSchemaBody = z.object({
@@ -54,9 +55,13 @@ interface EditAddressModalProps {
 
 }
 
-export const EditAddressModal = ({ address, setOpenModal, openModal, }: EditAddressModalProps) => {
+export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAddressModalProps) => {
+  const serviceNeighborhoods = new ServiceNeighborhoods()
+  const service = new Service()
   const [openModalDelete, setOpenModalDelete] = useState(false);
-  const { neighborhoods, setAddresses, addresses } = ContextApp();
+  const [neighborhoods, setNeighborhoods] = useState()
+  const {setAddresses, addresses} = ContextApp();
+
   const {
     control,
     register,
@@ -75,92 +80,76 @@ export const EditAddressModal = ({ address, setOpenModal, openModal, }: EditAddr
     }
   });
 
+  const getAddress = async () => {
+    const response = await service.showAddress()
+    setAddresses(response.body as any)
+  }
+
+  const getNeighborhoods = async () => {
+    const response = await serviceNeighborhoods.showNeighborhood()
+    
+    const neighborhoods = response.body as any
+    
+    setNeighborhoods(neighborhoods.map((element: any) => {
+      return {
+        label: element.name,
+        value: element.name,
+        id: element.id
+      }
+    }))
+  }
+
+  useEffect(() => {
+    getNeighborhoods()
+  }, [])
+
+ 
   const handleEditAddressForm = async (data: AddressSchema) => {
 
     try {
-      // Se o novo endereço será definido como padrão, ajuste todos os outros endereços para não padrão
-      if (data.standardAddress) {
-        const updatedAddresses = addresses.map((item) => ({
-          ...item,
-          standard: false,
-        }));
+       const response = await service.updateAddress({
+        neighborhood: data.neighborhood.label,
+        id: address.id,  
+        number: data.number,
+        customerId: address.customerId,
+        standard: data.standardAddress,
+        street: data.street,
+        type: data.type.label,
+        zipCode: data.zipCode,
+        phone: data.phone
+      })
 
-        // Agora, atualize o endereço desejado com padrão verdadeiro
-        updatedAddresses.find((item) => item.id === address.id)!.standard = true;
-
-        await api.put(`/address`, {
-          neighborhood: data.neighborhood.label,
-          id: address.id,
-          number: data.number,
-          customerId: address.customerId,
-          standard: data.standardAddress,
-          street: data.street,
-          type: data.type.label === 'Casa' ? 'HOME' : data.type.label === 'Trabalho' ? 'WORK' : 'OTHER',
-          zipCode: data.zipCode,
-          phone: data.phone,
-        });
-
-        notify(`Endereço atualizado com sucesso`, 'bottom');
-
-        setAddresses(updatedAddresses); // Atualize o estado com todos os endereços ajustados
-        setOpenModal(false);
-      } else {
-        // Se o novo endereço não é padrão, você pode atualizá-lo diretamente
-        await api.put(`/address`, {
-          neighborhood: data.neighborhood.label,
-          id: address.id,
-          number: data.number,
-          customerId: address.customerId,
-          standard: data.standardAddress,
-          street: data.street,
-          type: data.type.label === 'Casa' ? 'HOME' : data.type.label === 'Trabalho' ? 'WORK' : 'OTHER',
-          zipCode: data.zipCode,
-          phone: data.phone,
-        });
-
-        notify(`Endereço atualizado com sucesso`, 'bottom');
-
-        const newAddress: AddressProps = {
-          customerId: address.customerId,
-          id: address.id,
-          neighborhood: {
-            name: data.neighborhood.label!,
-            tax: data.neighborhood.tax!,
-            id: '',
-          },
-          number: data.number,
-          phone: data.phone,
-          standard: data.standardAddress!,
-          street: data.street,
-          type: data.type.value!,
-          zipCode: data.zipCode,
-        };
-
-        setAddresses(addresses.map((item) => (item.id === address.id ? newAddress : item)));
-        setOpenModal(false);
+      if (response.statusCode === 200) {
+        notify(`Endereco atualizado com sucesso`, 'bottom')
+        getAddress()
       }
+      
+      setOpenModal(false)
+      
     } catch (error) {
       console.error(error);
     }
-  };
+
+  }
+
   const handleDeleteAddress = (id: string) => {
     const newAddresses = addresses.filter(item => item.id !== id);
     setAddresses(newAddresses);
   }
 
   return (
-    <>
-      <Dialog.Root open={openModal}>
-        <Dialog.Portal>
-          <Dialog.Overlay className=" fixed w-screen h-screen inset-0 bg-gray-900/[.6]" />
-          <Dialog.Content className="w-11/12  rounded py-5 flex flex-col items-center z-15 bg-[#f3f3f3] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <Dialog.Close onClick={() => setOpenModal(false)} className="absolute bg-transparent border-spacing-0 top-5 right-5 text-gray-300 line-through ">
-              <X size={24} />
-            </Dialog.Close>
-            <Dialog.Title className="text-gray-600 font-semibold text-xl">
-              Editar Endereço
-            </Dialog.Title>
-            <form onSubmit={handleSubmit(handleEditAddressForm)} className="w-10/12 flex flex-col items-start gap-3 justify-start  mx-5">
+  <>
+    <Dialog.Root open={openModal}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed w-screen h-screen inset-0 bg-gray-900/[.6]" />
+        <Dialog.Content className="w-11/12 rounded py-5 flex flex-col items-center bg-[#f3f3f3] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
+          <Dialog.Close onClick={() => setOpenModal(false)}  className="absolute bg-transparent border-spacing-0 top-5 right-5 text-gray-300 line-through ">
+            <X size={24} color="red" />
+          </Dialog.Close>
+          <Dialog.Title className="text-gray-600 font-semibold text-xl">
+            Editar Endereço
+          </Dialog.Title>
+          <form onSubmit={handleSubmit(handleEditAddressForm)} className="w-10/12 flex flex-col items-start gap-3 justify-start  mx-5">
 
               <Label className='mt-5 text-gray-500'>Bairro</Label>
               <Controller
@@ -279,7 +268,6 @@ export const EditAddressModal = ({ address, setOpenModal, openModal, }: EditAddr
               notifyText={'Endereço excluido com sucesso'}
               text={'Deseja excluir este endereço?'}
               id={address.id}
-              url={'/address'}
             />
           </Dialog.Content>
         </Dialog.Portal>

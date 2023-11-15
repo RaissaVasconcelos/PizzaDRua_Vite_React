@@ -3,8 +3,7 @@ import { NavLink } from "react-router-dom";
 import { AddressProps, ContextApp } from "../context/context-app";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
-import { api } from "../utils/axios";
-import { parseCookies } from "nookies";
+import ServiceAddress from '../infrastructure/services/address'
 import { ColorRing } from "react-loader-spinner";
 
 interface CardAddressProps {
@@ -12,20 +11,17 @@ interface CardAddressProps {
 }
 
 export const CardAddress = ({ textLink }: CardAddressProps) => {
-  const [addresses, setAddresses] = useState<AddressProps[]>([]);
+  const [address, setAddress] = useState<AddressProps | null>(null);
   const [loading, setLoading] = useState(true);
   const { isAuthenticated } = ContextApp()
-
+  const serviceAddress = new ServiceAddress()
   const getAddresses = async () => {
-    const token = parseCookies().accessToken;
-
+    
     try {
-      const response = await api.get('/address', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setAddresses(response.data);
+      const response = await serviceAddress.showAddress()
+      const addresses = response.body as any
+      const standardAddress = addresses?.find((element: AddressProps) => element.standard === true)
+      setAddress(standardAddress);
     } catch (error) {
       console.error("Erro ao carregar endereços", error);
     } finally {
@@ -37,7 +33,7 @@ export const CardAddress = ({ textLink }: CardAddressProps) => {
     getAddresses();
   }, []);
 
-  const address = addresses.find((address) => address.standard === true);
+ 
 
   return (
     <>

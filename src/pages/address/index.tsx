@@ -5,8 +5,8 @@ import { ContextApp } from "../../context/context-app";
 import { Button } from "../../components/ui/button";
 
 
-export default function Address() {
 
+export default function Address() {
   const { addresses } = ContextApp()
 
 
@@ -20,12 +20,12 @@ export default function Address() {
           </NavLink>
         </Button>
         <div className="w-full flex flex-col items-center justify-center gap-5">
-          {addresses.map((address) => (
-            <CardAddress
-              address={address}
-              key={address.id}
-            />
-          ))}
+            {addresses.map((address: any) => (
+              <CardAddress
+                address={address}
+                key={address.id}
+              />
+            ))}
         </div>
       </div>
     </>

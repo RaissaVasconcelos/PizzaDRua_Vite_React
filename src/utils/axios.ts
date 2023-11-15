@@ -6,7 +6,7 @@ export const api = axios.create({
 })
 
 export const socket = axios.create({
-    baseURL: 'ws://localhost:3001'
+    baseURL: 'https://hammerhead-app-mvicn.ondigitalocean.app'
 })
 
 export const localServer = axios.create({
