@@ -35,7 +35,6 @@ export class AxiosHttpClient implements IHttpClient {
   
   private async getToken(): Promise<string | null > {
     const token = parseCookies().accessToken
-    console.log('token', token)
     if(token) {
       return token
     } else {
@@ -61,21 +60,13 @@ export class AxiosHttpClient implements IHttpClient {
 
       return {
         statusCode: response.status,
-        data: response.data,
+        body: response.data,
       };
-    } catch (err) {
-      // return {
-      //   statusCode: err?.response?.status,
-      //   body: err?.response?.data,
-      // };
-
-      console.log('error', err)
-
+    } catch (err: any) {
       return {
-        statusCode: 505,
-        data: err,
+        statusCode: err?.response?.status,
+        body: err?.response?.data,
       };
-
     }
   }
   

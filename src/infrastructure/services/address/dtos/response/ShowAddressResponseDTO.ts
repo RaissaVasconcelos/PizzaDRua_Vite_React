@@ -15,6 +15,5 @@ export interface IAddress {
 }
 
 export interface ShowListAddressResponse {
-  statusCode: number
   data: IAddress[]
 }
