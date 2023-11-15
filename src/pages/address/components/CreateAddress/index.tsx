@@ -8,7 +8,9 @@ import { Label } from '@radix-ui/react-label';
 import { Input } from '../../../../components/ui/input';
 import { Button } from '../../../../components/ui/button';
 import { AddressProps, ContextApp } from '../../../../context/context-app';
-import Service from '../../../../infrastructure/services/address'
+import ServiceAddress from '../../../../infrastructure/services/address'
+import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
+import { useEffect, useState } from 'react';
 
 const addressSchemaBody = z.object({
   neighborhood: z.object({
@@ -39,7 +41,11 @@ const addressSchemaBody = z.object({
 type AddressSchema = z.infer<typeof addressSchemaBody>
 
 export default function CreateAddress() {
-  const service = new Service()
+  const { setAddresses, addresses } = ContextApp()
+  const serviceAddress = new ServiceAddress()
+  const serviceNeighborhoods = new ServiceNeighborhoods() 
+  const [neighborhoods, setNeighborhoods] = useState()
+  const navigate = useNavigate()
   const {
     control,
     register,
@@ -49,12 +55,9 @@ export default function CreateAddress() {
     resolver: zodResolver(addressSchemaBody),
   });
 
-  const { neighborhoods, setAddresses, addresses } = ContextApp()
-  
-  const navigate = useNavigate()
 
   const handleSubmitForm = async (data: AddressSchema) => {
-    await service.createAddress({
+    await serviceAddress.createAddress({
       neighborhood: data.neighborhood.value,
       number: data.number,
       street: data.street,
@@ -81,6 +84,24 @@ export default function CreateAddress() {
     setAddresses([...addresses, address])
     navigate('/address')
   }
+
+  const getNeighborhoods = async () => {
+    const response = await serviceNeighborhoods.showNeighborhood()
+    
+    const neighborhoods = response.body as any
+    
+    setNeighborhoods(neighborhoods.map((element: any) => {
+      return {
+        label: element.name,
+        value: element.name,
+        id: element.id
+      }
+    }))
+  }
+
+  useEffect(() => {
+    getNeighborhoods()
+  }, [])
 
   return (
     <>

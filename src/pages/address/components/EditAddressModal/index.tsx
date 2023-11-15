@@ -11,10 +11,12 @@ import { Switch } from "../../../../components/ui/switch";
 import { Button } from "../../../../components/ui/button";
 import { AddressProps, ContextApp } from "../../../../context/context-app";
 import { DeleteModal } from "../../../../components/ModalDelete";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { notify } from "../../../../utils/toast";
 import { ToastContainer } from "react-toastify";
 import Service from '../../../../infrastructure/services/address'
+import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
+
 
 const addressSchemaBody = z.object({
   neighborhood: z.object({
@@ -54,9 +56,12 @@ interface EditAddressModalProps {
 }
 
 export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAddressModalProps) => {
+  const serviceNeighborhoods = new ServiceNeighborhoods()
   const service = new Service()
   const [openModalDelete, setOpenModalDelete] = useState(false);
-  const {neighborhoods, setAddresses, addresses} = ContextApp();
+  const [neighborhoods, setNeighborhoods] = useState()
+  const {setAddresses, addresses} = ContextApp();
+
   const {
     control,
     register,
@@ -79,6 +84,25 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
     const response = await service.showAddress()
     setAddresses(response.body as any)
   }
+
+  const getNeighborhoods = async () => {
+    const response = await serviceNeighborhoods.showNeighborhood()
+    
+    const neighborhoods = response.body as any
+    
+    setNeighborhoods(neighborhoods.map((element: any) => {
+      return {
+        label: element.name,
+        value: element.name,
+        id: element.id
+      }
+    }))
+  }
+
+  useEffect(() => {
+    getNeighborhoods()
+  }, [])
+
  
   const handleEditAddressForm = async (data: AddressSchema) => {
     try {
