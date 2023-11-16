@@ -1,4 +1,4 @@
-import { ContextApp } from "../../../context/context-app"
+import { ContextCartApp } from "../../../context/cart-context"
 import { cn } from "../../../utils/cn"
 import { priceFormatter } from "../../../utils/formatter"
 
@@ -9,7 +9,7 @@ interface taxProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export const Summary = ({ tax, className }: taxProps) => {
 
 
-  const { cartProductsTotalPrice } = ContextApp()
+  const { cartProductsTotalPrice } = ContextCartApp()
 
   const totalPriceProduct = (cartProductsTotalPrice).toFixed(2)
   const totalPrice = (parseFloat(totalPriceProduct) + parseFloat(tax)).toFixed(2)

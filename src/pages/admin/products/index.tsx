@@ -1,11 +1,11 @@
 import { CardProducts } from "./components/Card";
 import * as Dialog from "@radix-ui/react-dialog";
 import ModalRegisterProduct from "./components/ModalRegisterProduct";
-import { ContextApp } from "../../../context/context-app";
+import { ContextCartApp } from "../../../context/cart-context";
 
 
 export default function Products() {
-  const {products} = ContextApp()
+  const {products} = ContextCartApp()
   return (
       <>
         <div className="w-full mt-10 flex items-center justify-end">

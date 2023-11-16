@@ -1,4 +1,5 @@
-import { AddressProps, ContextApp } from "../../context/context-app";
+import { AddressProps, ContextAuthApp } from "../../context/auth-context";
+import { ContextCartApp } from "../../context/cart-context";
 import { Summary } from "./components/summary";
 import { HeaderOrder } from "../../components/HeaderOrder";
 import { Card } from "../../components/ui/card";
@@ -12,12 +13,11 @@ import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 
 
-
-
 export default function Cart() {
   const [address, setAddress] = useState<AddressProps | null>(null)
 
-  const { productToCart, isAuthenticated } = ContextApp()
+  const { isAuthenticated } = ContextAuthApp()
+  const { productToCart } = ContextCartApp()
 
   const getAddresses = async () => {
     const response = await api.get('/address', {

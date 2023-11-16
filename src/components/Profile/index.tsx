@@ -1,14 +1,14 @@
 
 import { useState } from 'react';
 import { ModalProfile } from './ModalProdile'
-import { ContextApp } from '../../context/context-app';
+import { ContextAuthApp } from '../../context/auth-context';
 import { User } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 
 export const Profile = () => {
   const [openModal, setOpenModal] = useState(false);
-  const { customer } = ContextApp()
+  const { customer } = ContextAuthApp()
   return (
     <>
       <div className='flex items-center justify-center'>

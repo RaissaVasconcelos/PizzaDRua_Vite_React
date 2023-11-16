@@ -7,7 +7,7 @@ import InputMask from 'react-input-mask';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '../../../../components/ui/input';
 import { Button } from '../../../../components/ui/button';
-import { AddressProps, ContextApp } from '../../../../context/context-app';
+import { AddressProps, ContextAuthApp } from '../../../../context/auth-context';
 import ServiceAddress from '../../../../infrastructure/services/address'
 import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
 import { useEffect, useState } from 'react';
@@ -41,7 +41,7 @@ const addressSchemaBody = z.object({
 type AddressSchema = z.infer<typeof addressSchemaBody>
 
 export default function CreateAddress() {
-  const { setAddresses, addresses } = ContextApp()
+  const { setAddresses, addresses } = ContextAuthApp()
   const serviceAddress = new ServiceAddress()
   const serviceNeighborhoods = new ServiceNeighborhoods() 
   const [neighborhoods, setNeighborhoods] = useState()

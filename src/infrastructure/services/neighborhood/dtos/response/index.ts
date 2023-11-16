@@ -1,1 +1,1 @@
-export * from './ShowNeighborhoodResponse'
+export * from './ShowNeighborhoodResponseDTO'

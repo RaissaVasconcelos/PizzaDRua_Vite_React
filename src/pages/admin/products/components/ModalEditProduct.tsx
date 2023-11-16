@@ -10,7 +10,7 @@ import { Image, Trash, X } from 'lucide-react';
 import { Textarea } from '../../../../components/ui/textarea';
 import { api } from '../../../../utils/axios';
 import { useState } from 'react';
-import { ProductProps } from '../../../../context/context-app';
+import { ProductProps } from '../../../../context/cart-context';
 import { ToastContainer } from 'react-toastify';
 import { notify } from '../../../../utils/toast';
 

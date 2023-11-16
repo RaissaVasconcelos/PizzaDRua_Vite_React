@@ -13,7 +13,7 @@ import Select, { StylesConfig } from 'react-select';
 import makeAnimated from 'react-select/animated';
 import chroma from 'chroma-js';
 import uuid from 'react-uuid';
-import { ContextApp } from '../../context/context-app';
+import { ContextCartApp } from '../../context/cart-context';
 import { Button } from '../../components/ui/button';
 import { priceFormatter } from '../../utils/formatter';
 import { ToastContainer } from "react-toastify";
@@ -116,7 +116,7 @@ export default function Personalize() {
   type FlavorSchema = z.infer<typeof flavorSchema>
 
 
-  const { addProductToCart, groupOptions, products } = ContextApp();
+  const { addProductToCart, groupOptions, products } = ContextCartApp();
 
   const [isChecked, setIsChecked] = useState('ENTIRE');
   const [isSelectSpecial, setIsSelectSpecial] = useState(false);

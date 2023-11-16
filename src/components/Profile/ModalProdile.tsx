@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { Mail, Phone, MapPin, X, ExternalLink, User, XCircle } from 'lucide-react'
-import { ContextApp } from '../../context/context-app'
+import { ContextAuthApp } from '../../context/auth-context'
 import order from '../../assets/order.png'
 import { destroyCookie } from 'nookies'
 import { NavLink, useNavigate } from 'react-router-dom'
@@ -14,7 +14,7 @@ interface ModalProfileProps {
 
 export const ModalProfile = ({ openModal, setOpenModal }: ModalProfileProps) => {
 
-  const { customer } = ContextApp()
+  const { customer } = ContextAuthApp()
   const auth = getAuth();
   const navigate = useNavigate()
 

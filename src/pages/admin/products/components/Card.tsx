@@ -4,7 +4,7 @@ import { Button } from "../../../../components/ui/button";
 import { priceFormatter } from "../../../../utils/formatter";
 import { Edit, Trash2 } from "lucide-react";
 import ModalEditProduct from "./ModalEditProduct";
-import { ProductProps } from "../../../../context/context-app";
+import { ProductProps } from "../../../../context/cart-context";
 import { useState } from "react";
 import { DeleteModal } from "../../../../components/ModalDelete";
 

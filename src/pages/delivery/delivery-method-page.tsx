@@ -8,7 +8,7 @@ import { CardAddress } from "../../components/CardAddress";
 import { Controller, useForm } from "react-hook-form";
 import InputMask from 'react-input-mask';
 import { Label } from "../../components/ui/label";
-import { ContextApp } from "../../context/context-app";
+import { ContextAuthApp } from "../../context/auth-context";
 import { api } from "../../utils/axios";
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -27,7 +27,7 @@ type MethodDeliverySchema = z.infer<typeof methodDeliverySchemaBody>
 
 export default function MethodDelivery() {
   const [isCheckedDelivery, setIsCheckedDelivery] = useState('DELIVERY');
-  const { customer } = ContextApp()
+  const { customer } = ContextAuthApp()
   const navigate = useNavigate();
 
   const {
