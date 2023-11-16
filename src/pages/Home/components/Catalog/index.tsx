@@ -1,11 +1,11 @@
 
 import { CardCatalogPizza } from "./CardCatalog/pizza"
 import { CardCatalogDrink } from "./CardCatalog/drink"
-import { ContextApp } from "../../../../context/context-app";
+import { ContextCartApp } from "../../../../context/cart-context";
 import { useState } from "react";
 
 export const Catalog = () => {
-  const { products, onChangeCatalog } = ContextApp()
+  const { products, onChangeCatalog } = ContextCartApp()
   const [onChangeType, setOnChangeType] = useState('TRADITIONAL')
 
   return (

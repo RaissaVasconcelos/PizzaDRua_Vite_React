@@ -1,8 +1,10 @@
 import { parseCookies } from "nookies";
-import { ContextApp } from "../context/context-app";
+import { ContextAuthApp } from "../context/auth-context";
+import { ContextCartApp } from "../context/cart-context";
 
 export const CalculatePrice = () => {
-  const { cartProductsTotalPrice, addresses } = ContextApp();
+  const { addresses } = ContextAuthApp()
+  const { cartProductsTotalPrice } = ContextCartApp()
   const currentAddress = addresses.find((address) => address.standard === true)
   const tax = currentAddress ? parseFloat(currentAddress.neighborhood.tax) : 0;
   const methodDelivery = JSON.parse(parseCookies().delivery)

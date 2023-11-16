@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ContextApp } from "../../context/context-app";
+import { ContextAuthApp } from "../../context/auth-context";
+import { ContextCartApp } from "../../context/cart-context";
 import { HeaderOrder } from "../../components/HeaderOrder";
 import { destroyCookie, parseCookies } from "nookies";
 import { CardAddress } from "../../components/CardAddress";
@@ -41,7 +42,8 @@ export default function Checkout() {
   const [methodDelivery, setMethodDelivery] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false)
 
-  const { productToCart, currentAddress } = ContextApp()
+  const { currentAddress } = ContextAuthApp()
+  const { productToCart } = ContextCartApp()
 
   const totalPrice = CalculatePrice();
 
@@ -100,7 +102,6 @@ export default function Checkout() {
     })
   }
   useEffect(() => {
-
     getDataCookies()
   }, [])
 

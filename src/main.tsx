@@ -1,10 +1,10 @@
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './globals/main.css'
-import { PizzaDRuaProvider } from './context/context-app.tsx'
+import { Providers } from './providers'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <PizzaDRuaProvider>
+  <Providers>
     <App />
-  </PizzaDRuaProvider>
+  </Providers>
 )

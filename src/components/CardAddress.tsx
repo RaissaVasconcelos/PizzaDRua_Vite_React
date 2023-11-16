@@ -1,6 +1,6 @@
 import { Building2, Edit, Home, MapPin, MapPinOff } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { AddressProps, ContextApp } from "../context/context-app";
+import { AddressProps, ContextAuthApp } from "../context/auth-context";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import ServiceAddress from '../infrastructure/services/address'
@@ -13,7 +13,7 @@ interface CardAddressProps {
 export const CardAddress = ({ textLink }: CardAddressProps) => {
   const [address, setAddress] = useState<AddressProps | null>(null);
   const [loading, setLoading] = useState(true);
-  const { isAuthenticated } = ContextApp()
+  const { isAuthenticated } = ContextAuthApp()
   const serviceAddress = new ServiceAddress()
   const getAddresses = async () => {
     

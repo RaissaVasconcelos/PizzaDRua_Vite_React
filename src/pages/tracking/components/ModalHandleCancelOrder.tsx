@@ -11,7 +11,6 @@ interface CancelModalOrderProps {
   setOpenModalCancelOrder: (isOpen: boolean) => void;
   openModalCancelOrder: boolean;
   order: Orders
-
 }
 
 export const ModalHandleCancelOrder = ({ openModalCancelOrder, setOpenModalCancelOrder, order }: CancelModalOrderProps) => {

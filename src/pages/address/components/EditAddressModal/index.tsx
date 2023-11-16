@@ -9,7 +9,7 @@ import ReactSelect from "react-select";
 import { Input } from "../../../../components/ui/input";
 import { Switch } from "../../../../components/ui/switch";
 import { Button } from "../../../../components/ui/button";
-import { AddressProps, ContextApp } from "../../../../context/context-app";
+import { AddressProps, ContextAuthApp } from "../../../../context/auth-context";
 import { DeleteModal } from "../../../../components/ModalDelete";
 import { useEffect, useState } from "react";
 import { notify } from "../../../../utils/toast";
@@ -60,7 +60,7 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
   const service = new Service()
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [neighborhoods, setNeighborhoods] = useState()
-  const {setAddresses, addresses} = ContextApp();
+  const {setAddresses, addresses} = ContextAuthApp();
 
   const {
     control,

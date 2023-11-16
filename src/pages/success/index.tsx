@@ -5,11 +5,11 @@ import { Orders } from '../../@types/interface'
 import { parseCookies } from 'nookies'
 import { api } from '../../utils/axios'
 import { NavLink } from 'react-router-dom'
-import { ContextApp } from '../../context/context-app'
+import { ContextCartApp } from '../../context/cart-context'
 
 export default function Success() {
   const [order, setOrder] = useState<Orders>()
-  const { clearCart } = ContextApp()
+  const { clearCart } = ContextCartApp()
 
   const getOrders = async () => {
 

@@ -1,13 +1,13 @@
 import { Trash } from "lucide-react"
 import imageUrl from '../../../../public/coca-cola.png'
-import { ContextApp } from "../../../context/context-app"
+import { ContextCartApp } from "../../../context/cart-context"
 import { CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
 import { CartProps } from "../../../@types/interface"
 import { priceFormatter } from "../../../utils/formatter"
 
 export const CardDrink = ({ product, price, quantityProduct, id, description }: CartProps) => {
-  const { removeProductFromCart } = ContextApp()
+  const { removeProductFromCart } = ContextCartApp()
   const priceString = price.replace(',', '.')
   const totalPrice = (parseFloat(priceString) * quantityProduct).toFixed(2)
   return (

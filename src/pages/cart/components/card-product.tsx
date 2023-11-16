@@ -1,5 +1,5 @@
 import { Trash } from "lucide-react"
-import { ContextApp } from "../../../context/context-app"
+import { ContextCartApp } from "../../../context/cart-context"
 import { CardContent } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
 import { priceFormatter } from "../../../utils/formatter"
@@ -8,7 +8,7 @@ import image from "../../../assets/Vector.png"
 
 
 export const CardProduct = ({ product, price, quantityProduct, id, image_url }: CartProps) => {
-  const { removeProductFromCart } = ContextApp()
+  const { removeProductFromCart } = ContextCartApp()
   const priceString = price.replace(',', '.')
   const totalPrice = (parseFloat(priceString) * quantityProduct)
   return (

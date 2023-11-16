@@ -1,14 +1,13 @@
 import { Plus } from "lucide-react";
 import { CardAddress } from "./components/card";
 import { NavLink } from 'react-router-dom'
-import { ContextApp } from "../../context/context-app";
+import { ContextAuthApp } from "../../context/auth-context";
 import { Button } from "../../components/ui/button";
 
 
 
 export default function Address() {
-  const { addresses } = ContextApp()
-
+  const { addresses } = ContextAuthApp()
 
   return (
     <>

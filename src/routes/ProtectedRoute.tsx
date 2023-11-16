@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { ReactNode } from 'react';
-import { ContextApp } from '../context/context-app';
+import { ContextAuthApp } from '../context/auth-context';
 
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const {isAuthenticated} = ContextApp()
+  const {isAuthenticated} = ContextAuthApp()
   const navigate = useNavigate();
   if (!isAuthenticated) {
     navigate('/sign-in');
