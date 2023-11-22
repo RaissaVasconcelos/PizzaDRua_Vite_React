@@ -3,8 +3,6 @@ import { InputQuantityProductInCart } from "../input-quantity-product-in-cart"
 import { useState } from "react"
 import image from "../../../../../assets/lata.png"
 import { Button } from "../../../../../components/ui/button"
-import { ToastContainer } from "react-toastify";
-import { notify } from "../../../../../utils/toast"
 import { ContextCartApp, ProductProps } from "../../../../../context/cart-context"
 import { priceFormatter } from "../../../../../utils/formatter"
 
@@ -29,7 +27,6 @@ export const CardCatalogDrink = (catalog: ProductProps) => {
       quantityProduct
     }
     addProductToCart(drinkToCart)
-    notify('Adicionado ao carrinho', 'bottom')
   }
 
 
@@ -55,7 +52,7 @@ export const CardCatalogDrink = (catalog: ProductProps) => {
       <div className="flex items-center justify-center flex-col w-full text-gray-100  gap-2 ">
         <Button disabled={!quantityProduct} onClick={handleAddDrinkToCart} className={"w-full rounded bg-orange-500 hover:bg-orange-600 text-lg"} >Adicionar ao carrinho</Button>
       </div>
-      <ToastContainer />
+
     </Card>
 
   )

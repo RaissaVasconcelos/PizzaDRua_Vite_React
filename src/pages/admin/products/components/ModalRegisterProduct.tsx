@@ -11,7 +11,7 @@ import { Textarea } from '../../../../components/ui/textarea';
 import { api } from '../../../../utils/axios';
 import { useState } from 'react';
 import { formatValue } from '../../../../utils/formatter';
-
+import ProductService from '../../../../infrastructure/services/product'
 
 // const maxFileSize = 5 * 1024 * 1024; // 5MB
 // const allowedFileTypes = ["image/jpeg", "image/jpg"];
@@ -47,7 +47,7 @@ export default function ModalRegisterProduct() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [errorFieldImage, setErrorFieldImage] = useState<string | null>(null);
   const [selectCategory, setSelectCategory] = useState<string | undefined>('Pizza');
-
+  const productService = new ProductService();
   // const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
@@ -76,27 +76,34 @@ export default function ModalRegisterProduct() {
   //     fileInputRef.current.click();
   //   }
   // };
+ 
 
   const handleSubmitForm = async (data: ProductSchema) => {
-    if (!data.file) {
-      setErrorFieldImage('O campo de arquivo é obrigatório');
-      return;
-    }
-    const imageUrl = await api.post('/upload', data.file)
-    await api.post('/product', {
-      name: data.name,
-      size: data.category.value === "Pizza" ? 'ENTIRE' : '',
-      description: data.description,
-      status: data.status.value === "ATIVO" ? 'ACTIVE' : 'DISABLE',
-      type: data.category.value === "Pizza" ? data.type.value === "Especial" ? 'SPECIAL' : 'TRADITIONAL' : '',
-      price: formatValue(data.price),
-      category: data.category.value === "Pizza" ? 'pizza' : 'drink',
-      imageUrl: imageUrl.data
-    })
+    try {
+      if (!data.file) {
+        setErrorFieldImage('O campo de arquivo é obrigatório');
+        return;
+      }
 
-    reset()
-    setPreviewImage(null)
-    setErrorFieldImage(null)
+      const imageUrl = await api.post('/upload', data.file)
+      await productService.RegisterProduct({
+        name: data.name,
+        size: data.category.value === "Pizza" ? 'ENTIRE' : '',
+        description: data.description,
+        status: data.status.value === "ATIVO" ? 'ACTIVE' : 'DISABLE',
+        type: data.category.value === "Pizza" ? data.type.value === "Especial" ? 'SPECIAL' : 'TRADITIONAL' : '',
+        price: formatValue(data.price),
+        category: data.category.value === "Pizza" ? 'pizza' : 'drink',
+        imageUrl: imageUrl.data
+      })
+      
+      reset()
+      setPreviewImage(null)
+      setErrorFieldImage(null)
+    } catch (error) {
+      console.error(error);
+
+    }
   }
 
 

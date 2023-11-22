@@ -52,7 +52,7 @@ export default function MethodDelivery() {
           phone: data.phone
         }
       )
-      navigate('/payment')
+      navigate('/checkout')
     } catch (error) {
       console.log(error);
     }
@@ -85,9 +85,9 @@ export default function MethodDelivery() {
 
           isCheckedDelivery === 'DELIVERY' ? (
             <>
-              <CardAddress textLink="/address" />
+              <CardAddress textLink="/address" className="w-11/12 p-2" />
               <ButtonCheckout onClick={() => setCookie(undefined, 'delivery', methodDeliveryData)}>
-                <NavLink to={'/payment'}>
+                <NavLink to={'/checkout'}>
                   Proximo
                 </NavLink>
               </ButtonCheckout>

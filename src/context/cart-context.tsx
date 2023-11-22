@@ -2,6 +2,7 @@ import { useContext, createContext, ReactNode, useState, useEffect } from 'react
 import { setCookie, parseCookies } from "nookies";
 import { produce } from "immer";
 import ProductService from '../infrastructure/services/product'
+import { api } from '../utils/axios';
 
 interface ChildrenProps {
   children: ReactNode
@@ -85,7 +86,7 @@ export const CartProvider = ({ children }: ChildrenProps) => {
       }
     ]
 
-    setProducts(response.body as any)
+    setProducts(response.body)
     setGroupOptions(groupData)
   }
 
@@ -95,7 +96,9 @@ export const CartProvider = ({ children }: ChildrenProps) => {
     return acc + price * item.quantityProduct;
   }, 0);
 
-  let totalItemsOnCart = (productToCart.length)
+  let totalItemsOnCart = (productToCart.reduce((acc, item) => {
+    return acc + item.quantityProduct
+  }, 0))
 
 
   const clearCart = () => {

@@ -12,6 +12,12 @@ import ServiceAddress from '../../../../infrastructure/services/address'
 import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
 import { useEffect, useState } from 'react';
 
+interface NeighborhoodsProps {
+  label: string
+  value: string
+  id: string
+}
+
 const addressSchemaBody = z.object({
   neighborhood: z.object({
     label: z.string().nonempty('Selecione um bairro'),
@@ -42,9 +48,9 @@ type AddressSchema = z.infer<typeof addressSchemaBody>
 
 export default function CreateAddress() {
   const { setAddresses, addresses } = ContextAuthApp()
-  const serviceAddress = new ServiceAddress()
   const serviceNeighborhoods = new ServiceNeighborhoods() 
-  const [neighborhoods, setNeighborhoods] = useState()
+  const [neighborhoods, setNeighborhoods] = useState<NeighborhoodsProps[]>([])
+  const serviceAddress = new ServiceAddress()
   const navigate = useNavigate()
   const {
     control,
@@ -87,9 +93,9 @@ export default function CreateAddress() {
 
   const getNeighborhoods = async () => {
     const response = await serviceNeighborhoods.showNeighborhood()
-    const neighborhoods = response.body as any
+    const neighborhoodsArray = response.body
     
-    setNeighborhoods(neighborhoods.map((element: any) => {
+    setNeighborhoods(neighborhoodsArray.filter((item) => item.status === 'ACTIVE').map((element) => {
       return {
         label: element.name,
         value: element.name,
@@ -101,10 +107,6 @@ export default function CreateAddress() {
   useEffect(() => {
     getNeighborhoods()
   }, [])
-
-  console.log(neighborhoods);
-  
-  
 
   return (
     <>

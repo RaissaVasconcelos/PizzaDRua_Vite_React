@@ -1,1 +1,1 @@
-export * from './ShowProductsResponseDTO'
+export * from './ProductsResponseDTO'

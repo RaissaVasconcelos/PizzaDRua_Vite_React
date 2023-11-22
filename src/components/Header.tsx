@@ -1,5 +1,5 @@
 
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { ContextCartApp } from "../context/cart-context";
 import { Profile } from "./Profile";
 import { NavLink } from "react-router-dom";
@@ -14,7 +14,7 @@ export const Header = () => {
         <NavLink className="" to={'/cart'}>
           <div className="flex items-center justify-center">
             <div className="rounded-full text-orange-500 bg-orange-100 p-4">
-              <ShoppingBag size={28} />
+              <ShoppingCart size={28} />
             </div>
 
             {totalItemsOnCart && <span className="text-white bg-orange-500 px-2 -ml-5 mb-8 rounded-full">{totalItemsOnCart}</span>}

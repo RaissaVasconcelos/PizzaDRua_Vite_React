@@ -3,7 +3,7 @@ import { ToastContainer } from "react-toastify";
 import { notify } from "../utils/toast";
 // import { api } from "../utils/axios";
 // import { parseCookies } from "nookies";  
-import Service from '../infrastructure/services/address'
+import ServiceProduct from '../infrastructure/services/product'
 
 
 interface DeleteModalProps {
@@ -24,10 +24,10 @@ export const DeleteModal = ({
   notifyText,
   text,
   id }: DeleteModalProps) => {
-  const service = new Service()
+  const serviceProduct = new ServiceProduct()
 
   const handleDelete = async () => {
-    await service.deleteAddress({ id })
+    await serviceProduct.deleteProduct({ id })
     notify(`${notifyText}`, 'bottom')
     onDelete && onDelete(id)
     setOpenModalDelete(false)

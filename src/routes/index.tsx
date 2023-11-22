@@ -21,6 +21,7 @@ import Neighborhoods from '../pages/admin/neighborhoods'
 import Products from '../pages/admin/products'
 import OrdersCustomer from '../pages/orders'
 import OrdersHistory from '../pages/admin/orders-history'
+import ProtectedRouteAdmin from './ProtectedRouteAdmin'
 
 export const Router = () => {
 
@@ -51,10 +52,10 @@ export const Router = () => {
       <Route path='/' element={<AdminLayout />}>
       
         <Route path='/admin/sign-in' element={<SignInDashboard />} />
-        <Route path='/admin/orders-history' element={<OrdersHistory />} />
-        <Route path='/admin/dashboard' element={<Dashboard />} />
-        <Route path='/admin/neighborhoods' element={<Neighborhoods />} />
-        <Route path='/admin/products' element={<Products />} />
+        <Route path='/admin/orders-history' element={<ProtectedRouteAdmin><OrdersHistory /></ProtectedRouteAdmin>} />
+        <Route path='/admin/dashboard' element={<ProtectedRouteAdmin><Dashboard /></ProtectedRouteAdmin>} />
+        <Route path='/admin/neighborhoods' element={<ProtectedRouteAdmin><Neighborhoods /></ProtectedRouteAdmin>} />
+        <Route path='/admin/products' element={<ProtectedRouteAdmin><Products /></ProtectedRouteAdmin>} />
       </Route>
     </Routes>
   )

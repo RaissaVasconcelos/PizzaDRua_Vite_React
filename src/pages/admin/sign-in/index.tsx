@@ -2,8 +2,10 @@ import { useForm } from 'react-hook-form'
 import logo from '../../../assets/logo.png'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
+import ServiceAuthenticate from '../../../infrastructure/services/customer'
+import { setCookie } from 'nookies'
+
 
 const createCustomerFormSchema = z.object({
   email: z
@@ -19,6 +21,7 @@ const createCustomerFormSchema = z.object({
 type CreateCustomerFormData = z.infer<typeof createCustomerFormSchema>
 
 export default function SignInDashboard() {
+  const customer = new ServiceAuthenticate()
 
   const {
     register,
@@ -32,31 +35,23 @@ export default function SignInDashboard() {
   const navigate = useNavigate()
 
   const handleSignIn = async (data: CreateCustomerFormData) => {
-    try {
-       console.log(data);
-        
-      // const response = await api.post('/sessions', data)
-      // const { access_token } = response.data
-      // setCookie(undefined, 'accessToken', access_token, {
-      //     maxAge: 60 * 60 * 24, // 1 days
-      // })
+
+    const response = await customer.authentication(data)
+    if (response.statusCode === 401) {
+      setError('email', {
+        type: 'manual',
+        message: 'Email ou senha inválidos',
+      })
+      setError('password', {
+        type: 'manual',
+        message: 'Email ou senha inválidos',
+      })
+    }else{
+      const { access_token } = response.body as any
+      setCookie(undefined, 'token', access_token)
+    }
 
       navigate('/admin/dashboard')
-    } catch (error: unknown) {
-      const customError = error as AxiosError
-      if (customError.response?.status === 401) {
-        setError('email', {
-          type: 'manual',
-          message: 'Email ou senha inválidos',
-        })
-        setError('password', {
-          type: 'manual',
-          message: 'Email ou senha inválidos',
-        })
-      } else {
-        console.error(customError)
-      }
-    }
   }
 
 

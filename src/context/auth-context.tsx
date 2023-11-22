@@ -19,6 +19,7 @@ export interface AddressProps {
     id: string
     name: string
     tax: string
+    status?: string
   }
   zipCode: string
   phone: string

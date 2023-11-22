@@ -8,7 +8,7 @@ export type IHttpRequest = {
   headers?: any
 }
 
-export type HttpResponse< T = any > = {
+export type HttpResponse<T> = {
   statusCode: number
   body: T
 }

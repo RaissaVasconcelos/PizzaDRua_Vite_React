@@ -12,7 +12,8 @@ export interface CartProps {
 export interface Orders {
     methodDelivery: "DELIVERY" | "PICKUP"
     status: string
-    payment: "CARD" | "MONEY" | "PIX",
+    payment: "Card" | "Money" | "Pix",
+    observation?: string    
     id: string
     createdAt: Date
     totalPrice: string
@@ -63,4 +64,19 @@ export interface OrderData {
     neighborhoodName: string;
     neighborhoodTax: string;
 
+}
+
+
+export interface OrderProps {
+    payment: string
+    totalPrice: string
+    methodDelivery: string
+    status: string
+    itensOrder: {
+        mode?: string,
+        size: string,
+        price: string
+        product: string[]
+        quantity: number
+    }[]
 }
