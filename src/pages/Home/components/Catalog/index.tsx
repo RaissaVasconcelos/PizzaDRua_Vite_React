@@ -9,7 +9,7 @@ export const Catalog = () => {
   const [onChangeType, setOnChangeType] = useState('TRADITIONAL')
 
   return (
-    <div className=" mt-10  w-full">
+    <div className=" mt-10 mb-24  w-full">
       {onChangeCatalog === 'PIZZA'
         ? (
           <>

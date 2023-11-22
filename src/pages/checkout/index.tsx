@@ -129,7 +129,7 @@ export default function Checkout() {
   return (
     <>
       <HeaderOrder activeLink="CHECKOUT" leftLink="/delivery" />
-      <div className="w-full bg-white flex flex-col items-center justify-center my-5">
+      <div className="w-full bg-white flex flex-col items-center justify-center pt-6">
 
         <div className="w-11/12">
             <div className="w-full flex items-center justify-between">

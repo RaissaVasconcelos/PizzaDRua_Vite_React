@@ -7,8 +7,6 @@ import visa from '../../assets/visa.png'
 import elo from '../../assets/elo.png'
 import money from '../../assets/money.png'
 
-
-
 interface PaymentProps {
   methodPayment: string
   flag?: string
@@ -18,10 +16,7 @@ interface PaymentProps {
 export default function Payment() {
   const [isCheckedPayment, setIsCheckedPayment] = useState('APP');
  
-
   const navigate = useNavigate();
-
-
 
   const handleSubmitPayment = (payment: PaymentProps) => {
     
@@ -30,12 +25,11 @@ export default function Payment() {
         maxAge: 60 * 60 * 24 * 7, // 7 days
       });
       navigate('/checkout');
-    
   }
 
   return (
     <>
-      <div className="mt-28 w-11/12 flex items-center justify-center font-normal gap-3 text-gray-500 text-base my-6">
+      <div className="mt-28 w-11/12 flex items-center justify-center font-normal gap-3 text-gray-500 text-base ">
         <h3
           onClick={() => setIsCheckedPayment('APP')}
           className={`w-full ${isCheckedPayment === 'APP'

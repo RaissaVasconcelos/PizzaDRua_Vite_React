@@ -15,7 +15,7 @@ export default function Home() {
       <Catalog />
       {
         totalItemsOnCart > 0 && (
-          <div className={`bg-white max-w-[1100px] m-auto flex items-center justify-between p-5 h-24 bottom-0 left-0 right-0  fixed`}>
+          <div className={`border-t-[1px] border-gray-200  bg-white max-w-[1100px] m-auto flex items-center justify-between p-5 h-24 bottom-0 left-0 right-0  fixed`}>
             <div>
               <span className="text-gray-500 text-sm">Total sem a entrega</span>
               <div className="flex items-center gap-1">
