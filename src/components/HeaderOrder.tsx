@@ -1,5 +1,5 @@
 
-import { Banknote, CheckCircle, ChevronLeft, ShoppingBag, ShoppingCart } from "lucide-react"
+import { CheckCircle, ChevronLeft, ShoppingCart } from "lucide-react"
 import { NavLink } from "react-router-dom"
 import delivery from '../assets/delivery.png'
 import deliveryOrange from '../assets/delivery-orange.png'
@@ -26,7 +26,7 @@ export const HeaderOrder = ({ leftLink, activeLink }: HeaderOrderProps) => {
           : (<img src={delivery} className={` w-7`} />)}
         Entrega
       </div>
-      
+
       <div className={`w-4/12 border-[1px] ${activeLink === 'CHECKOUT' ? 'border-orange-300 bg-orange-50 text-orange-500' : 'border-gray-300'}  py-2 flex flex-col items-center justify-center`}>
         <CheckCircle size={28} strokeWidth={1} className={`${activeLink === 'CART' ? 'text-orange-500' : 'text-gray-400'}}`} />
         Finalizar

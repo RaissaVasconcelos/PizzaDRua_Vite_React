@@ -7,215 +7,89 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as RadioGroup from "@radix-ui/react-radio-group";
-import { AlertCircle, XCircle } from 'lucide-react';
-import { useState } from 'react';
-import Select, { StylesConfig } from 'react-select';
-import makeAnimated from 'react-select/animated';
-import chroma from 'chroma-js';
+import { Minus, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import uuid from 'react-uuid';
-import { ContextCartApp } from '../../context/cart-context';
+import { ContextCartApp, OrdersCartProps, ProductProps } from '../../context/cart-context';
 import { Button } from '../../components/ui/button';
 import { priceFormatter } from '../../utils/formatter';
 import { ToastContainer } from "react-toastify";
 import { notify } from '../../utils/toast'
+import { useNavigate } from 'react-router-dom'
 
-const colourStyles: StylesConfig<ColourOption, true> = {
-  control: (styles) => ({ ...styles, backgroundColor: 'white' }),
-  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    const color = chroma(data.color);
-    return {
-      ...styles,
-      backgroundColor: isDisabled
-        ? undefined
-        : isSelected
-          ? data.color
-          : isFocused
-            ? color.alpha(0.1).css()
-            : undefined,
-      color: isDisabled
-        ? '#ccc'
-        : isSelected
-          ? chroma.contrast(color, 'white') > 2
-            ? 'white'
-            : 'black'
-          : data.color,
-      cursor: isDisabled ? 'not-allowed' : 'default',
-
-      ':active': {
-        ...styles[':active'],
-        backgroundColor: !isDisabled
-          ? isSelected
-            ? data.color
-            : color.alpha(0.3).css()
-          : undefined,
-      },
-    };
-  },
-  multiValue: (styles, { data }) => {
-    const color = chroma(data.color);
-    return {
-      ...styles,
-      backgroundColor: color.alpha(0.1).css(),
-    };
-  },
-  multiValueLabel: (styles, { data }) => ({
-    ...styles,
-    color: data.color,
-  }),
-  multiValueRemove: (styles, { data }) => ({
-    ...styles,
-    color: data.color,
-    ':hover': {
-      backgroundColor: data.color,
-      color: 'white',
-    },
-  }),
-};
-
-export interface ColourOption {
-  readonly value: string;
-  readonly label: string;
-  readonly color: string;
-  readonly isFixed?: boolean;
-  readonly isDisabled?: boolean;
-}
-interface ProductProps {
-  id: string
-  type: 'TRADITIONAL' | 'SPECIAL'
-  image_url?: string
-  category: {
-    name: string
-  }
-  product: { name: string }[]
-  description: string
-  size: 'ENTIRE' | 'HALF'
-  mode?: string
-  price: string
-  quantityProduct: number
-  status: string
-}
 
 export default function Personalize() {
-  const flavorSchema = z.object({
-    value: z.string().nonempty('Selecione um sabor'),
-    label: z.string().nonempty('Selecione um sabor'),
-    type: z.enum(['TRADITIONAL', 'SPECIAL']).optional(),
-    price: z.string().optional(),
-    image: z.string().optional()
 
-  })
   const customizeSchemaBody = z.object({
     size: z.enum(['ENTIRE', 'HALF']),
     finalPrice: z.string().optional(),
-    flavor: z.array(flavorSchema).refine(flavors => flavors.length > 0, {
-      message: 'Selecione pelo menos um sabor',
-      path: ['flavor'],
-    }),
   })
   type CustomizeSchema = z.infer<typeof customizeSchemaBody>
-  type FlavorSchema = z.infer<typeof flavorSchema>
 
 
-  const { addProductToCart, groupOptions, products } = ContextCartApp();
+
+  const { addProductToCart, products } = ContextCartApp();
 
   const [isChecked, setIsChecked] = useState('ENTIRE');
   const [isSelectSpecial, setIsSelectSpecial] = useState(false);
   const [price, setPrice] = useState('00.00');
-  // const router = useRouter();
-  const animatedComponents = makeAnimated();
+  const [selectedItems, setSelectedItems] = useState<ProductProps[]>([]);
+  const [quantityProduct, setQuantityProduct] = useState(1);
+  const navigate = useNavigate();
 
   const {
     control,
-    setValue,
     handleSubmit,
-    formState: { errors, isSubmitting },
   } = useForm<CustomizeSchema>({
     resolver: zodResolver(customizeSchemaBody),
     defaultValues: {
       size: 'ENTIRE',
-      flavor: [],
     }
   });
 
 
   const handleSubmitForm = (data: CustomizeSchema) => {
-
-    const product: ProductProps = {
+    const product: OrdersCartProps = {
       id: uuid(),
       category: {
         name: 'pizza',
       },
-      description: data.flavor[0].label,
-      image_url: data.flavor[0].image,
+      description: '',
+      image_url: '',
       price,
       size: data.size,
-      product: data.flavor.map((name: any) => {
-        return {
-          name: name.label
-        }
-      }),
+      product: selectedItems.flatMap((item) =>
+        item.product.map((product) => {
+          return {
+            name: product.name,
+          };
+        })
+      ),
       type: isSelectSpecial ? 'SPECIAL' : 'TRADITIONAL',
       mode: 'MIXED',
-      quantityProduct: 1,
+      quantityProduct,
       status: 'WAITING'
 
     }
-
     addProductToCart(product);
-    setValue('flavor', []);
     notify('Produto adicionado ao carrinho', 'bottom');
-
+    navigate('/cart')
   }
 
-  const handleFlavorChange = (selectedOptions: FlavorSchema[]) => {
-    const selectedFlavorsArray = selectedOptions.map((option) => ({
-      value: option.value,
-      label: option.label,
-      type: option.type,
-      price: option.price,
-      image: option.image
-    }));
+  const handleSelectionChange = (item: ProductProps) => {
 
-    // Verifica se algum sabor especial foi selecionado
-    const hasSpecialFlavor = selectedFlavorsArray.some((selectedFlavor) => {
-      return selectedFlavor.type === 'SPECIAL';
-    });
-
-    // Verifica se algum sabor tradicional foi selecionado
-    const hasTraditionalFlavor = selectedFlavorsArray.some((selectedFlavor) => {
-      return selectedFlavor.type === 'TRADITIONAL';
-    });
-
-    if (hasSpecialFlavor) {
-      // Se houver um sabor especial, use o preço desse sabor
-      const specialFlavorPrice = selectedFlavorsArray.find((selectedFlavor) => selectedFlavor.type === 'SPECIAL')?.price;
-      if (specialFlavorPrice) {
-        if (isChecked === 'HALF') {
-          const priceString = specialFlavorPrice.replace(',', '.');
-          setPrice(
-            (parseFloat(priceString) / 2).toFixed(2))
-        } else {
-          const priceString = specialFlavorPrice.replace(',', '.');
-          setPrice(parseFloat(priceString).toFixed(2));
-        }
+    if (selectedItems.includes(item)) {
+      // Desselecionar o item se já estiver selecionado
+      setSelectedItems(selectedItems.filter((selected) => selected !== item));
+    } else {
+      // Verificar se o número de itens selecionados não excede três
+      if (selectedItems.length < 3 && isChecked === 'ENTIRE') {
+        setSelectedItems([...selectedItems, item]);
+      } else if (selectedItems.length < 2 && isChecked === 'HALF') {
+        setSelectedItems([...selectedItems, item]);
       }
-      setIsSelectSpecial(true);
-    } else if (hasTraditionalFlavor) {
-      // Se houver um sabor tradicional, use o preço desse sabor
-      const traditionalFlavorPrice = selectedFlavorsArray.find((selectedFlavor) => selectedFlavor.type === 'TRADITIONAL')?.price;
-      if (traditionalFlavorPrice) {
-        if (isChecked === 'HALF') {
-          const priceString = traditionalFlavorPrice.replace(',', '.'); // Substitua uma vírgula por um ponto
-          const priceFloat = (parseFloat(priceString) / 2).toFixed(2);
-          setPrice(priceFloat);
-
-        } else {
-          const priceString = traditionalFlavorPrice.replace(',', '.');
-          setPrice(parseFloat(priceString).toFixed(2));
-        }
-      }
-      setIsSelectSpecial(false);
     }
+
   };
 
   const handleSelectSize = (size: string) => {
@@ -238,15 +112,57 @@ export default function Personalize() {
     }
   }
 
+  useEffect(() => {
+    const hasSpecialFlavor = selectedItems.some((selectedFlavor) => {
+      return selectedFlavor.type === 'SPECIAL';
+    });
+
+    // Verifica se algum sabor tradicional foi selecionado
+    const hasTraditionalFlavor = selectedItems.some((selectedFlavor) => {
+      return selectedFlavor.type === 'TRADITIONAL';
+    });
+
+    if (hasSpecialFlavor) {
+      // Se houver um sabor especial, use o preço desse sabor
+      const specialFlavorPrice = selectedItems.find((selectedFlavor) => selectedFlavor.type === 'SPECIAL')?.price;
+      if (specialFlavorPrice) {
+        if (isChecked === 'HALF') {
+          const priceString = specialFlavorPrice.replace(',', '.');
+          setPrice(
+            (parseFloat(priceString) / 2).toFixed(2))
+        } else {
+          const priceString = specialFlavorPrice.replace(',', '.');
+          setPrice(parseFloat(priceString).toFixed(2));
+        }
+      }
+      setIsSelectSpecial(true);
+    } else if (hasTraditionalFlavor) {
+      // Se houver um sabor tradicional, use o preço desse sabor
+      const traditionalFlavorPrice = selectedItems.find((selectedFlavor) => selectedFlavor.type === 'TRADITIONAL')?.price;
+      if (traditionalFlavorPrice) {
+        if (isChecked === 'HALF') {
+          const priceString = traditionalFlavorPrice.replace(',', '.'); // Substitua uma vírgula por um ponto
+          const priceFloat = (parseFloat(priceString) / 2).toFixed(2);
+          setPrice(priceFloat);
+
+        } else {
+          const priceString = traditionalFlavorPrice.replace(',', '.');
+          setPrice(parseFloat(priceString).toFixed(2));
+        }
+      }
+      setIsSelectSpecial(false);
+    }
+  }, [selectedItems])
+
   return (
     <>
       <img src={pizza} className='w-full mt-20 object-contain' width={450} height={350} alt='' />
-      <div className='flex flex-col items-center mt-4 '>
+      <div className='flex flex-col items-center my-5 '>
         <h2 className=' text-gray-700 font-semibold text-xl'>Personalize sua Pizza</h2>
       </div>
       <form onSubmit={handleSubmit(handleSubmitForm)} className='w-full ' action="">
-        <div className='bg-white  m-5'>
-          <h2 className='text-gray-100 font-semibold bg-orange-600 rounded-t-sm p-1 '>TAMANHO</h2>
+        <div className='bg-white  '>
+          <h2 className='text-gray-600 text-base  font-medium p-2 '>Selecione um tamanho</h2>
           <Controller
             control={control}
             name="size"
@@ -259,11 +175,10 @@ export default function Personalize() {
                 >
                   <RadioGroup.Item
                     value="ENTIRE"
-
                     onClick={() => {
                       setIsChecked('ENTIRE'),
-                        setValue('flavor', [])
-                      handleSelectSize('ENTIRE')
+                        handleSelectSize('ENTIRE'),
+                        setSelectedItems([])
                     }}
                     className={`${isChecked === 'ENTIRE' ? 'bg-orange-500' : 'bg-[#f9f9f9]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
                   >
@@ -272,8 +187,8 @@ export default function Personalize() {
                   <RadioGroup.Item
                     onClick={() => {
                       setIsChecked('HALF'),
-                        setValue('flavor', [])
-                      handleSelectSize('HALF')
+                        handleSelectSize('HALF'),
+                        setSelectedItems([])
                     }}
                     className={`${isChecked === 'HALF' ? 'bg-orange-500' : 'bg-[#f9f9f9]'} flex items-center justify-center text-blue-600 font-semibold  w-20 h-20 rounded-full`}
                     value="HALF"
@@ -285,8 +200,8 @@ export default function Personalize() {
               )
             }}
           />
-          <div className='h-[2px] bg-blue-500 mx-2'></div>
-          <div className='mx-2 p-2 text-gray-500 font-semibold'>
+          <div className='h-[1px] bg-gray-200 mx-2'></div>
+          <div className='mx-2 p-3 text-gray-500 font-semibold'>
             {
               isChecked === 'ENTIRE'
                 ? <p>Pizza de 40 centimetros, com 12 fatias</p>
@@ -294,63 +209,90 @@ export default function Personalize() {
             }
           </div>
         </div>
-        <div className='bg-white  m-5'>
-          <h2 className='text-gray-100 font-semibold bg-orange-600 rounded-t-sm p-1 '>SABORES</h2>
-          <div className='p-5'>
-            <Controller
-              control={control}
-              name="flavor"
-              rules={{ required: true }}
-              render={({ field }) => (
-                isChecked === 'ENTIRE' ? (
-                  <Select
-                    onChange={(selectedOptions: any) => {
-                      field.onChange(selectedOptions); // Atualiza o campo "flavor" com as opções selecionadas
-                      handleFlavorChange(selectedOptions); // Atualiza o estado com as opções selecionadas
-                    }}
-                    options={groupOptions}
-                    styles={colourStyles}
-                    isMulti
-                    value={field.value}
-                    components={animatedComponents}
-                    isOptionDisabled={() => field.value.length === 3}
-                  />
-                ) : (
-                  <Select
-                    onChange={(selectedOptions: any) => {
-                      field.onChange(selectedOptions); // Atualiza o campo "flavor" com as opções selecionadas
-                      handleFlavorChange(selectedOptions); // Atualiza o estado com as opções selecionadas
-                    }}
-                    className='Selecione'
-                    options={groupOptions}
-                    styles={colourStyles}
-                    isMulti
-                    value={field.value}
-                    components={animatedComponents}
-                    isOptionDisabled={() => field.value.length === 2}
-                  />
-                )
-              )}
-            />
-
-            {errors.flavor && <p className='flex gap-2 rounded-md border-[1px] border-red-500 bg-red-50 p-2 text-red-500 font-normal m-2'> <XCircle className='text-red-500' /> Selecione pelo menos um sabor</p>}
-            {isSelectSpecial && (
-              <p className="border-[1px] border-gray-400 bg-gray-100 p-2 rounded-md text-gray-500 font-normal mt-4 flex gap-2 "><AlertCircle className='text-gray-400' /> Sabor especial selecionado.</p>
+        <div className=' w-full flex flex-col items-center justify-center mb-20'>
+          <div className='sticky top-[92px] bg-[#F6F6F9] px-4 py-3  flex flex-col items-start justify-center w-full '>
+            <h2 className='text-gray-600 font-semibold'>Escolha a sua Preferencia</h2>
+            {isChecked === 'ENTIRE' ? (
+              <span className='text-gray-400 font-semibold'>{selectedItems.length} de 3</span>
+            ) : (
+              <span className='text-gray-400 font-semibold'>{selectedItems.length} de 2</span>
             )}
-            <div className='h-[2px] bg-blue-500 mt-4' />
-            <p className='text-gray-500 mt-2 font-semibold'>{isChecked === 'ENTIRE' ? 'Voce pode selecionar até 3 sabores' : 'Voce pode selecionar até 2 sabores'}</p>
           </div>
+          <div className='bg-white py-5 px-3 flex  items-center justify-start w-full border-b-[1px] border-gray-100'>
+            <h2 className="text-gray-600 font-medium">Tradicional</h2>
+          </div>
+          {products.filter((item) => item.category.name === 'pizza' && item.type === 'TRADITIONAL').map((item) => (
+            <div key={item.id} onClick={() => handleSelectionChange(item)} className="bg-white w-full flex items-center justify-between p-[14px] gap-10 border-b-[1px] border-gray-100">
+              <div>
+                {item.product.map((product) => (
+                  <h2
+                    key={product.name}
+                    className="cursor-pointer"
+                  >
+                    {product.name}
+                  </h2>
+                ))}
+                <p className='text-gray-300 text-sm'>{item.description}</p>
+              </div>
+              <input
+                type="checkbox"
+                id={item.id}
+                checked={selectedItems.includes(item)}
+                onChange={() => handleSelectionChange(item)}
+                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                disabled={isChecked === 'ENTIRE' ? selectedItems.length === 3 && !selectedItems.includes(item) : selectedItems.length === 2 && !selectedItems.includes(item)}
+              />
+            </div>
+          ))}
+          <div className='bg-white py-5 px-3 flex  items-center justify-start w-full border-b-[1px] border-gray-100'>
+            <h2 className="text-gray-600 font-medium">Especial</h2>
+          </div>
+          {products.filter((item) => item.category.name === 'pizza' && item.type === 'SPECIAL').map((item) => (
+            <div key={item.id} onClick={() => handleSelectionChange(item)} className="bg-white w-full flex items-center justify-between p-[14px] gap-10 border-b-[1px] border-gray-100">
+              <div>
+                {item.product.map((product) => (
+                  <h2
+                    key={product.name}
+                    className="cursor-pointer"
+                  >
+                    {product.name}
+                  </h2>
+                ))}
+                <p className='text-gray-300 text-sm'>{item.description}</p>
+              </div>
+              <input
+                type="checkbox"
+                id={item.id}
+                checked={selectedItems.includes(item)}
+                onChange={() => handleSelectionChange(item)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                disabled={isChecked === 'ENTIRE' ? selectedItems.length === 3 && !selectedItems.includes(item) : selectedItems.length === 2 && !selectedItems.includes(item)}
+              />
+            </div>
+          ))}
         </div>
-        <div className='bg-white  m-5 flex items-center justify-between gap-3 p-5'>
-          <div className='flex-col flex items-start justify-center'>
-            <span className='text-gray-500 font-semibold text-lg'>Preço</span>
-            <span className='text-gray-500 font-bold text-xl'>{priceFormatter.format(Number(price))}</span>
+        <div className='fixed border-t-[1px] border-gray-200 bottom-0 bg-white w-full flex items-center justify-between  p-3 py-5 '>
+          <div className='flex items-center justify-center gap-4 '>
+            <button
+              className='disabled:text-gray-300 text-red-500'
+              disabled={quantityProduct === 1}
+              type='button'
+              onClick={() => setQuantityProduct((state) => state - 1)}>
+              <Minus size={16} />
+            </button>
+            <span>{quantityProduct}</span>
+            <button type='button' onClick={() => setQuantityProduct((state) => state + 1)}>
+              <Plus size={16} className='text-red-500' />
+            </button>
+
           </div>
           <Button
+
             type='submit'
-            disabled={isSubmitting}
-            className='bg-red-500  text-base text-gray-100 rounded  hover:bg-red-600'>
-            Adicionar ao carrinho
+            disabled={selectedItems.length === 0}
+            className='bg-red-500 disabled:bg-gray-300 disabled:text-gray-800 flex items-center justify-between w-8/12 text-base text-gray-100 rounded  hover:bg-red-600'>
+            Adicionar
+            <span>{priceFormatter.format(Number(price) * quantityProduct)}</span>
           </Button>
         </div>
       </form>

@@ -1,6 +1,4 @@
 import { Card, CardContent } from "../../../../../components/ui/card"
-import { InputQuantityProductInCart } from "../input-quantity-product-in-cart"
-import { useState } from "react"
 import { Button } from "../../../../../components/ui/button"
 import { ContextCartApp, ProductProps } from "../../../../../context/cart-context"
 import { priceFormatter } from "../../../../../utils/formatter"
@@ -8,22 +6,16 @@ import { NavLink } from "react-router-dom";
 
 
 export const CardCatalogPizza = (catalog: ProductProps) => {
-  const [quantityProduct, setQuantityProduct] = useState(1);
+
   const { addProductToCart } = ContextCartApp()
 
-  const handleIncrementProduct = () => {
-    setQuantityProduct((state) => state - 1);
-  };
 
-  const handleDecrementProduct = () => {
-    setQuantityProduct((state) => state + 1);
-  };
 
   const handleAddProductToCart = () => {
     const productToCart = {
       ...catalog,
       mode: 'SIMPLE',
-      quantityProduct
+      quantityProduct: 1
     }
     addProductToCart(productToCart)
   }
@@ -40,16 +32,12 @@ export const CardCatalogPizza = (catalog: ProductProps) => {
           <p className="text-gray-600">{catalog.description}</p>
           <div className="w-full flex items-center justify-between mt-3 ">
             <p className="text-gray-500 font-bold text-lg">{priceFormatter.format(Number(catalog.price))}</p>
-            <InputQuantityProductInCart
-              onDecrease={handleDecrementProduct}
-              onIncrease={handleIncrementProduct}
-              quantityProduct={quantityProduct}
-            />
+
           </div>
         </div>
       </CardContent>
       <div className="px-2 flex items-center justify-center flex-col w-full text-gray-100  gap-2 ">
-        <Button disabled={!quantityProduct} onClick={handleAddProductToCart} className={"w-full rounded bg-orange-500 hover:bg-orange-600 text-lg"} >Adicionar ao carrinho</Button>
+        <Button onClick={handleAddProductToCart} className={"w-full rounded bg-orange-500 hover:bg-orange-600 text-lg"} >Adicionar ao carrinho</Button>
         <NavLink className="w-full" to="/personalize">
           <Button className={"w-full rounded border-2 border-orange-500 text-lg text-orange-500 bg-white hover:bg-orange-50"} >Personalizar</Button>
         </NavLink>
