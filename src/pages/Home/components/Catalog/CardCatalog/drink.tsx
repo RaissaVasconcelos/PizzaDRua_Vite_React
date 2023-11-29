@@ -1,6 +1,4 @@
 import { Card, CardContent } from "../../../../../components/ui/card"
-import { InputQuantityProductInCart } from "../input-quantity-product-in-cart"
-import { useState } from "react"
 import image from "../../../../../assets/lata.png"
 import { Button } from "../../../../../components/ui/button"
 import { ContextCartApp, ProductProps } from "../../../../../context/cart-context"
@@ -9,22 +7,15 @@ import { priceFormatter } from "../../../../../utils/formatter"
 
 
 export const CardCatalogDrink = (catalog: ProductProps) => {
-  const [quantityProduct, setQuantityProduct] = useState(1);
+
   const { addProductToCart } = ContextCartApp()
 
-  const handleIncrementProduct = () => {
-    setQuantityProduct((state) => state - 1);
-  };
-
-  const handleDecrementProduct = () => {
-    setQuantityProduct((state) => state + 1);
-  };
 
   const handleAddDrinkToCart = () => {
     const drinkToCart = {
       ...catalog,
       mode: 'SIMPLE',
-      quantityProduct
+      quantityProduct: 1
     }
     addProductToCart(drinkToCart)
   }
@@ -41,16 +32,11 @@ export const CardCatalogDrink = (catalog: ProductProps) => {
           <p className="text-gray-600">{catalog.description}</p>
           <div className="w-full flex items-center justify-between mt-3 ">
             <p className="text-gray-500 font-bold text-lg">{priceFormatter.format(parseFloat(catalog.price))}</p>
-            <InputQuantityProductInCart
-              onDecrease={handleDecrementProduct}
-              onIncrease={handleIncrementProduct}
-              quantityProduct={quantityProduct}
-            />
           </div>
         </div>
       </CardContent>
       <div className="flex items-center justify-center flex-col w-full text-gray-100  gap-2 ">
-        <Button disabled={!quantityProduct} onClick={handleAddDrinkToCart} className={"w-full rounded bg-orange-500 hover:bg-orange-600 text-lg"} >Adicionar ao carrinho</Button>
+        <Button onClick={handleAddDrinkToCart} className={"w-full rounded bg-orange-500 hover:bg-orange-600 text-lg"} >Adicionar ao carrinho</Button>
       </div>
 
     </Card>

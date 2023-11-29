@@ -1,4 +1,3 @@
-
 import { api } from "../../utils/axios";
 import { useEffect, useState } from "react";
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -8,7 +7,7 @@ import { ToastContainer } from "react-toastify";
 import { notify } from "../../utils/toast";
 import socket from "../../utils/socketIO";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { destroyCookie, parseCookies } from "nookies";
 import { OrderProps } from "../../@types/interface";
 import { CalculatePrice } from "../../utils/calculate-price";
@@ -18,16 +17,10 @@ interface qrCodeProps {
   qrcode: string
   imagemQrcode: string
 }
-interface PaymentProps {
-  methodPayment: string
-}
 
 export default function Pix() {
   const [qrCodeData, setQrCodeData] = useState<qrCodeProps>()
-  const [getPayment, setGetPayment] = useState<PaymentProps>(() => {
-    const storaged = parseCookies().payment
-    return storaged ? JSON.parse(storaged) : []
-  });
+
   const [methodDelivery, setMethodDelivery] = useState<string>(() => {
     const storaged = parseCookies().delivery
     return storaged ? JSON.parse(storaged) : []
@@ -35,6 +28,7 @@ export default function Pix() {
   const navigate = useNavigate()
   const totalPrice = CalculatePrice()
   const { productToCart } = ContextCartApp()
+  const { id } = useParams();
 
   const handleQRcodePix = async () => {
     const response = await api.post('/pix', {
@@ -43,21 +37,22 @@ export default function Pix() {
       },
       devedor: {
         cpf: "12345678909",
-        nome: "Francisco da Silva"
+        nome: "xxx-xx-xx"
       },
       valor: {
         original: '0.01',
       },
       chave: "a471ed5a-0b30-4507-8e9e-c9ba73ec33cb",
-      solicitacaoPagador: "Informe o número ou identificador do pedido."
-
+      solicitacaoPagador: id,
+      
     })
     setQrCodeData(response.data)
   }
+  console.log(totalPrice);
 
   useEffect(() => {
 
-    socket.on('payment', (data: any) => {
+    socket.on('payment', (data) => {
       console.log(data);
       const createOrder = async () => {
 
@@ -65,8 +60,8 @@ export default function Pix() {
 
           const token = parseCookies().accessToken;
           const order: OrderProps = {
-            payment: getPayment.methodPayment,
-            totalPrice: totalPrice,
+            payment: 'Pix',
+            totalPrice: await totalPrice,
             status: 'WAITING',
             methodDelivery: methodDelivery,
             itensOrder: productToCart.map((item) => ({
@@ -78,8 +73,6 @@ export default function Pix() {
               quantity: item.quantityProduct
             }))
           }
-          
-
           await api.post('/order', order, {
             headers: {
               Authorization: `Bearer ${token}`
@@ -90,6 +83,7 @@ export default function Pix() {
           destroyCookie(null, 'payment')
           destroyCookie(null, 'delivery')
         }
+
         navigate('/success')
       }
       createOrder();
@@ -100,19 +94,20 @@ export default function Pix() {
     };
   }, []);
 
+
+  socket.emit('join', {
+    room: id
+  })
+
+
+
   const getDataCookies = () => {
-    setGetPayment(() => {
-      const storaged = parseCookies().payment
-      return storaged ? JSON.parse(storaged) : []
-    })
 
     setMethodDelivery(() => {
       const storaged = parseCookies().delivery
       return storaged ? JSON.parse(storaged) : []
     })
   }
-
-  console.log(methodDelivery);
 
 
   useEffect(() => {

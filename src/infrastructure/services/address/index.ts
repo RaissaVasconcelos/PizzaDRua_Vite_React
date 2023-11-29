@@ -1,4 +1,4 @@
-import ApiFactory from '../../http/factories/ApiFactory'
+import {ApiFactoryClient} from '../../http/factories/ApiFactory'
 import { HttpResponse } from '../../../model/http/http-client'
 
 import {
@@ -12,7 +12,7 @@ import {
 } from '../address/dtos/response' 
 
 export default class Service {
-  httpClient = ApiFactory()
+  httpClient = ApiFactoryClient()
 
   public async showAddress(): Promise<HttpResponse<ShowListAddressResponse[]>> {
     return await this.httpClient.request({

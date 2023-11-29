@@ -6,6 +6,7 @@ import mc from '../../assets/mc.svg'
 import visa from '../../assets/visa.png'
 import elo from '../../assets/elo.png'
 import money from '../../assets/money.png'
+import { CardPayment } from "./components/CardPayment";
 
 interface PaymentProps {
   methodPayment: string
@@ -15,107 +16,72 @@ interface PaymentProps {
 
 export default function Payment() {
   const [isCheckedPayment, setIsCheckedPayment] = useState('APP');
- 
+
   const navigate = useNavigate();
 
   const handleSubmitPayment = (payment: PaymentProps) => {
-    
-      const paymentData = JSON.stringify(payment);
-      setCookie(undefined, 'payment', paymentData, {
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      });
-      navigate('/checkout');
+
+    const paymentData = JSON.stringify(payment);
+    setCookie(undefined, 'payment', paymentData, {
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+    navigate('/checkout');
   }
 
   return (
     <>
-      <div className="mt-28 w-11/12 flex items-center justify-center font-normal gap-3 text-gray-500 text-base ">
-        <h3
-          onClick={() => setIsCheckedPayment('APP')}
-          className={`w-full ${isCheckedPayment === 'APP'
-            ? "text-orange-500  border-b-[2px] border-orange-600"
-            : "text-gray-500 "} flex items-center justify-center p-2`}>
-          PAGUE PELO APP
-        </h3>
-        <h3
-          onClick={() => setIsCheckedPayment('DELIVERY')}
-          className={`w-full ${isCheckedPayment === 'DELIVERY'
-            ? "text-orange-500  border-b-[2px] border-orange-600"
-            : "text-gray-500 "} flex items-center justify-center p-2`}>
-          PAGUE NA ENTREGA
-        </h3>
+      <div className="fixed bg-[#F6F6F9] mt-24 pt-4 w-11/12  font-normal gap-3 text-gray-500 text-base ">
+        <div className="w-full flex items-center justify-center">
+          <h3
+            onClick={() => setIsCheckedPayment('APP')}
+            className={`w-full ${isCheckedPayment === 'APP'
+              ? "text-orange-500  border-b-[2px] border-orange-600"
+              : "text-gray-500 "} flex items-center justify-center p-2`}>
+            PAGUE PELO APP
+          </h3>
+          <h3
+            onClick={() => setIsCheckedPayment('DELIVERY')}
+            className={`w-full ${isCheckedPayment === 'DELIVERY'
+              ? "text-orange-500  border-b-[2px] border-orange-600"
+              : "text-gray-500 "} flex items-center justify-center p-2`}>
+            PAGUE NA ENTREGA
+          </h3>
+        </div>
+        {isCheckedPayment === 'DELIVERY' && (
+          <div className="bg-white mt-5 text-gray-500 text-sm p-3 w-full flex flex-col items-center justify-center mb-5">
+            <p>Atenção para a forma de pagamento selecionada.</p>
+            <p>Você não poderá utilizar outra nesta entrega.</p>
+          </div>
+        )}
       </div>
       <div className="w-full flex flex-col items-center justify-center my-10">
         {isCheckedPayment === 'APP' ? (
-          <div className="w-full flex flex-col items-center justify-center">
-            
-            <h3 className="w-11/12 font-semibold text-base text-gray-600">
+          <div className="w-full mt-40 flex flex-col items-center justify-center">
+
+            <h3 className="w-11/12 mb-3 font-semibold text-base text-gray-600">
               Formas de pagamento
             </h3>
-            <div 
-                onClick={() => handleSubmitPayment({ methodPayment: 'Pix',typeCard: 'Pix'  })} 
-                className="w-11/12 flex items-center justify-start gap-2 p-4 border-[1px] border-gray-300 rounded-md mt-10 ">
-              <img className="w-8" src={pix} alt="" />
-              <span>Pix</span>
-            </div>
+            <CardPayment className="p-2 text-sm" handleSubmitPayment={handleSubmitPayment} img={pix} payment={{ methodPayment: 'Pix', typeCard: 'Pix' }} />
           </div>
         ) : (
-          <div className="w-full flex flex-col items-center justify-center text-xs">
-              <div className="bg-white text-gray-500 text-sm p-3 w-11/12 flex flex-col items-center justify-center mb-5">
-                <p>Atencao para a forma de pagamento selecionada.</p>
-                <p>Voce nao podera utlilizar outra nessa entrega.</p>
-              </div>
+          <div className="mt-52 w-full flex flex-col items-center justify-center text-xs">
             <h3 className="w-11/12 font-semibold text-sm text-gray-500 mt-5">
-              Credito
+              Crédito
             </h3>
-            <div 
-                onClick={() => handleSubmitPayment({ methodPayment: 'Card', flag: 'Elo', typeCard: 'Crédito' })} 
-              className="w-11/12 flex items-center justify-start gap-4 p-4 border-[1px] border-gray-300 rounded-md mt-3 ">
-              <img className="w-8" src={elo} alt="" />
-              <span>Elo</span>
-            </div>
-              <div
-                onClick={() => handleSubmitPayment({ methodPayment: 'Card', flag: 'Visa', typeCard: 'Crédito' })}
-                className="w-11/12 flex items-center justify-start gap-4 p-4 border-[1px] border-gray-300 rounded-md mt-3 ">
-                <img className="w-8" src={visa} alt="" />
-                <span>Visa</span>
-              </div>
-              <div
-                onClick={() => handleSubmitPayment({ methodPayment: 'Card', flag: 'Mastercard', typeCard: 'Crédito' })}
-                className="w-11/12 flex items-center justify-start gap-4 p-4 border-[1px] border-gray-300 rounded-md mt-3 ">
-                <img className="w-8" src={mc} alt="" />
-                <span>Mastercard</span>
-              </div>
-              <h3 className="w-11/12 font-semibold text-sm text-gray-500 mt-5">
-                Debito
-              </h3>
-              <div
-                onClick={() => handleSubmitPayment({ methodPayment: 'Card', flag: 'Elo', typeCard: 'Débito' })}
-                className="w-11/12 flex items-center justify-start gap-4 p-4 border-[1px] border-gray-300 rounded-md mt-3 ">
-                <img className="w-8" src={elo} alt="" />
-                <span>Elo</span>
-              </div>
-              <div
-                onClick={() => handleSubmitPayment({ methodPayment: 'Card', flag: 'Visa', typeCard: 'Débito' })}
-                className="w-11/12 flex items-center justify-start gap-4 p-4 border-[1px] border-gray-300 rounded-md mt-3 ">
-                <img className="w-8" src={visa} alt="" />
-                <span>Visa</span>
-              </div>
-              <div
-                onClick={() => handleSubmitPayment({ methodPayment: 'Card', flag: 'Mastercard', typeCard: 'Débito' })}
-                className="w-11/12 flex items-center justify-start gap-4 p-4 border-[1px] border-gray-300 rounded-md mt-3 ">
-                <img className="w-8" src={mc} alt="" />
-                <span>Mastercard</span>
-              </div>
-              <h3 className="w-11/12 font-semibold text-sm text-gray-500 mt-5">
-                Dinheiro
-              </h3>
-              <div
-                onClick={() => handleSubmitPayment({ methodPayment: 'Money', typeCard: 'Dinheiro' })}
-                className="w-11/12 flex items-center justify-start gap-4 p-3 border-[1px] border-gray-300 rounded-md mt-3 ">
-                <img className="w-8" src={money} alt="" />
-                <span>Dinheiro</span>
-              </div>
+
+            <CardPayment handleSubmitPayment={handleSubmitPayment} img={elo} payment={{ methodPayment: 'Card', flag: 'Elo', typeCard: 'Crédito' }} />
+            <CardPayment handleSubmitPayment={handleSubmitPayment} img={visa} payment={{ methodPayment: 'Card', flag: 'Visa', typeCard: 'Crédito' }} />
+            <CardPayment handleSubmitPayment={handleSubmitPayment} img={mc} payment={{ methodPayment: 'Card', flag: 'Mastercard', typeCard: 'Crédito' }} />
+            <h3 className="w-11/12 font-semibold text-sm text-gray-500 mt-5">
+              Débito
+            </h3>
+            <CardPayment handleSubmitPayment={handleSubmitPayment} img={elo} payment={{ methodPayment: 'Card', flag: 'Elo', typeCard: 'Débito' }} />
+            <CardPayment handleSubmitPayment={handleSubmitPayment} img={visa} payment={{ methodPayment: 'Card', flag: 'Visa', typeCard: 'Débito' }} />
+            <CardPayment handleSubmitPayment={handleSubmitPayment} img={mc} payment={{ methodPayment: 'Card', flag: 'Mastercard', typeCard: 'Débito' }} />
+            <h3 className="w-11/12 font-semibold text-sm text-gray-500 mt-5">
+              Dinheiro
+            </h3>
+            <CardPayment className="p-[10px]" handleSubmitPayment={handleSubmitPayment} img={money} payment={{ methodPayment: 'Money', typeCard: 'Dinheiro' }} />
           </div>
         )}
       </div>

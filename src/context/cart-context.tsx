@@ -2,7 +2,6 @@ import { useContext, createContext, ReactNode, useState, useEffect } from 'react
 import { setCookie, parseCookies } from "nookies";
 import { produce } from "immer";
 import ProductService from '../infrastructure/services/product'
-import { api } from '../utils/axios';
 
 interface ChildrenProps {
   children: ReactNode
@@ -40,6 +39,7 @@ interface cartTypeContext {
   addProductToCart: (product: OrdersCartProps) => void
   setOnChangeCatalog: (catalog: string) => void
   removeProductFromCart: (productId: string) => void
+  removeProductInCart: (products: OrdersCartProps) => void
   onChangeCatalog: string
   cartProductsTotalPrice: number
   totalItemsOnCart: number
@@ -55,7 +55,7 @@ const filterType = (type: string, arr: ProductProps[]) => {
       color: element.type === 'TRADITIONAL' ? '#ae7a47' : '#3f1503',
     }
   })
-  
+
   return arrOption
 }
 
@@ -72,7 +72,7 @@ export const CartProvider = ({ children }: ChildrenProps) => {
       return storagedCart ? JSON.parse(storagedCart) : []
     }
   )
-  
+
   const getFlavors = async () => {
     const response = await serviceProduct.showProduct()
     const groupData = [
@@ -107,6 +107,7 @@ export const CartProvider = ({ children }: ChildrenProps) => {
   }
 
   const addProductToCart = (product: OrdersCartProps) => {
+
     const checkIfProductExists = productToCart.findIndex(
       (item) => item.id === product.id)
     const newProduct = produce(productToCart, (draft) => {
@@ -121,6 +122,25 @@ export const CartProvider = ({ children }: ChildrenProps) => {
       maxAge: 60 * 60 * 24 * 30,
     })
   }
+
+  const removeProductInCart = (product: OrdersCartProps) => {
+    const checkIfProductExists = productToCart.findIndex(
+      (item) => item.id === product.id
+    );
+    const newProduct = produce(productToCart, (draft) => {
+      if (checkIfProductExists >= 0) {
+        draft[checkIfProductExists].quantityProduct -= 1;
+
+        if (draft[checkIfProductExists].quantityProduct <= 0) {
+          draft.splice(checkIfProductExists, 1);
+        }
+      }
+    });
+    setProductToCart(newProduct);
+    setCookie(undefined, 'product', JSON.stringify(newProduct), {
+      maxAge: 60 * 60 * 24 * 30,
+    });
+  };
 
   const removeProductFromCart = (productId: string) => {
     const findProduct = produce(productToCart, (draft) => {
@@ -152,6 +172,7 @@ export const CartProvider = ({ children }: ChildrenProps) => {
         setOnChangeCatalog,
         addProductToCart,
         removeProductFromCart,
+        removeProductInCart
       }}
     >
       {children}
