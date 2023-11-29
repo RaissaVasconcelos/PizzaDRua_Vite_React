@@ -1,14 +1,37 @@
 import { Plus } from "lucide-react";
 import { CardAddress } from "./components/card";
 import { NavLink } from 'react-router-dom'
-import { ContextAuthApp } from "../../context/auth-context";
 import { Button } from "../../components/ui/button";
-
+import { useEffect, useState } from "react";
+import ServiceAddress from '../../infrastructure/services/address'
+import { ContextAuthApp } from "../../context/auth-context";
+import { ColorRing } from "react-loader-spinner";
 
 
 export default function Address() {
-  const { addresses } = ContextAuthApp()
+  // const [addresses, setAddresses] = useState<AddressProps[] | []>([]);
+  const [loading, setLoading] = useState(true);
+  const serviceAddress = new ServiceAddress()
+  const { setAddresses, addresses } = ContextAuthApp();
+  const getAddresses = async () => {
 
+    try {
+      const response = await serviceAddress.showAddress()
+      const addressesArray = response.body
+      setAddresses(addressesArray);
+    } catch (error) {
+      console.error("Erro ao carregar endereços", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getAddresses();
+  }, []);
+
+  console.log(addresses);
+  
   return (
     <>
       <div className="w-full flex flex-col items-center justify-center mt-32">
@@ -18,14 +41,26 @@ export default function Address() {
             <span className="text-base ">Adicionar Endereco</span>
           </NavLink>
         </Button>
-        <div className="w-full flex flex-col items-center justify-center gap-5">
-            {addresses.map((address: any) => (
-              <CardAddress
-                address={address}
-                key={address.id}
-              />
+        {loading ? (
+          <div className="mt-5 flex items-center justify-center w-11/12">
+            <ColorRing
+              visible={true}
+              height="80"
+              width="80"
+              ariaLabel="blocks-loading"
+              wrapperStyle={{}}
+              wrapperClass="blocks-wrapper"
+              colors={['#f59e0b', '#f59e0b', '#f59e0b', '#f59e0b', '#f59e0b']}
+            />
+          </div>
+        ) : (
+          <div className="w-full flex flex-col items-center justify-center gap-5">
+            {addresses.filter(address => address.neighborhood.status === "ACTIVE").map((address) => (
+              <CardAddress key={address.id} address={address} />
             ))}
-        </div>
+          </div>
+        )}
+
       </div>
     </>
   )

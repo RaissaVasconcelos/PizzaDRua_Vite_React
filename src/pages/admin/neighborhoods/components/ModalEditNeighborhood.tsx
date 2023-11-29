@@ -51,10 +51,11 @@ export default function ModalEditNeighborhood({ neighborhood, openModalEdit, set
     defaultValues: {
       name: neighborhood.name,
       tax: formatValue(neighborhood.tax),
-      status: { label: "ATIVO", value: "ATIVO" },
+      status: { label: neighborhood.status },
     }
   });
-
+  console.log(neighborhood);
+  
   const handleSubmitForm = async (data: ProductSchema) => {
  
     try {

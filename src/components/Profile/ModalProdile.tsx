@@ -35,8 +35,8 @@ export const ModalProfile = ({ openModal, setOpenModal }: ModalProfileProps) => 
     <Dialog.Root open={openModal}>
 
       <Dialog.Portal>
-        <Dialog.Overlay className=" fixed w-screen h-screen inset-0 bg-gray-900/[.6] " />
-        <Dialog.Content className="w-11/12  rounded py-10 px-12 bg-gray-100 z-20 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Dialog.Overlay className=" fixed w-screen h-screen inset-0 bg-gray-900/[.6]  " />
+        <Dialog.Content className="w-11/12  rounded py-10 px-12 bg-gray-100 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <Dialog.Close onClick={() => setOpenModal(false)} className="absolute bg-transparent border-spacing-0 top-5 right-5 text-gray-300 line-through ">
             <X size={24} className='text-gray-500' />
           </Dialog.Close>

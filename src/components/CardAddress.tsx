@@ -1,27 +1,30 @@
-import { Building2, Edit, Home, MapPin, MapPinOff } from "lucide-react";
+import { MapPin, MapPinOff } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { AddressProps, ContextAuthApp } from "../context/auth-context";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import ServiceAddress from '../infrastructure/services/address'
 import { ColorRing } from "react-loader-spinner";
+import { cn } from "../utils/cn";
 
-interface CardAddressProps {
-  textLink: string;
+type CardAddressProps = React.HTMLAttributes<HTMLParagraphElement> & {
+  textLink?: string;
 }
 
-export const CardAddress = ({ textLink }: CardAddressProps) => {
+export const CardAddress = ({ textLink, className }: CardAddressProps) => {
   const [address, setAddress] = useState<AddressProps | null>(null);
   const [loading, setLoading] = useState(true);
   const { isAuthenticated } = ContextAuthApp()
   const serviceAddress = new ServiceAddress()
   const getAddresses = async () => {
-    
+
     try {
       const response = await serviceAddress.showAddress()
-      const addresses = response.body as any
-      const standardAddress = addresses?.find((element: AddressProps) => element.standard === true)
-      setAddress(standardAddress);
+      const addresses = response.body
+      const standardAddress = addresses.find((element: AddressProps) => element.standard === true && element.neighborhood.status === "ACTIVE");
+      if (standardAddress) {
+        setAddress(standardAddress);
+      }
     } catch (error) {
       console.error("Erro ao carregar endereços", error);
     } finally {
@@ -33,7 +36,7 @@ export const CardAddress = ({ textLink }: CardAddressProps) => {
     getAddresses();
   }, []);
 
- 
+
 
   return (
     <>
@@ -52,25 +55,21 @@ export const CardAddress = ({ textLink }: CardAddressProps) => {
         </div>
       ) : address ? (
         // Exibir o card do endereço padrão
-        <div className="w-11/12 flex bg-white rounded flex-col items-center justify-center p-4">
-          <header className="flex items-center justify-between w-full">
-            <div className="flex items-center justify-between gap-2 text-orange-500">
-              {address.type === "HOME" ? <Home size={20} /> : address.type === "WORK" ? <Building2 size={18} /> : <MapPin />}
-              <span>{address.type}</span>
-            </div>
-            <NavLink to={textLink}>
-              <Edit size={24} className="text-gray-500" />
-            </NavLink>
-          </header>
-          <div className="w-full flex items-start justify-center flex-col">
-            <div className="w-11/12 mt-2 flex gap-2">
-              <span>{address.street},</span>
-              <span>{address.number} - </span>
-              <span>{address.neighborhood.name}</span>
-            </div>
-            <span>{address.phone}</span>
-            <span>{address.zipCode}</span>
+        <div className={cn("flex bg-white rounded  items-center justify-center", className)}>
+          <header className="flex items-center justify-start gap-2 w-full">
+            {<MapPin size={50} className="bg-orange-50 text-orange-500 p-3 rounded-full" />}
+          <div className="w-full flex items-start justify-start flex-col gap-1">
+            <p>{address.street}, {address.number}</p>
+            <p className="text-gray-400 text-sm">{address.neighborhood.name}</p>
           </div>
+            {
+              textLink && (
+                <NavLink className='text-red-500 text-sm' to={textLink}>
+                  Trocar
+                </NavLink>
+              )
+            }
+          </header>
         </div>
       ) : (
         // Exibir o card para ativar um endereço como padrão

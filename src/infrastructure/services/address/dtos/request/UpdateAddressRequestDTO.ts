@@ -1,11 +1,11 @@
 export interface UpdateAddressRequest {
-  neighborhood: string
+  neighborhood?: string
   id: string
   number: string
   customerId: string
-  standard: string
+  standard?: boolean
   street: string
-  type: string
+  type?: string
   zipCode: string
   phone: string
 }

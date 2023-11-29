@@ -333,9 +333,9 @@ export default function Personalize() {
               )}
             />
 
-            {errors.flavor && <p className='flex gap-2 rounded-md border-2 border-red-500 bg-red-100 p-2 text-red-500 font-semibold m-2'> <XCircle className='text-red-500' /> Selecione pelo menos um sabor</p>}
+            {errors.flavor && <p className='flex gap-2 rounded-md border-[1px] border-red-500 bg-red-50 p-2 text-red-500 font-normal m-2'> <XCircle className='text-red-500' /> Selecione pelo menos um sabor</p>}
             {isSelectSpecial && (
-              <p className="border-2 border-yellow-500 bg-yellow-100 p-2 rounded-md text-yellow-500 font-semibold mt-4 flex gap-2 "><AlertCircle className='text-yellow-500' /> Sabor especial selecionado.</p>
+              <p className="border-[1px] border-gray-400 bg-gray-100 p-2 rounded-md text-gray-500 font-normal mt-4 flex gap-2 "><AlertCircle className='text-gray-400' /> Sabor especial selecionado.</p>
             )}
             <div className='h-[2px] bg-blue-500 mt-4' />
             <p className='text-gray-500 mt-2 font-semibold'>{isChecked === 'ENTIRE' ? 'Voce pode selecionar até 3 sabores' : 'Voce pode selecionar até 2 sabores'}</p>

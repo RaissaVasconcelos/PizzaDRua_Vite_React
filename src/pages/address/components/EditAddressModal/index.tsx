@@ -10,13 +10,18 @@ import { Input } from "../../../../components/ui/input";
 import { Switch } from "../../../../components/ui/switch";
 import { Button } from "../../../../components/ui/button";
 import { AddressProps, ContextAuthApp } from "../../../../context/auth-context";
-import { DeleteModal } from "../../../../components/ModalDelete";
 import { useEffect, useState } from "react";
 import { notify } from "../../../../utils/toast";
 import { ToastContainer } from "react-toastify";
 import Service from '../../../../infrastructure/services/address'
 import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
 
+
+interface NeighborhoodsProps {
+  label: string
+  value: string
+  id: string
+}
 
 const addressSchemaBody = z.object({
   neighborhood: z.object({
@@ -58,8 +63,7 @@ interface EditAddressModalProps {
 export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAddressModalProps) => {
   const serviceNeighborhoods = new ServiceNeighborhoods()
   const service = new Service()
-  const [openModalDelete, setOpenModalDelete] = useState(false);
-  const [neighborhoods, setNeighborhoods] = useState()
+  const [neighborhoods, setNeighborhoods] = useState<NeighborhoodsProps[]>([])
   const {setAddresses, addresses} = ContextAuthApp();
 
   const {
@@ -72,7 +76,7 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
     defaultValues: {
       number: address.number,
       street: address.street,
-      neighborhood: { label: address.neighborhood.name },
+      neighborhood: {label: address.neighborhood.name},
       phone: address.phone,
       type: { label: address.type === 'HOME' ? 'Casa' : address.type === 'WORK' ? 'Trabalho' : 'Outro' },
       zipCode: address.zipCode,
@@ -80,17 +84,12 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
     }
   });
 
-  const getAddress = async () => {
-    const response = await service.showAddress()
-    setAddresses(response.body as any)
-  }
 
   const getNeighborhoods = async () => {
     const response = await serviceNeighborhoods.showNeighborhood()
+    const neighborhoods = response.body
     
-    const neighborhoods = response.body as any
-    
-    setNeighborhoods(neighborhoods.map((element: any) => {
+    setNeighborhoods(neighborhoods.filter((item) => item.status === 'ACTIVE').map((element) => {
       return {
         label: element.name,
         value: element.name,
@@ -105,7 +104,8 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
 
  
   const handleEditAddressForm = async (data: AddressSchema) => {
-
+    console.log(data);
+    
     try {
        const response = await service.updateAddress({
         neighborhood: data.neighborhood.label,
@@ -121,7 +121,6 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
 
       if (response.statusCode === 200) {
         notify(`Endereco atualizado com sucesso`, 'bottom')
-        getAddress()
       }
       
       setOpenModal(false)
@@ -132,9 +131,11 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
 
   }
 
-  const handleDeleteAddress = (id: string) => {
+  const handleDeleteAddress = async (id: string) => {
+    await service.deleteAddress({id});
     const newAddresses = addresses.filter(item => item.id !== id);
     setAddresses(newAddresses);
+    setOpenModal(false);
   }
 
   return (
@@ -257,18 +258,15 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
                 )}
               />
 
-              <Button onClick={() => setOpenModal(true)} className='w-full bg-red-500 mt-5 hover:bg-red-400' type='submit'>Salvar</Button>
+              <Button 
+                onClick={() => setOpenModal(true)} 
+                className='w-full bg-red-500 mt-5 hover:bg-red-400' 
+                type='submit'
+              > Salvar
+              </Button>
             </form>
-            <button onClick={() => setOpenModalDelete(true)} className="w-10/12 mt-3 py-2 items-center justify-center font-medium rounded  bg-gray-200 hover:bg-gray-400 text-gray-800  flex gap-2"> Deletar</button>
-            <DeleteModal
-              setOpenModalDelete={setOpenModalDelete}
-              onDelete={handleDeleteAddress}
-              openModalDelete={openModalDelete}
-              setOpenModal={setOpenModal}
-              notifyText={'Endereço excluido com sucesso'}
-              text={'Deseja excluir este endereço?'}
-              id={address.id}
-            />
+            <button onClick={() => handleDeleteAddress(address.id)} className="w-10/12 mt-3 py-2 items-center justify-center font-medium rounded  bg-gray-200 hover:bg-gray-400 text-gray-800  flex gap-2"> Deletar</button>
+            
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

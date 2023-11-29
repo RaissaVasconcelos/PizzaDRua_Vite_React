@@ -95,9 +95,8 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
             <div className="w-full flex flex-col items-start justify-center mt-7">
               {order.methodDelivery === 'DELIVERY' && (
                 <div className="w-full flex items-center justify-start gap-2">
-                  Endereco: <span>{order.customer.Address[0].street}</span> -
-                  <span>{order.customer.Address[0].number}</span> -
-                  <span>{order.customer.Address[0].neighborhood.name}</span>
+                  Endereco: <p>{order.customer.Address[0].street} - {order.customer.Address[0].number} - {order.customer.Address[0].neighborhood.name}</p>
+             
                 </div>
               )}
               {order.methodDelivery === 'PICKUP' ? (
@@ -117,10 +116,11 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
 
               )}
               <span>Metado de Entrega: {order.methodDelivery === "DELIVERY" ? 'ENTREGA' : 'RETIRADA'}</span>
-              <span>Metado de Pagamento: {order.payment === "CARD" ? 'CREDITO' : order.payment === "PIX" ? 'PIX' : 'DINHEIRO'}</span>
+              <span>Metado de Pagamento: {order.payment === "Card" ? 'Cartao' : order.payment === "Pix" ? 'Pix' : 'Dinheiro'}</span>
               {order.methodDelivery === 'DELIVERY' && (
                 <span>Taxa de Entrega: {priceFormatter.format(Number(order.customer.Address[0].neighborhood.tax))}</span>
               )}
+              <p>Observacao: {order.observation}</p>
             </div>
             <div className="w-full flex items-center justify-between mt-7">
               <span>Total</span>

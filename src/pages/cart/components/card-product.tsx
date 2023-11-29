@@ -16,14 +16,14 @@ export const CardProduct = ({ product, price, quantityProduct, id, image_url }: 
     <CardContent className="flex items-center justify-between ">
       <div className="flex items-center justify-center gap-2">
         <img
-          className="w-28 rounded object-contain "
+          className="w-28 mt-2 rounded object-contain "
           src={image_url ? image_url : image}
 
           alt="" />
-        <div className="flex flex-col items-start justify-center">
-          <div className="flex  items-center justify-start gap-2 ">
+        <div className="w-full flex flex-col items-start justify-center">
+          <div className="w-11/12 flex  items-center justify-start gap-2 ">
 
-            {product.map(item => (<span key={item.name} className="text-gray-600 font-semibold">{item.name}</span>))}
+            {product.map(item => (<p key={item.name} className="text-gray-600 font-semibold">{item.name}</p>))}
 
           </div>
           <span className="text-gray-600 font-semibold text-lg">Qtd {quantityProduct}x</span>

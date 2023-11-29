@@ -6,48 +6,37 @@ import { Input } from '../../../../components/ui/input';
 import { Button } from '../../../../components/ui/button';
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from 'lucide-react';
-import { api } from '../../../../utils/axios';
 import { AxiosError } from 'axios';
-import { formatValue } from '../../../../utils/formatter';
 import { notify } from '../../../../utils/toast';
 import { ToastContainer } from 'react-toastify';
+import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
 
-
-const productSchemaBody = z.object({
-
+const NeighborhoodSchemaBody = z.object({
   name: z.string().nonempty('O campo nome é obrigatório'),
   tax: z.string().nonempty('O campo taxa é obrigatório'),
-  status: z.object({
-    label: z.enum(['ACTIVE', 'DISABLE']).optional(),
-    value: z.enum(['ATIVO', 'DESABILITADO']).optional(),
-  }),
 })
 
-type ProductSchema = z.infer<typeof productSchemaBody>
+type NeighborhoodSchema = z.infer<typeof NeighborhoodSchemaBody>
 
 
 export default function ModalRegisterNeighborhood() {
-
+  const serviceNeighborhoods = new ServiceNeighborhoods()
   const {
     register,
     handleSubmit,
     setError,
     reset,
     formState: { errors },
-  } = useForm<ProductSchema>({
-    resolver: zodResolver(productSchemaBody),
+  } = useForm<NeighborhoodSchema>({
+    resolver: zodResolver(NeighborhoodSchemaBody),
    
   });
 
 
 
-  const handleSubmitForm = async (data: ProductSchema) => {
+  const handleSubmitForm = async (data: NeighborhoodSchema) => {
     try {
-    console.log(data);
-    await api.post('/neighborhood', {
-    name: data.name,
-    tax: formatValue(data.tax),
-    })
+    await serviceNeighborhoods.createNeighborhood(data)
     reset()
     notify('Bairro criado com sucesso!', 'top')  
     } catch (error) {

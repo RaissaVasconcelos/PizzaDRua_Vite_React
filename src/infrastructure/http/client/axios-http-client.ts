@@ -6,7 +6,7 @@ import {
   IHttpRequest } from '../../../model/http/http-client'
 import { parseCookies } from 'nookies';
 
-const { VITE_BACKEND_URL } = import.meta.env 
+// const { VITE_BACKEND_URL } = import.meta.env 
 
 interface CreateHeadersProps {
   token?: string | null
@@ -19,7 +19,7 @@ export class AxiosHttpClient implements IHttpClient {
   private baseUrl: string | undefined
 
   constructor(){
-    this.baseUrl = VITE_BACKEND_URL
+    this.baseUrl = 'https://hammerhead-app-mvicn.ondigitalocean.app'
   }
 
   private createHeaders({ token, headers }: CreateHeadersProps) {
@@ -42,7 +42,7 @@ export class AxiosHttpClient implements IHttpClient {
     }
   }
 
-  async request(data: IHttpRequest): Promise<HttpResponse> {
+  async request(data: IHttpRequest): Promise<HttpResponse<any>> {
     try {
       const response = await axios.request({
         baseURL: this.baseUrl,

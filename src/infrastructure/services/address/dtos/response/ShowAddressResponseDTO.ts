@@ -1,19 +1,16 @@
-export interface IAddress {
-  id: string,
-  type: string,
-  customerId: string,
-  number: string,
-  phone: string,
-  standard: boolean,
-  street: string,
-  zipCode: string,
-  neighborhood: {
-    id: string,
-    name: string,
-    tax: string
-  }
-}
 
 export interface ShowListAddressResponse {
-  data: IAddress[]
+  customerId: string
+  type: "HOME" | "WORK" | "OTHER"
+  street: string
+  number: string
+  standard: boolean,
+  neighborhood: {
+    id: string
+    name: string
+    tax: string
+  }
+  zipCode: string
+  phone: string
+  id: string
 }
