@@ -1,18 +1,19 @@
-import { Plus } from "lucide-react";
+import { MapPinOff, Plus } from "lucide-react";
 import { CardAddress } from "./components/card";
 import { NavLink } from 'react-router-dom'
 import { Button } from "../../components/ui/button";
 import { useEffect, useState } from "react";
 import ServiceAddress from '../../infrastructure/services/address'
-import { ContextAuthApp } from "../../context/auth-context";
 import { ColorRing } from "react-loader-spinner";
+import { ButtonCheckout } from "../../components/ButtonCheckout";
+import { ContextCartApp } from "../../context/cart-context";
 
 
 export default function Address() {
   // const [addresses, setAddresses] = useState<AddressProps[] | []>([]);
   const [loading, setLoading] = useState(true);
   const serviceAddress = new ServiceAddress()
-  const { setAddresses, addresses } = ContextAuthApp();
+  const { setAddresses, addresses } = ContextCartApp();
   const getAddresses = async () => {
 
     try {
@@ -30,8 +31,7 @@ export default function Address() {
     getAddresses();
   }, []);
 
-  console.log(addresses);
-  
+
   return (
     <>
       <div className="w-full flex flex-col items-center justify-center mt-32">
@@ -55,13 +55,20 @@ export default function Address() {
           </div>
         ) : (
           <div className="w-full flex flex-col items-center justify-center gap-5">
-            {addresses.filter(address => address.neighborhood.status === "ACTIVE").map((address) => (
-              <CardAddress key={address.id} address={address} />
-            ))}
+            {addresses ? (
+              addresses.filter(address => address.neighborhood.status === "ACTIVE").map((address) => (
+                <CardAddress key={address.id} address={address} />
+              ))
+            ) : (
+              <MapPinOff size={50} className="font-bold mt-32 text-gray-300" />
+            )}
           </div>
         )}
 
       </div>
+      <ButtonCheckout link="/cart" title="Voltar" />
+
+
     </>
   )
 }

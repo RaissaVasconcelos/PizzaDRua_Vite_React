@@ -1,5 +1,4 @@
 import { Card, CardContent } from "../../../../../components/ui/card"
-import image from "../../../../../assets/lata.png"
 import { Button } from "../../../../../components/ui/button"
 import { ContextCartApp, ProductProps } from "../../../../../context/cart-context"
 import { priceFormatter } from "../../../../../utils/formatter"
@@ -25,7 +24,7 @@ export const CardCatalogDrink = (catalog: ProductProps) => {
     <Card className="bg-white border-0 p-2 rounded w-11/12">
       <CardContent className=" w-full flex items-center justify-between gap-3">
         <div className="w-40">
-          <img className="object-fit w-full rounded" src={image} alt='' />
+          <img className="object-fit w-full rounded" src={catalog.image_url} alt='' />
         </div>
         <div className="w-full">
           {catalog.product.map((item) => (<p key={item.name} className="font-bold text-lg text-gray-600">{item.name}</p>))}

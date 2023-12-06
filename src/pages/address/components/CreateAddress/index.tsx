@@ -7,7 +7,6 @@ import InputMask from 'react-input-mask';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '../../../../components/ui/input';
 import { Button } from '../../../../components/ui/button';
-import { AddressProps, ContextAuthApp } from '../../../../context/auth-context';
 import ServiceAddress from '../../../../infrastructure/services/address'
 import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
 import { useEffect, useState } from 'react';
@@ -47,8 +46,7 @@ const addressSchemaBody = z.object({
 type AddressSchema = z.infer<typeof addressSchemaBody>
 
 export default function CreateAddress() {
-  const { setAddresses, addresses } = ContextAuthApp()
-  const serviceNeighborhoods = new ServiceNeighborhoods() 
+  const serviceNeighborhoods = new ServiceNeighborhoods()
   const [neighborhoods, setNeighborhoods] = useState<NeighborhoodsProps[]>([])
   const serviceAddress = new ServiceAddress()
   const navigate = useNavigate()
@@ -72,29 +70,13 @@ export default function CreateAddress() {
       phone: data.phone
     })
 
-    const address: AddressProps = {
-      neighborhood: {
-        name: data.neighborhood.label,
-        tax: data.neighborhood.rate!,
-        id: ''
-      },
-      number: data.number,
-      street: data.street,
-      type: data.type.value,
-      zipCode: data.zipCode,
-      phone: data.phone,
-      standard: addresses.length > 0 ? false : true,
-      customerId: '',
-      id: '',
-    }
-    setAddresses([...addresses, address])
     navigate('/address')
   }
 
   const getNeighborhoods = async () => {
     const response = await serviceNeighborhoods.showNeighborhood()
     const neighborhoodsArray = response.body
-    
+
     setNeighborhoods(neighborhoodsArray.filter((item) => item.status === 'ACTIVE').map((element) => {
       return {
         label: element.name,
@@ -215,10 +197,10 @@ export default function CreateAddress() {
         </Button>
         <Button
           className='w-full mt-1 bg-gray-200 hover:bg-gray-400 text-gray-800'
-          onClick={() => navigate('/address')}  
+          onClick={() => navigate('/address')}
         >
           Cancelar
-        </Button>    
+        </Button>
       </form>
     </>
   )

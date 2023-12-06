@@ -12,10 +12,10 @@ import { api } from '../../../../utils/axios';
 import { useState } from 'react';
 import { formatValue } from '../../../../utils/formatter';
 import ProductService from '../../../../infrastructure/services/product'
+import { Oval } from 'react-loader-spinner';
 
 // const maxFileSize = 5 * 1024 * 1024; // 5MB
 // const allowedFileTypes = ["image/jpeg", "image/jpg"];
-
 
 const productSchemaBody = z.object({
 
@@ -42,13 +42,12 @@ const productSchemaBody = z.object({
 
 type ProductSchema = z.infer<typeof productSchemaBody>
 
-
 export default function ModalRegisterProduct() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [errorFieldImage, setErrorFieldImage] = useState<string | null>(null);
   const [selectCategory, setSelectCategory] = useState<string | undefined>('Pizza');
   const productService = new ProductService();
-  // const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isLoading, setIsLoading] = useState(false)
 
   const {
     control,
@@ -71,12 +70,6 @@ export default function ModalRegisterProduct() {
       setPreviewImage(URL.createObjectURL(file));
     }
   };
-  // const showFileInput = () => {
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.click();
-  //   }
-  // };
- 
 
   const handleSubmitForm = async (data: ProductSchema) => {
     try {
@@ -84,8 +77,10 @@ export default function ModalRegisterProduct() {
         setErrorFieldImage('O campo de arquivo é obrigatório');
         return;
       }
-
+      setIsLoading(true)
       const imageUrl = await api.post('/upload', data.file)
+      console.log(imageUrl.data);
+
       await productService.RegisterProduct({
         name: data.name,
         size: data.category.value === "Pizza" ? 'ENTIRE' : '',
@@ -96,10 +91,11 @@ export default function ModalRegisterProduct() {
         category: data.category.value === "Pizza" ? 'pizza' : 'drink',
         imageUrl: imageUrl.data
       })
-      
+
       reset()
       setPreviewImage(null)
       setErrorFieldImage(null)
+      setIsLoading(false)
     } catch (error) {
       console.error(error);
 
@@ -254,7 +250,23 @@ export default function ModalRegisterProduct() {
               <span className="text-red-500 mb-3">{errors.description?.message}</span>
             )}
             <Button className='w-full mt-4 bg-red-500 hover:bg-red-400' type='submit'>
-              Cadastrar
+              {isLoading ? (
+                <Oval
+                  height={25}
+                  width={25}
+                  color="#fff"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                  ariaLabel='oval-loading'
+                  secondaryColor="#fff"
+                  strokeWidth={2}
+                  strokeWidthSecondary={2}
+
+                />
+              ) : (
+                'Cadastrar'
+              )}
             </Button>
           </form>
         </Dialog.Content>

@@ -29,16 +29,16 @@ export default function ModalRegisterNeighborhood() {
     formState: { errors },
   } = useForm<NeighborhoodSchema>({
     resolver: zodResolver(NeighborhoodSchemaBody),
-   
+
   });
 
 
 
   const handleSubmitForm = async (data: NeighborhoodSchema) => {
     try {
-    await serviceNeighborhoods.createNeighborhood(data)
-    reset()
-    notify('Bairro criado com sucesso!', 'top')  
+      await serviceNeighborhoods.createNeighborhood(data)
+      reset()
+      notify('Bairro criado com sucesso!', 'top')
     } catch (error) {
       const customError = error as AxiosError
       if (customError.response?.status === 401) {
@@ -65,24 +65,24 @@ export default function ModalRegisterNeighborhood() {
             Cadastrar Bairro
           </Dialog.Title>
           <form onSubmit={handleSubmit(handleSubmitForm)} className="mt-10 w-7/12 flex flex-col items-start gap-3 justify-start  mx-5">
-      
-              <div className='w-full'>
-                <Label className='text-gray-500'>Nome</Label>
-                <Input type='text' {...register('name')} className='py-6' />
-                {errors.name && (
-                  <span className="text-red-500 mb-3">{errors.name?.message}</span>
-                )}
-              </div>
 
-              <div className='w-full'>
-                <Label className='text-gray-500'>Taxa</Label>
-                <Input type='number' {...register('tax')} className='py-6' placeholder='Ex. 00.00' />
-                {errors.tax && (
-                  <span className="text-red-500 mb-3">{errors.tax?.message}</span>
-                )}
-              </div>
-           
-          
+            <div className='w-full'>
+              <Label className='text-gray-500'>Nome</Label>
+              <Input type='text' {...register('name')} className='py-6' />
+              {errors.name && (
+                <span className="text-red-500 mb-3">{errors.name?.message}</span>
+              )}
+            </div>
+
+            <div className='w-full'>
+              <Label className='text-gray-500'>Taxa</Label>
+              <Input type='number' {...register('tax')} className='py-6' placeholder='Ex. 00.00' />
+              {errors.tax && (
+                <span className="text-red-500 mb-3">{errors.tax?.message}</span>
+              )}
+            </div>
+
+
             <Button className='w-full mt-4 bg-red-500 hover:bg-red-400' type='submit'>
               Cadastrar
             </Button>

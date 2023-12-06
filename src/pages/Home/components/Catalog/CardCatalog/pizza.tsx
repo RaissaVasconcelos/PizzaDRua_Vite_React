@@ -9,8 +9,6 @@ export const CardCatalogPizza = (catalog: ProductProps) => {
 
   const { addProductToCart } = ContextCartApp()
 
-
-
   const handleAddProductToCart = () => {
     const productToCart = {
       ...catalog,
@@ -19,7 +17,6 @@ export const CardCatalogPizza = (catalog: ProductProps) => {
     }
     addProductToCart(productToCart)
   }
-
 
   return (
     <Card className="bg-white border-0  rounded w-11/12 py-2 box-border">

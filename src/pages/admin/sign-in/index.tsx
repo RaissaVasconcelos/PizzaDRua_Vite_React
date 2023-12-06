@@ -46,12 +46,14 @@ export default function SignInDashboard() {
         type: 'manual',
         message: 'Email ou senha inválidos',
       })
-    }else{
+    } else {
       const { access_token } = response.body as any
+      console.log(access_token);
+
       setCookie(undefined, 'token', access_token)
     }
 
-      navigate('/admin/dashboard')
+    navigate('/admin/dashboard')
   }
 
 

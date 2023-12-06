@@ -7,7 +7,7 @@ interface InputAmountProductsProps {
   onDecrease: (event: FormEvent) => void
 }
 
-export const InputQuantityProductInCart = ({
+export const InputQuantityProduct = ({
   quantityProduct,
   onIncrease,
   onDecrease,

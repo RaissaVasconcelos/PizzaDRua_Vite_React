@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { api } from '../../../utils/axios';
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { TrTableOrders } from './components/TrTableOrder';
 import { OrderData } from '../../../@types/interface';
 import { priceFormatter } from '../../../utils/formatter';
 import { HeaderAdmin } from '../../../components/HeaderAdmin';
+import ServiceOrder from '../../../infrastructure/services/order';
 
 export default function OrdersHistory() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [typeOrder, setTypeOrder] = useState('finish');
+  const serviceOrder = new ServiceOrder();
 
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
@@ -25,12 +26,14 @@ export default function OrdersHistory() {
     }, 0);
 
   const handleFilterOrders = async () => {
+
     if (selectedDate) {
       const formattedDate = selectedDate.toISOString();
-      const response = await api.post(`/date-order`, { formattedDate });
-      setOrders(response.data)
+      const response = await serviceOrder.showOrdersDateAdmin({ formattedDate });
+      setOrders(response.body);
     }
   };
+
 
 
   return (

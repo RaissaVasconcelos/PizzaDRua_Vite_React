@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
-import { ContextCartApp } from "../../../context/cart-context"
+import { AddressProps, ContextCartApp } from "../../../context/cart-context"
 import { cn } from "../../../utils/cn"
 import { priceFormatter } from "../../../utils/formatter"
-import { AddressProps } from "../../../context/auth-context"
 import ServiceAddress from '../../../infrastructure/services/address'
 import { parseCookies } from "nookies"
 

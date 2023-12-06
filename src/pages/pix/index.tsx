@@ -6,12 +6,14 @@ import { Copy } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import { notify } from "../../utils/toast";
 import socket from "../../utils/socketIO";
-import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { destroyCookie, parseCookies } from "nookies";
 import { OrderProps } from "../../@types/interface";
 import { CalculatePrice } from "../../utils/calculate-price";
+import ServiceAddress from '../../infrastructure/services/address'
+import ServiceOrder from '../../infrastructure/services/order'
 import { ContextCartApp } from "../../context/cart-context";
+import "react-toastify/dist/ReactToastify.css";
 
 interface qrCodeProps {
   qrcode: string
@@ -20,7 +22,6 @@ interface qrCodeProps {
 
 export default function Pix() {
   const [qrCodeData, setQrCodeData] = useState<qrCodeProps>()
-
   const [methodDelivery, setMethodDelivery] = useState<string>(() => {
     const storaged = parseCookies().delivery
     return storaged ? JSON.parse(storaged) : []
@@ -29,6 +30,8 @@ export default function Pix() {
   const totalPrice = CalculatePrice()
   const { productToCart } = ContextCartApp()
   const { id } = useParams();
+  const serviceAddress = new ServiceAddress()
+  const serviceOrder = new ServiceOrder()
 
   const handleQRcodePix = async () => {
     const response = await api.post('/pix', {
@@ -44,49 +47,64 @@ export default function Pix() {
       },
       chave: "a471ed5a-0b30-4507-8e9e-c9ba73ec33cb",
       solicitacaoPagador: id,
-      
+
     })
     setQrCodeData(response.data)
   }
-  console.log(totalPrice);
+
+  const getAddresses = async () => {
+    const response = await serviceAddress.showAddress()
+    if (!response.body) {
+      return null
+    }
+    const address = response.body.find(address => address.standard === true)
+    return address
+  }
+
+  const createOrder = async () => {
+
+    const currentAddress = await getAddresses()
+
+    const order: OrderProps = {
+      payment: {
+        methodPayment: 'Pix',
+        typeCard: 'Pix',
+      },
+      address: {
+        cep: currentAddress?.zipCode,
+        neighborhood: currentAddress?.neighborhood.name,
+        number: currentAddress?.number,
+        tax: currentAddress?.neighborhood.tax,
+        phone: currentAddress?.phone,
+        street: currentAddress?.street
+      },
+      totalPrice: await totalPrice,
+      status: 'WAITING',
+      methodDelivery: methodDelivery,
+      observation: parseCookies().observation ? JSON.parse(parseCookies().observation) : '',
+      itensOrder: productToCart.map((item) => ({
+        mode: item.mode,
+        size: item.size,
+        image_url: item.image_url ? item.image_url : '',
+        price: item.price,
+        product: item.product.map(item => item.name),
+        quantity: item.quantityProduct
+      }))
+    }
+    const result = await serviceOrder.createOrder(order)
+
+    destroyCookie(null, 'product')
+    destroyCookie(null, 'payment')
+    destroyCookie(null, 'delivery')
+    navigate(`/success/${result.body.id}`)
+
+  }
 
   useEffect(() => {
-
     socket.on('payment', (data) => {
-      console.log(data);
-      const createOrder = async () => {
-
-        if (data.status === 'PaymentConfirmed') {
-
-          const token = parseCookies().accessToken;
-          const order: OrderProps = {
-            payment: 'Pix',
-            totalPrice: await totalPrice,
-            status: 'WAITING',
-            methodDelivery: methodDelivery,
-            itensOrder: productToCart.map((item) => ({
-              mode: item.mode,
-              size: item.size,
-              image_url: item.image_url ? item.image_url : '',
-              price: item.price,
-              product: item.product.map(item => item.name),
-              quantity: item.quantityProduct
-            }))
-          }
-          await api.post('/order', order, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          })
-
-          destroyCookie(null, 'product')
-          destroyCookie(null, 'payment')
-          destroyCookie(null, 'delivery')
-        }
-
-        navigate('/success')
+      if (data.status === 'PaymentConfirmed') {
+        createOrder();
       }
-      createOrder();
     });
     // Remova o ouvinte quando o componente for desmontado para evitar vazamento de memória
     return () => {
@@ -98,8 +116,6 @@ export default function Pix() {
   socket.emit('join', {
     room: id
   })
-
-
 
   const getDataCookies = () => {
 
@@ -130,7 +146,7 @@ export default function Pix() {
         </div>
         <div className="mt-10">
           <CopyToClipboard text={qrCodeData?.qrcode ? qrCodeData.qrcode : ''}>
-            <button onClick={() => notify('Codigo copiado com sucesso', 'bottom')} className="bg-orange-500 p-4 rounded text-gray-100 flex items-center gap-2 hover:bg-orange-600 ">Capia codigo <Copy /> </button>
+            <button onClick={() => notify('Codigo copiado com sucesso', 'top-center')} className="bg-orange-500 p-4 rounded text-gray-100 flex items-center gap-2 hover:bg-orange-600 ">Capia codigo <Copy /> </button>
           </CopyToClipboard>
         </div>
       </div>

@@ -10,7 +10,7 @@ import InputMask from 'react-input-mask';
 import { Label } from "../../components/ui/label";
 import { ContextAuthApp } from "../../context/auth-context";
 import { api } from "../../utils/axios";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const methodDeliverySchemaBody = z.object({
   withdrawalName: z.string().nonempty('O nome é obrigatorio!').min(3, 'O nome deve ter pelo menos 3 caracteres'),
@@ -82,15 +82,10 @@ export default function MethodDelivery() {
         </div>
 
         {
-
           isCheckedDelivery === 'DELIVERY' ? (
             <>
               <CardAddress textLink="/address" className="w-11/12 p-2" />
-              <ButtonCheckout onClick={() => setCookie(undefined, 'delivery', methodDeliveryData)}>
-                <NavLink to={'/checkout'}>
-                  Proximo
-                </NavLink>
-              </ButtonCheckout>
+              <ButtonCheckout onClick={() => setCookie(undefined, 'delivery', methodDeliveryData)} title="Proximo" link="/checkout" />
             </>
           ) : (
             <>
@@ -127,9 +122,10 @@ export default function MethodDelivery() {
                 />
                 {errors.phone && <p className='text-red-500'>{errors.phone.message}</p>}
 
-                <ButtonCheckout type="submit">
+                <button type="submit" className="w-[1100px] fixed p-3 text-lg font-medium bg-orange-500 text-white bottom-0">
                   Proximo
-                </ButtonCheckout>
+                </button>
+
               </form>
             </>
           )

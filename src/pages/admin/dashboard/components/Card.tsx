@@ -9,6 +9,8 @@ interface CardProps {
 }
 
 export const Card = ({ order, onChangeOrderStatus, onCancelOrder }: CardProps) => {
+  console.log(order);
+
   return (
     <AlertDialog.Root >
       <AlertDialog.Trigger asChild>

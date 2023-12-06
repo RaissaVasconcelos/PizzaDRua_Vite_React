@@ -1,10 +1,9 @@
 
 import { useState } from 'react';
-import { ModalProfile } from './ModalProdile'
+import { ModalProfile } from './ModalProfile'
 import { ContextAuthApp } from '../../context/auth-context';
 import { User } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-
 
 export const Profile = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -28,7 +27,7 @@ export const Profile = () => {
           ) : (
             <div className='p-4  bg-gray-600 rounded-full '>
               <NavLink to="/sign-in">
-                <User size={28}/>
+                <User size={28} />
               </NavLink>
             </div>
           )
@@ -37,7 +36,7 @@ export const Profile = () => {
       <ModalProfile
         openModal={openModal}
         setOpenModal={setOpenModal}
-       />
+      />
     </>
   )
 }

@@ -9,19 +9,15 @@ import ReactSelect from "react-select";
 import { Input } from "../../../../components/ui/input";
 import { Switch } from "../../../../components/ui/switch";
 import { Button } from "../../../../components/ui/button";
-import { AddressProps, ContextAuthApp } from "../../../../context/auth-context";
 import { useEffect, useState } from "react";
 import { notify } from "../../../../utils/toast";
 import { ToastContainer } from "react-toastify";
-import Service from '../../../../infrastructure/services/address'
+import ServiceAddress from '../../../../infrastructure/services/address'
 import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
+import { AddressProps, ContextCartApp } from "../../../../context/cart-context";
 
 
-interface NeighborhoodsProps {
-  label: string
-  value: string
-  id: string
-}
+
 
 const addressSchemaBody = z.object({
   neighborhood: z.object({
@@ -53,6 +49,12 @@ const addressSchemaBody = z.object({
 
 type AddressSchema = z.infer<typeof addressSchemaBody>;
 
+interface NeighborhoodsProps {
+  label: string
+  value: string
+  id: string
+}
+
 interface EditAddressModalProps {
   address: AddressProps
   setOpenModal: (value: boolean) => void
@@ -60,11 +62,11 @@ interface EditAddressModalProps {
 
 }
 
-export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAddressModalProps) => {
+export const EditAddressModal = ({ address, setOpenModal, openModal, }: EditAddressModalProps) => {
   const serviceNeighborhoods = new ServiceNeighborhoods()
-  const service = new Service()
+  const serviceAddress = new ServiceAddress()
   const [neighborhoods, setNeighborhoods] = useState<NeighborhoodsProps[]>([])
-  const {setAddresses, addresses} = ContextAuthApp();
+  const { setAddresses, addresses } = ContextCartApp();
 
   const {
     control,
@@ -76,7 +78,7 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
     defaultValues: {
       number: address.number,
       street: address.street,
-      neighborhood: {label: address.neighborhood.name},
+      neighborhood: { label: address.neighborhood.name },
       phone: address.phone,
       type: { label: address.type === 'HOME' ? 'Casa' : address.type === 'WORK' ? 'Trabalho' : 'Outro' },
       zipCode: address.zipCode,
@@ -88,7 +90,7 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
   const getNeighborhoods = async () => {
     const response = await serviceNeighborhoods.showNeighborhood()
     const neighborhoods = response.body
-    
+
     setNeighborhoods(neighborhoods.filter((item) => item.status === 'ACTIVE').map((element) => {
       return {
         label: element.name,
@@ -102,29 +104,28 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
     getNeighborhoods()
   }, [])
 
- 
+
   const handleEditAddressForm = async (data: AddressSchema) => {
-    console.log(data);
-    
+
     try {
-       const response = await service.updateAddress({
+      const response = await serviceAddress.updateAddress({
         neighborhood: data.neighborhood.label,
-        id: address.id,  
+        id: address.id,
         number: data.number,
         customerId: address.customerId,
         standard: data.standardAddress,
         street: data.street,
-        type: data.type.label,
+        type: data.type.label === 'Casa' ? 'HOME' : data.type.label === 'Trabalho' ? 'WORK' : 'OTHER',
         zipCode: data.zipCode,
         phone: data.phone
       })
 
       if (response.statusCode === 200) {
-        notify(`Endereco atualizado com sucesso`, 'bottom')
+        notify(`Endereco atualizado com sucesso`, 'top');
       }
-      
+
       setOpenModal(false)
-      
+
     } catch (error) {
       console.error(error);
     }
@@ -132,25 +133,25 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
   }
 
   const handleDeleteAddress = async (id: string) => {
-    await service.deleteAddress({id});
+    await serviceAddress.deleteAddress({ id });
     const newAddresses = addresses.filter(item => item.id !== id);
     setAddresses(newAddresses);
     setOpenModal(false);
   }
 
   return (
-  <>
-    <Dialog.Root open={openModal}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed w-screen h-screen inset-0 bg-gray-900/[.6]" />
-        <Dialog.Content className="w-11/12 rounded py-5 flex flex-col items-center bg-[#f3f3f3] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
-          <Dialog.Close onClick={() => setOpenModal(false)}  className="absolute bg-transparent border-spacing-0 top-5 right-5 text-gray-300 line-through ">
-            <X size={24} color="red" />
-          </Dialog.Close>
-          <Dialog.Title className="text-gray-600 font-semibold text-xl">
-            Editar Endereço
-          </Dialog.Title>
-          <form onSubmit={handleSubmit(handleEditAddressForm)} className="w-10/12 flex flex-col items-start gap-3 justify-start  mx-5">
+    <>
+      <Dialog.Root open={openModal}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed w-screen h-screen inset-0 bg-gray-900/[.6]" />
+          <Dialog.Content className="w-11/12 rounded py-5 flex flex-col items-center bg-[#f3f3f3] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
+            <Dialog.Close onClick={() => setOpenModal(false)} className="absolute bg-transparent border-spacing-0 top-5 right-5 text-gray-300 line-through ">
+              <X size={24} color="red" />
+            </Dialog.Close>
+            <Dialog.Title className="text-gray-600 font-semibold text-xl">
+              Editar Endereço
+            </Dialog.Title>
+            <form onSubmit={handleSubmit(handleEditAddressForm)} className="w-10/12 flex flex-col items-start gap-3 justify-start  mx-5">
 
               <Label className='mt-5 text-gray-500'>Bairro</Label>
               <Controller
@@ -258,15 +259,15 @@ export const EditAddressModal = ({ address, setOpenModal, openModal,  }: EditAdd
                 )}
               />
 
-              <Button 
-                onClick={() => setOpenModal(true)} 
-                className='w-full bg-red-500 mt-5 hover:bg-red-400' 
+              <Button
+                onClick={() => setOpenModal(true)}
+                className='w-full bg-red-500 mt-5 hover:bg-red-400'
                 type='submit'
               > Salvar
               </Button>
             </form>
             <button onClick={() => handleDeleteAddress(address.id)} className="w-10/12 mt-3 py-2 items-center justify-center font-medium rounded  bg-gray-200 hover:bg-gray-400 text-gray-800  flex gap-2"> Deletar</button>
-            
+
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

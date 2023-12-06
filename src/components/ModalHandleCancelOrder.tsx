@@ -1,11 +1,9 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { ToastContainer } from "react-toastify";
-import { parseCookies } from "nookies";
 import { Orders } from "../@types/interface";
-import { api } from "../utils/axios";
 import { notify } from "../utils/toast";
 import socket from "../utils/socketIO";
-
+import ServiceOrder from "../infrastructure/services/order";
 
 
 interface CancelModalOrderProps {
@@ -17,33 +15,11 @@ interface CancelModalOrderProps {
 }
 
 export const ModalHandleCancelOrder = ({ onCancelOrder, openModalCancelOrder, setOpenModalCancelOrder, order }: CancelModalOrderProps) => {
-
+  const serviceOrder = new ServiceOrder();
   const handleCancelOrder = async () => {
-    await api.put('/order', {
-      id: order.id,
-      totalPrice: order.totalPrice,
-      customerId: order.customer.id,
-      payment: order.payment,
-      methodDelivery: order.methodDelivery,
-      status: 'CANCELED',
-      itensOrder: [
-        {
-          product: order.itensOrder[0].product,
-          quantity: order.itensOrder[0].quantity,
-          size: order.itensOrder[0].size,
-          mode: order.itensOrder[0].mode,
-          price: order.itensOrder[0].price
-        }
-      ]
-    },
-      {
-        headers: {
-          Authorization: `Bearer ${parseCookies().accessToken}`
-        }
-      }
-    )
+    await serviceOrder.updateOrderCustomer({ id: order.id, status: 'CANCELED' })
     onCancelOrder && onCancelOrder(order.id)
-    notify(`Pedido cancelado com sucesso`, 'bottom')
+    notify(`Pedido cancelado com sucesso`, 'top-center')
     setOpenModalCancelOrder(false)
     socket.emit('orderCanceled', { orderId: order.id, status: 'CANCELED' });
   }

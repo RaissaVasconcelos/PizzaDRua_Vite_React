@@ -41,8 +41,8 @@ export const Router = () => {
         <Route path='/checkout' element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path='/address' element={<ProtectedRoute><Address /></ProtectedRoute>} />
         <Route path='/create-address' element={<ProtectedRoute><CreateAddress /></ProtectedRoute>} />
-        <Route path='/pix' element={<ProtectedRoute><Pix /></ProtectedRoute>} />
-        <Route path='/success' element={<ProtectedRoute><Success /></ProtectedRoute>} />
+        <Route path='/pix/:id' element={<ProtectedRoute><Pix /></ProtectedRoute>} />
+        <Route path='/success/:id' element={<ProtectedRoute><Success /></ProtectedRoute>} />
         <Route path='/tracking/:id' element={<ProtectedRoute><Tracking /></ProtectedRoute>} />
         <Route path='/delivery' element={<ProtectedRoute><MethodDelivery /></ProtectedRoute>} />
         <Route path='/orders' element={<ProtectedRoute><OrdersCustomer /></ProtectedRoute>} />
@@ -50,12 +50,12 @@ export const Router = () => {
 
       //Rotas admin
       <Route path='/' element={<AdminLayout />}>
-      
+
         <Route path='/admin/sign-in' element={<SignInDashboard />} />
         <Route path='/admin/orders-history' element={<ProtectedRouteAdmin><OrdersHistory /></ProtectedRouteAdmin>} />
         <Route path='/admin/dashboard' element={<ProtectedRouteAdmin><Dashboard /></ProtectedRouteAdmin>} />
         <Route path='/admin/neighborhoods' element={<ProtectedRouteAdmin><Neighborhoods /></ProtectedRouteAdmin>} />
-        <Route path='/admin/products' element={<ProtectedRouteAdmin><Products /></ProtectedRouteAdmin>} />
+        <Route path='/admin/products' element={<Products />} />
       </Route>
     </Routes>
   )

@@ -1,13 +1,15 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { CheckSquare, ChefHat, ClipboardCheck, Truck, X } from "lucide-react";
 import image from '../../../../assets/Vector.png'
-import './styles.css'
 import { Orders } from "../../../../@types/interface";
 import { priceFormatter } from "../../../../utils/formatter";
-import { api } from "../../../../utils/axios";
-import socket from "../../../../utils/socketIO";
 import { ModalHandleCancelOrder } from "../../../../components/ModalHandleCancelOrder";
 import { useState } from "react";
+import { Button } from "../../../../components/ui/button";
+import whatsapp from '../../../../assets/whatsapp-green.svg'
+import ServiceOrder from "../../../../infrastructure/services/order";
+import './styles.css'
+
 
 interface ModalOrderProps {
   order: Orders
@@ -17,6 +19,7 @@ interface ModalOrderProps {
 
 export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOrder }: ModalOrderProps) => {
   const [openModalCancelOrder, setOpenModalCancelOrder] = useState(false)
+  const serviceOrder = new ServiceOrder()
   const imprimirPedido = () => {
     window.print()
   }
@@ -29,34 +32,21 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
       : order.status === 'ACCEPTED'
         ? 'PREPARING'
         : order.status === 'PREPARING' && order.methodDelivery === 'PICKUP'
-          ? 'FINISHED'
+          ? 'AWAITING_WITHDRAWAL'
           : order.status === 'PREPARING' && order.methodDelivery === 'DELIVERY'
             ? 'DELIVERY'
             : 'FINISHED'
 
 
-    await api.put('/order', {
+    await serviceOrder.updateOrderAdmin({
       id: order.id,
-      totalPrice: order.totalPrice,
-      customerId: order.customer.id,
-      payment: order.payment,
-      methodDelivery: order.methodDelivery,
-      status: newStatus,
-      itensOrder: [
-        {
-          product: order.itensOrder[0].product,
-          quantity: order.itensOrder[0].quantity,
-          size: order.itensOrder[0].size ? order.itensOrder[0].size : '',
-          mode: order.itensOrder[0].mode,
-          price: order.itensOrder[0].price
-        }
-      ]
-    }
-    )
-    onChangeOrderStatus(order.id, newStatus)
-    // Substitua pela URL do seu servidor Socket.IO
-    socket.emit('statusUpdate', { orderId: order.id, status: newStatus });
+      status: newStatus
+    })
+
+    onChangeOrderStatus && onChangeOrderStatus(order.id, newStatus)
   }
+
+
 
   return (
     <AlertDialog.Portal>
@@ -93,32 +83,49 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
               </div>
             ))}
             <div className="w-full flex flex-col items-start justify-center mt-7">
+              {order.methodDelivery === 'PICKUP' ? (
+                <Button
+                  className='border-[1px] border-green-500 text-green-500 bg-transparent hover:bg-transparent text-lg flex gap-2'
+                  onClick={() => {
+
+                    const whatsappURL = `https://web.whatsapp.com/send?phone=${order.customer.phone}`;
+                    window.open(whatsappURL, '_blank');
+                  }}
+                >
+                  <img src={whatsapp} className='w-6' alt='' />
+                  {order.customer.phone && order.customer.phone}
+                </Button>
+              ) : (
+
+                <Button
+                  className='border-[1px] border-green-500 text-green-500 bg-transparent hover:bg-transparent text-lg flex gap-2'
+                  onClick={() => {
+
+                    const whatsappURL = `https://web.whatsapp.com/send?phone=${order.address.phone}`;
+                    window.open(whatsappURL, '_blank');
+                  }}
+                >
+                  <img src={whatsapp} className='w-6' alt='' />
+                  {order.address.phone}
+                </Button>
+              )}
               {order.methodDelivery === 'DELIVERY' && (
                 <div className="w-full flex items-center justify-start gap-2">
-                  Endereco: <p>{order.customer.Address[0].street} - {order.customer.Address[0].number} - {order.customer.Address[0].neighborhood.name}</p>
-             
+                  Endereco: <p>{order.address.street} - {order.address.number} - {order.address.neighborhood}</p>
+
                 </div>
-              )}
-              {order.methodDelivery === 'PICKUP' ? (
-                <span>
-                  Telefone: {order.customer.phone && order.customer.phone}
-                </span>
-              ) : (
-                <span>
-                  Telefone: {order.customer.Address && order.customer.Address[0].phone}
-                </span>
               )}
 
               {order.methodDelivery === 'DELIVERY' && (
                 <span>
-                  Cep: {order.methodDelivery === "DELIVERY" && order.customer.Address[0].zipCode}
+                  Cep: {order.address.cep}
                 </span>
 
               )}
               <span>Metado de Entrega: {order.methodDelivery === "DELIVERY" ? 'ENTREGA' : 'RETIRADA'}</span>
-              <span>Metado de Pagamento: {order.payment === "Card" ? 'Cartao' : order.payment === "Pix" ? 'Pix' : 'Dinheiro'}</span>
+              <span>Metado de Pagamento: {order.payment.methodPayment === "Card" ? `Cartão - ${order.payment.typeCard} - ${order.payment.flag}` : order.payment.methodPayment === "Pix" ? 'Pix' : 'Dinheiro'}</span>
               {order.methodDelivery === 'DELIVERY' && (
-                <span>Taxa de Entrega: {priceFormatter.format(Number(order.customer.Address[0].neighborhood.tax))}</span>
+                <span>Taxa de Entrega: {priceFormatter.format(Number(order.address.tax))}</span>
               )}
               <p>Observacao: {order.observation}</p>
             </div>
@@ -145,10 +152,15 @@ export const ModalHandleChangeStatus = ({ order, onChangeOrderStatus, onCancelOr
                     <ChefHat className="text-orange-500" />
                     <span>Iniciar Producao</span>
                   </>
-                ) : order.status === 'PREPARING' ? (
+                ) : order.status === 'PREPARING' && order.methodDelivery === 'DELIVERY' ? (
                   <>
                     <Truck className="text-orange-500" />
                     <span>Saiu para Entrega</span>
+                  </>
+                ) : order.status === 'PREPARING' && order.methodDelivery === 'PICKUP' ? (
+                  <>
+                    <CheckSquare className="text-emerald-500" />
+                    <span>Pronto</span>
                   </>
                 ) : (
                   <>

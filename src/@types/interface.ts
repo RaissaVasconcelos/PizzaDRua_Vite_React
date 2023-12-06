@@ -12,27 +12,30 @@ export interface CartProps {
 export interface Orders {
     methodDelivery: "DELIVERY" | "PICKUP"
     status: string
-    payment: "Card" | "Money" | "Pix",
-    observation?: string    
+    payment: {
+        methodPayment: string
+        typeCard?: string
+        flag?: string
+    },
+    observation?: string
     id: string
     createdAt: Date
     totalPrice: string
     customer: {
         id: string
         name: string
-        withdrawalName: string   
+        withdrawalName: string
         email: string
         phone: string
-        Address: {
-            id: string
-            street: string
-            number: string
-            type: string
-            neighborhood: { name: string, tax: string }
-            zipCode: string
-            phone: string
-        }[],
-    }
+    },
+    address: {
+        street?: string
+        number?: string
+        neighborhood?: string,
+        tax?: string
+        cep?: string
+        phone?: string
+    },
     itensOrder: {
         mode: "MIXED" | "SIMPLE",
         image_url: string
@@ -48,30 +51,51 @@ export interface OrderData {
     customerId: string;
     status: string;
     methodDelivery: string;
-    payment: string;
+    observation?: string;
+    payment: {
+        methodPayment: string;
+        typeCard?: string;
+        flag?: string;
+    };
+    address: {
+        street?: string;
+        number?: string;
+        neighborhood?: string;
+        tax?: string;
+        cep?: string;
+        phone?: string;
+    }
     totalPrice: string;
     itensOrder: any; // Defina o tipo apropriado para "itensOrder"
     orderCreatedAt: Date;
     customerName: string;
+    withdrawalName: string;
     customerEmail: string;
     customerPhone: string;
-    addressId: string;
-    addressNumber: string;
-    addressPhone: string;
-    addressStreet: string;
-    addressType: string;
-    addressZipCode: string;
-    neighborhoodName: string;
-    neighborhoodTax: string;
+
 
 }
 
 
 export interface OrderProps {
-    payment: string
+    id?: string
+    payment: {
+        methodPayment: string
+        flag?: string
+        typeCard?: string
+    },
+    address?: {
+        street?: string
+        number?: string
+        neighborhood?: string,
+        tax?: string
+        cep?: string
+        phone?: string
+    },
     totalPrice: string
     methodDelivery: string
     status: string
+    observation?: string
     itensOrder: {
         mode?: string,
         size: string,
@@ -80,3 +104,4 @@ export interface OrderProps {
         quantity: number
     }[]
 }
+

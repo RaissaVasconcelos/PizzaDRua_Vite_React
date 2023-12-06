@@ -12,7 +12,7 @@ interface CardProductsProps {
   product: ProductProps;
 }
 
-export const CardProducts = ({product}: CardProductsProps) => {
+export const CardProducts = ({ product }: CardProductsProps) => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
 
@@ -36,17 +36,17 @@ export const CardProducts = ({product}: CardProductsProps) => {
 
       </CardContent>
       <div className="px-2 flex items-center justify-center flex-col w-full text-gray-100  gap-2 ">
-       
+
         <Button onClick={() => setOpenModal(true)} className={"w-full rounded bg-orange-500 hover:bg-orange-600 text-lg flex gap-3"} >Editar Produto <Edit size={20} /></Button>
-          
-        <ModalEditProduct product={product} openModal={openModal} setOpenModal={setOpenModal} />    
-       
+
+        <ModalEditProduct product={product} openModal={openModal} setOpenModal={setOpenModal} />
+
         <Button onClick={() => setOpenModalDelete(true)} className={"w-full rounded border-2 border-orange-500 text-lg text-orange-500 bg-white hover:bg-orange-50 flex gap-3"} >Excluir <Trash2 size={20} /> </Button>
         <div className="w-7/12">
           <DeleteModal
             openModalDelete={openModalDelete}
             setOpenModalDelete={setOpenModalDelete}
-            notifyText="Produto excluido com sucesso"  
+            notifyText="Produto excluido com sucesso"
             text="Tem certeza que deseja excluir esse Produto ?"
             id={product.id} />
         </div>

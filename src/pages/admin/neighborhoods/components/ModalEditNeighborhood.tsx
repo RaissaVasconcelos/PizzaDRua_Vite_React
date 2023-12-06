@@ -6,12 +6,12 @@ import { Input } from '../../../../components/ui/input';
 import { Button } from '../../../../components/ui/button';
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from 'lucide-react';
-import { api } from '../../../../utils/axios';
 import { AxiosError } from 'axios';
 import { formatValue } from '../../../../utils/formatter';
 import { notify } from '../../../../utils/toast';
 import { ToastContainer } from 'react-toastify';
 import ReactSelect from 'react-select';
+import ServiceNeighborhoods from '../../../../infrastructure/services/neighborhood'
 
 const neighborhoodSchemaBody = z.object({
   name: z.string().nonempty('O campo nome é obrigatório'),
@@ -38,7 +38,7 @@ interface ModalEditNeighborhoodProps {
 }
 
 export default function ModalEditNeighborhood({ neighborhood, openModalEdit, setIsOpenModalEdit }: ModalEditNeighborhoodProps) {
-
+  const serviceNeighborhoods = new ServiceNeighborhoods()
   const {
     register,
     handleSubmit,
@@ -54,17 +54,17 @@ export default function ModalEditNeighborhood({ neighborhood, openModalEdit, set
       status: { label: neighborhood.status },
     }
   });
-  console.log(neighborhood);
-  
+
   const handleSubmitForm = async (data: ProductSchema) => {
- 
+
     try {
-      await api.put('/neighborhood', {
+      serviceNeighborhoods.updateNeighborhood({
         id: neighborhood.id,
         name: data.name,
         tax: formatValue(data.tax),
         status: data.status.label === "ATIVO" ? 'ACTIVE' : 'DISABLE',
       })
+
       reset()
       notify('Bairro atualizado com sucesso!', 'top')
       setIsOpenModalEdit(false)

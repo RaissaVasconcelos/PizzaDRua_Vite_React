@@ -1,7 +1,6 @@
-
 import { CheckCircle, ChevronLeft, ShoppingCart } from "lucide-react"
 import { NavLink } from "react-router-dom"
-import delivery from '../assets/delivery.png'
+import delivery from '../assets/delivery-gray.png'
 import deliveryOrange from '../assets/delivery-orange.png'
 
 
@@ -9,7 +8,7 @@ type HeaderOrderProps = React.HTMLAttributes<HTMLDivElement> & {
   leftLink: string
   activeLink: 'CART' | 'PAYMENT' | 'CHECKOUT' | 'DELIVERY'
 }
-//className = {cn('flex flex-col w-4/5', address.className)
+
 export const HeaderOrder = ({ leftLink, activeLink }: HeaderOrderProps) => {
   return (
     <header className={"w-full flex text-gray-400  mt-[94px]  items-center justify-center "}>
@@ -31,9 +30,6 @@ export const HeaderOrder = ({ leftLink, activeLink }: HeaderOrderProps) => {
         <CheckCircle size={28} strokeWidth={1} className={`${activeLink === 'CART' ? 'text-orange-500' : 'text-gray-400'}}`} />
         Finalizar
       </div>
-      {/* <NavLink to={rightLink} className={"w-2/12 text-gray-50 py-[30px]  bg-orange-500 flex items-center justify-center"}>
-        <ChevronRight size={35} strokeWidth={4} />
-      </NavLink> */}
     </header>
   )
 }

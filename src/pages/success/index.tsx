@@ -4,31 +4,29 @@ import { useEffect, useState } from 'react'
 import { Orders } from '../../@types/interface'
 import { parseCookies } from 'nookies'
 import { api } from '../../utils/axios'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
 import { ContextCartApp } from '../../context/cart-context'
 
 export default function Success() {
-  const [order, setOrder] = useState<Orders>()
+  const [order, setOrder] = useState<Orders | null>(null)
   const { clearCart } = ContextCartApp()
-
+  const { id } = useParams();
   const getOrders = async () => {
 
     const token = parseCookies().accessToken
-    const response = await api.get('/order', {
+    const response = await api.get(`/order/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
 
-    setOrder(response.data[0])
+    setOrder(response.data)
 
   }
   useEffect(() => {
     getOrders()
     clearCart()
   }, [])
-
-
 
   return (
 

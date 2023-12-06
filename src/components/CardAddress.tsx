@@ -1,11 +1,12 @@
 import { MapPin, MapPinOff } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { AddressProps, ContextAuthApp } from "../context/auth-context";
+import { ContextAuthApp } from "../context/auth-context";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import ServiceAddress from '../infrastructure/services/address'
 import { ColorRing } from "react-loader-spinner";
 import { cn } from "../utils/cn";
+import { AddressProps } from "../context/cart-context";
 
 type CardAddressProps = React.HTMLAttributes<HTMLParagraphElement> & {
   textLink?: string;
@@ -58,10 +59,10 @@ export const CardAddress = ({ textLink, className }: CardAddressProps) => {
         <div className={cn("flex bg-white rounded  items-center justify-center", className)}>
           <header className="flex items-center justify-start gap-2 w-full">
             {<MapPin size={50} className="bg-orange-50 text-orange-500 p-3 rounded-full" />}
-          <div className="w-full flex items-start justify-start flex-col gap-1">
-            <p>{address.street}, {address.number}</p>
-            <p className="text-gray-400 text-sm">{address.neighborhood.name}</p>
-          </div>
+            <div className="w-full flex items-start justify-start flex-col gap-1">
+              <p>{address.street}, {address.number}</p>
+              <p className="text-gray-400 text-sm">{address.neighborhood.name}</p>
+            </div>
             {
               textLink && (
                 <NavLink className='text-red-500 text-sm' to={textLink}>

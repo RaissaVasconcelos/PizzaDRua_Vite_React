@@ -1,17 +1,19 @@
 import { ClipboardCheck, ChefHat, CheckCheck, Truck } from "lucide-react";
 import { Card } from "./components/Card";
-import { api } from "../../../utils/axios";
 import { useEffect, useState } from "react";
 import { Orders } from "../../../@types/interface";
 import socket from "../../../utils/socketIO";
 import { HeaderAdmin } from "../../../components/HeaderAdmin";
+import ServiceOrder from '../../../infrastructure/services/order'
+
 
 export default function Dashboard() {
   const [orders, setOrders] = useState<Orders[]>([])
+  const serviceOrder = new ServiceOrder()
 
   useEffect(() => {
     // Adicione o ouvinte do evento 'newOrder' ao montar o componente
-    socket.on('newOrder', (data: any) => {
+    socket.on('OrderRoom', (data: any) => {
       setOrders((prevOrders) => {
         const orderExists = prevOrders.some((order) => order.id === data.id);
 
@@ -30,7 +32,7 @@ export default function Dashboard() {
 
     // Remova o ouvinte quando o componente for desmontado para evitar vazamento de memória
     return () => {
-      socket.off('newOrder');
+      socket.off('OrderRoom');
     };
   }, []);
 
@@ -45,16 +47,14 @@ export default function Dashboard() {
   }
 
   const getOrders = async () => {
-
-    const response = await api.get('/order')
-    setOrders(response.data)
+    const response = await serviceOrder.showOrdersAdmin()
+    setOrders(response.body)
 
   }
+
   useEffect(() => {
     getOrders()
   }, [])
-
-
 
 
   return (

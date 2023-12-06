@@ -160,7 +160,7 @@ export default function Personalize() {
       <div className='flex flex-col items-center my-5 '>
         <h2 className=' text-gray-700 font-semibold text-xl'>Personalize sua Pizza</h2>
       </div>
-      <form onSubmit={handleSubmit(handleSubmitForm)} className='w-full ' action="">
+      <form onSubmit={handleSubmit(handleSubmitForm)} className='w-full' action="">
         <div className='bg-white  '>
           <h2 className='text-gray-600 text-base  font-medium p-2 '>Selecione um tamanho</h2>
           <Controller
@@ -221,57 +221,63 @@ export default function Personalize() {
           <div className='bg-white py-5 px-3 flex  items-center justify-start w-full border-b-[1px] border-gray-100'>
             <h2 className="text-gray-600 font-medium">Tradicional</h2>
           </div>
-          {products.filter((item) => item.category.name === 'pizza' && item.type === 'TRADITIONAL').map((item) => (
-            <div key={item.id} onClick={() => handleSelectionChange(item)} className="bg-white w-full flex items-center justify-between p-[14px] gap-10 border-b-[1px] border-gray-100">
-              <div>
-                {item.product.map((product) => (
-                  <h2
-                    key={product.name}
-                    className="cursor-pointer"
-                  >
-                    {product.name}
-                  </h2>
-                ))}
-                <p className='text-gray-300 text-sm'>{item.description}</p>
+          {products.filter((item) =>
+            item.category.name === 'pizza' &&
+            item.type === 'TRADITIONAL' &&
+            item.status === 'ACTIVE').map((item) => (
+              <div key={item.id} onClick={() => handleSelectionChange(item)} className="bg-white w-full flex items-center justify-between p-[14px] gap-10 border-b-[1px] border-gray-100">
+                <div>
+                  {item.product.map((product) => (
+                    <h2
+                      key={product.name}
+                      className="cursor-pointer font-medium text-gray-600"
+                    >
+                      {product.name}
+                    </h2>
+                  ))}
+                  <p className='text-gray-400 text-sm'>{item.description}</p>
+                </div>
+                <input
+                  type="checkbox"
+                  id={item.id}
+                  checked={selectedItems.includes(item)}
+                  onChange={() => handleSelectionChange(item)}
+                  className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                  disabled={isChecked === 'ENTIRE' ? selectedItems.length === 3 && !selectedItems.includes(item) : selectedItems.length === 2 && !selectedItems.includes(item)}
+                />
               </div>
-              <input
-                type="checkbox"
-                id={item.id}
-                checked={selectedItems.includes(item)}
-                onChange={() => handleSelectionChange(item)}
-                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                disabled={isChecked === 'ENTIRE' ? selectedItems.length === 3 && !selectedItems.includes(item) : selectedItems.length === 2 && !selectedItems.includes(item)}
-              />
-            </div>
-          ))}
+            ))}
           <div className='bg-white py-5 px-3 flex  items-center justify-start w-full border-b-[1px] border-gray-100'>
             <h2 className="text-gray-600 font-medium">Especial</h2>
           </div>
-          {products.filter((item) => item.category.name === 'pizza' && item.type === 'SPECIAL').map((item) => (
-            <div key={item.id} onClick={() => handleSelectionChange(item)} className="bg-white w-full flex items-center justify-between p-[14px] gap-10 border-b-[1px] border-gray-100">
-              <div>
-                {item.product.map((product) => (
-                  <h2
-                    key={product.name}
-                    className="cursor-pointer"
-                  >
-                    {product.name}
-                  </h2>
-                ))}
-                <p className='text-gray-300 text-sm'>{item.description}</p>
+          {products.filter((item) =>
+            item.category.name === 'pizza' &&
+            item.type === 'SPECIAL' &&
+            item.status === 'ACTIVE').map((item) => (
+              <div key={item.id} onClick={() => handleSelectionChange(item)} className="bg-white w-full flex items-center justify-between p-[14px] gap-10 border-b-[1px] border-gray-100">
+                <div>
+                  {item.product.map((product) => (
+                    <h2
+                      key={product.name}
+                      className="cursor-pointer font-medium text-gray-600"
+                    >
+                      {product.name}
+                    </h2>
+                  ))}
+                  <p className='text-gray-400 text-sm'>{item.description}</p>
+                </div>
+                <input
+                  type="checkbox"
+                  id={item.id}
+                  checked={selectedItems.includes(item)}
+                  onChange={() => handleSelectionChange(item)}
+                  className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                  disabled={isChecked === 'ENTIRE' ? selectedItems.length === 3 && !selectedItems.includes(item) : selectedItems.length === 2 && !selectedItems.includes(item)}
+                />
               </div>
-              <input
-                type="checkbox"
-                id={item.id}
-                checked={selectedItems.includes(item)}
-                onChange={() => handleSelectionChange(item)}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                disabled={isChecked === 'ENTIRE' ? selectedItems.length === 3 && !selectedItems.includes(item) : selectedItems.length === 2 && !selectedItems.includes(item)}
-              />
-            </div>
-          ))}
+            ))}
         </div>
-        <div className='fixed border-t-[1px] border-gray-200 bottom-0 bg-white w-full flex items-center justify-between  p-3 py-5 '>
+        <div className='fixed xl:w-[1100px] 3xl:w-[1100px]  w-full  border-t-[1px] border-gray-200 bottom-0 bg-white flex items-center justify-between  p-3 py-5 '>
           <div className='flex items-center justify-center gap-4 '>
             <button
               className='disabled:text-gray-300 text-red-500'

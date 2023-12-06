@@ -1,4 +1,3 @@
-import { ContextAuthApp } from "../../context/auth-context";
 import { ContextCartApp } from "../../context/cart-context";
 import { Summary } from "./components/summary";
 import { HeaderOrder } from "../../components/HeaderOrder";
@@ -6,16 +5,13 @@ import { Card } from "../../components/ui/card";
 import { CardProduct } from "./components/card-product";
 import { ShoppingCart } from "lucide-react";
 import { ButtonCheckout } from "../../components/ButtonCheckout";
-import { NavLink } from "react-router-dom";
-
+import { ContextAuthApp } from "../../context/auth-context";
 
 
 export default function Cart() {
 
-
-  const { isAuthenticated } = ContextAuthApp()
   const { productToCart } = ContextCartApp()
-
+  const { isAuthenticated } = ContextAuthApp()
   return (
 
     <div className="w-full flex flex-col items-center justify-center mb-10">
@@ -53,10 +49,7 @@ export default function Cart() {
 
       }
       {productToCart.length > 0 && (
-        <ButtonCheckout >
-          <NavLink to={isAuthenticated ? '/delivery' : '/sign-in'} >Proximo</NavLink>
-        </ButtonCheckout>
-
+        <ButtonCheckout title="Proximo" link={isAuthenticated ? '/delivery' : '/sign-in'} />
       )}
 
     </div>

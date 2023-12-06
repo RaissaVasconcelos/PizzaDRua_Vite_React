@@ -13,8 +13,8 @@ import { useState } from 'react';
 import { ProductProps } from '../../../../context/cart-context';
 import { ToastContainer } from 'react-toastify';
 import { notify } from '../../../../utils/toast';
-import { parseCookies } from 'nookies';
 import ProductService from '../../../../infrastructure/services/product'
+import { Oval } from 'react-loader-spinner';
 
 // const maxFileSize = 5 * 1024 * 1024; // 5MB
 // const allowedFileTypes = ["image/jpeg", "image/jpg"];
@@ -54,7 +54,9 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
   const [previewImage, setPreviewImage] = useState<string | undefined>(product.image_url);
   const [errorFieldImage, setErrorFieldImage] = useState<string | null>(null);
   const [selectCategory, setSelectCategory] = useState<string | undefined>('Pizza');
+  const [isLoading, setIsLoading] = useState(false)
   const productService = new ProductService();
+
   const {
     control,
     register,
@@ -104,6 +106,7 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
   const handleSubmitForm = async (data: ProductSchema) => {
 
     if (typeof data.file !== 'string') {
+      setIsLoading(true)
       const imageUrl = await api.post('/upload', data.file)
       await productService.updateProduct({
         id: product.id,
@@ -117,6 +120,7 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
         imageUrl: imageUrl.data
       })
     } else {
+      setIsLoading(true)
       await productService.updateProduct({
         id: product.id,
         name: data.name,
@@ -133,6 +137,7 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
     reset()
     setErrorFieldImage(null)
     notify('Produto editado com sucesso', 'top')
+    setIsLoading(false)
     setOpenModal(false)
   }
 
@@ -283,7 +288,23 @@ export default function ModalEditProduct({ product, setOpenModal, openModal }: M
               <span className="text-red-500 mb-3">{errors.description?.message}</span>
             )}
             <Button className='w-full mt-4 bg-red-500 hover:bg-red-400' type='submit'>
-              Cadastrar
+              {isLoading ? (
+                <Oval
+                  height={25}
+                  width={25}
+                  color="#fff"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                  ariaLabel='oval-loading'
+                  secondaryColor="#fff"
+                  strokeWidth={2}
+                  strokeWidthSecondary={2}
+
+                />
+              ) : (
+                'Salvar'
+              )}
             </Button>
           </form>
           <ToastContainer />

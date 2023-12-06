@@ -2,6 +2,7 @@ import { useContext, createContext, ReactNode, useState, useEffect } from 'react
 import { setCookie, parseCookies } from "nookies";
 import { produce } from "immer";
 import ProductService from '../infrastructure/services/product'
+import ServiceAddress from '../infrastructure/services/address'
 
 interface ChildrenProps {
   children: ReactNode
@@ -26,6 +27,24 @@ export interface OrdersCartProps extends ProductProps {
   quantityProduct: number;
 }
 
+export interface AddressProps {
+  customerId: string
+  type: "HOME" | "WORK" | "OTHER"
+  street: string
+  number: string
+  standard: boolean,
+  neighborhood: {
+    id: string
+    name: string
+    tax: string
+    status?: string
+  }
+  zipCode: string
+  phone: string
+  id: string
+
+}
+
 interface GroupOptions {
   label: string
   options: ProductProps[]
@@ -40,6 +59,9 @@ interface cartTypeContext {
   setOnChangeCatalog: (catalog: string) => void
   removeProductFromCart: (productId: string) => void
   removeProductInCart: (products: OrdersCartProps) => void
+  addresses: AddressProps[]
+  setAddresses: (Address: AddressProps[]) => void
+  currentAddress: AddressProps | null
   onChangeCatalog: string
   cartProductsTotalPrice: number
   totalItemsOnCart: number
@@ -66,12 +88,15 @@ export const CartProvider = ({ children }: ChildrenProps) => {
   const [products, setProducts] = useState<ProductProps[]>([])
   const [groupOptions, setGroupOptions] = useState<any[]>([])
   const [onChangeCatalog, setOnChangeCatalog] = useState('PIZZA')
+  const [addresses, setAddresses] = useState<AddressProps[]>([])
+  const [currentAddress, setCurrentAddress] = useState<AddressProps | null>(null);
   const [productToCart, setProductToCart] = useState<OrdersCartProps[]>(
     () => {
       const storagedCart = parseCookies().product
       return storagedCart ? JSON.parse(storagedCart) : []
     }
   )
+  const serviceAddress = new ServiceAddress()
 
   const getFlavors = async () => {
     const response = await serviceProduct.showProduct()
@@ -155,8 +180,17 @@ export const CartProvider = ({ children }: ChildrenProps) => {
     setProductToCart(findProduct)
   };
 
+  const getAddresses = async () => {
+    const response = await serviceAddress.showAddress()
+    const addresses = response.body as any
+    const standardAddress = addresses?.find((element: AddressProps) => element.standard === true)
+    setCurrentAddress(standardAddress)
+    setAddresses(addresses)
+  }
+
   useEffect(() => {
     getFlavors()
+    getAddresses()
   }, [])
 
   return (
@@ -166,6 +200,9 @@ export const CartProvider = ({ children }: ChildrenProps) => {
         productToCart,
         groupOptions,
         onChangeCatalog,
+        addresses,
+        currentAddress,
+        setAddresses,
         cartProductsTotalPrice,
         totalItemsOnCart,
         clearCart,
